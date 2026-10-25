@@ -1,0 +1,378 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>造像台 · 人物设定稿</title>
+<link rel="icon" href="data:," />
+<link rel="stylesheet" href="./style.css" />
+</head>
+<body>
+<div class="app">
+
+  <header class="topbar">
+    <div class="brand">
+      <span class="seal">造</span>
+      <div class="brand-copy">
+        <strong>造像台</strong>
+        <span>人物设定稿</span>
+      </div>
+    </div>
+    <span class="tb-divider"></span>
+
+    <div class="conn">
+      <label class="ctl" title="服务商">
+        <span class="ctl-label">服务商</span>
+        <select id="providerSel"></select>
+      </label>
+      <label class="ctl" title="模型">
+        <span class="ctl-label">模型</span>
+        <select id="modelSel"></select>
+      </label>
+      <button class="icon-btn" id="refreshModels" title="重新拉取模型列表">↻</button>
+      <button class="icon-btn" id="manageBtn" title="管理模型与服务商">⋯</button>
+    </div>
+
+    <span class="tb-divider"></span>
+
+    <div class="canvas-set">
+      <label class="ctl" title="版面模板：只换右侧「版面」那一段的写法；人物内容段所有画幅共用同一份">
+        <span class="ctl-label">画幅</span>
+        <select id="templateSel" class="select-mini"></select>
+      </label>
+      <button class="icon-btn" id="layoutManage" title="管理画幅与预设：新建 / 改名 / 删除 / 快速切换">⋯</button>
+      <div class="ctl" title="画面比例">
+        <span class="ctl-label">比例</span>
+        <div class="chip-group" id="ratioSeg"></div>
+      </div>
+      <div class="ctl" title="清晰度档位，决定实际像素">
+        <span class="ctl-label">清晰度</span>
+        <div class="chip-group" id="resSeg"></div>
+      </div>
+      <label class="ctl" title="一次生成几张；多张时每张都会重新随机一个新人物">
+        <span class="ctl-label">张数</span>
+        <select id="batchSel" class="select-mini"></select>
+      </label>
+      <label class="ctl" title="画质档位">
+        <span class="ctl-label">质量</span>
+        <select id="qualitySel" class="select-mini"></select>
+      </label>
+      <div class="canvas-size" id="sizeReadout" title="实际出图像素">—</div>
+    </div>
+
+    <div class="actions">
+      <button class="btn ghost" id="rerollAll">换一个</button>
+      <button class="btn primary" id="generateBtn">生 成</button>
+    </div>
+  </header>
+
+  <main class="workspace">
+
+    <aside class="panel param-panel">
+      <div class="panel-head">
+        <h2>人物参数</h2>
+        <span class="head-actions">
+          <button class="text-btn on" id="togglePhrases" title="在每个参数下显示会写进提示词的词句；点击词句可在右侧提示词里定位">词句</button>
+          <button class="text-btn" id="unlockAll">全部解锁</button>
+          <button class="text-btn hide-btn" id="hideLeft" type="button" title="收起左栏（快捷键 [）">‹</button>
+        </span>
+      </div>
+      <div class="param-toolbar" id="paramToolbar">
+        <div class="param-search-row">
+          <input id="paramSearch" class="param-search" placeholder="搜参数 / 选项 / 变量…" spellcheck="false" autocomplete="off" />
+          <button class="text-btn" id="dictBtn" title="打开人物参数词典">词典</button>
+          <button class="text-btn" id="healthBtn" title="检查冲突、未接入与提示词预算">体检<span class="health-badge" id="healthBadge" hidden>0</span></button>
+        </div>
+        <div class="param-filter-row">
+          <div class="chip-group param-filters" id="paramFilters">
+            <button class="chip on" data-tier="all">全部</button>
+            <button class="chip" data-tier="core">核心</button>
+            <button class="chip" data-tier="advanced">进阶</button>
+            <button class="chip" data-tier="unused">未用</button>
+          </div>
+          <div class="chip-group density-seg" id="densitySeg" title="左栏密度：摘要行（一行一项，点开才展开）/ 全展开（旧观感）">
+            <button class="chip on" data-density="summary">摘要</button>
+            <button class="chip" data-density="full">全展开</button>
+          </div>
+        </div>
+      </div>
+      <div class="panel-scroll">
+        <div id="profileCard"></div>
+        <div id="paramGroups"></div>
+      </div>
+      <div class="seed-row">
+        <span class="seed-label">种子</span>
+        <input id="seedInput" class="seed-input" spellcheck="false" />
+        <button class="text-btn" id="applySeed">应用</button>
+        <button class="text-btn" id="diceSeed">掷</button>
+      </div>
+    </aside>
+
+    <section class="stage">
+      <div class="stage-head">
+        <div class="who">
+          <strong id="charName">尚未成形</strong>
+          <span id="charMeta"></span>
+        </div>
+        <div class="stage-tools">
+          <button class="text-btn retry-btn" id="retryFailed" hidden title="用原人物参数、原提示词重试上一批失败的图">↻ 重试失败 0 张</button>
+          <button class="text-btn" id="followLatest" hidden title="生成中你在看别的图；点这里回到这一批最新出的那张">↩ 回到最新</button>
+          <div class="zoom-tools" id="zoomTools" hidden title="滚轮缩放 · 放大后拖动平移 · 双击画面还原">
+            <button class="zoom-btn" id="zoomOut" type="button" title="缩小（滚轮向下）" aria-label="缩小">−</button>
+            <button class="zoom-pct fit" id="zoomPct" type="button" title="当前缩放倍数；点击还原为整张适配">100%</button>
+            <button class="zoom-btn" id="zoomIn" type="button" title="放大（滚轮向上）" aria-label="放大">＋</button>
+            <button class="text-btn zoom-fit" id="zoomFit" type="button" title="还原为整张适配（也可双击画面）">适应</button>
+          </div>
+          <button class="text-btn" id="copyPrompt">复制提示词</button>
+        </div>
+      </div>
+
+      <div class="sheet-wrap">
+        <div class="sheet" id="sheet">
+          <div class="empty" id="emptyState">
+            <div class="empty-grid" aria-hidden="true"></div>
+            <p class="empty-title">纸上还没有人</p>
+            <p class="empty-sub">调左侧参数，或者直接按「换一个」</p>
+          </div>
+          <img id="preview" alt="" />
+          <div class="loading" id="loading">
+            <div class="loader-bar"><i></i></div>
+            <p id="loadingText">正在生成…</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="history">
+        <div class="history-head">
+          <span>存档</span>
+          <span class="history-head-right">
+            <span id="archiveCount"></span>
+            <button class="text-btn" id="trashBtn" title="查看回收站：删除的图会先放这里，可清空">回收站</button>
+            <button class="text-btn" id="archiveOpen" title="在文件资源管理器里打开存档目录">打开目录</button>
+          </span>
+        </div>
+        <div class="history-strip" id="historyStrip">
+          <p class="history-empty">生成的图会自动存进「output / 人物 / 男｜女｜中性」；悬停缩略图可移到回收站</p>
+        </div>
+      </div>
+    </section>
+
+    <aside class="panel prompt-panel">
+      <div class="panel-head">
+        <button class="text-btn hide-btn" id="hideRight" type="button" title="收起右栏（快捷键 ]）">›</button>
+        <h2>提示词编排</h2>
+        <span class="head-actions">
+          <button class="text-btn" id="varTableBtn" title="查看所有 {{变量}} 的当前值与来源">变量表</button>
+          <button class="text-btn" id="resetBlocks" title="16 个内置段恢复默认文字；内容段对所有画幅生效">重置</button>
+          <button class="text-btn" id="addBlock" title="加到列表末尾，所有画幅共用；右上角 × 可移除">＋ 加一段</button>
+        </span>
+      </div>
+      <div class="preset-row" title="详细度：控制「面部进阶」「体表与毛发进阶」「人物档案」「记忆点」四段的开关；手动关段后显示自定义">
+        <span class="preset-label">详细度</span>
+        <div class="chip-group preset-seg" id="presetSeg">
+          <button class="chip" data-preset="simple">简洁</button>
+          <button class="chip" data-preset="standard">标准</button>
+          <button class="chip on" data-preset="detailed">详细</button>
+        </div>
+      </div>
+      <div class="block-list" id="blockList"></div>
+      <div class="prompt-out">
+        <div class="prompt-out-head">
+          <span>最终提示词</span>
+          <span id="promptMeta"></span>
+        </div>
+        <p class="prompt-warn" id="promptWarn" hidden></p>
+        <pre id="promptPreview"></pre>
+      </div>
+    </aside>
+
+  </main>
+
+  <button class="rail-toggle left" id="railLeft" type="button" title="展开左栏 · 人物参数（快捷键 [）">人物参数</button>
+  <button class="rail-toggle right" id="railRight" type="button" title="展开右栏 · 提示词编排（快捷键 ]）">提示词编排</button>
+
+  <footer class="statusbar">
+    <span id="statusText">准备就绪</span>
+    <span id="statusRight"></span>
+  </footer>
+
+</div>
+
+<div class="modal" id="modal">
+  <div class="modal-card">
+    <h3 id="modalTitle">接入第三方生图接口</h3>
+    <p class="modal-note">接口需兼容 OpenAI 的 <code>/v1/models</code> 与 <code>/v1/images/generations</code>；地址只填域名也行（会依次试 <code>/v1/models</code>、<code>/models</code>）。密钥只存在本机服务端。</p>
+    <label class="form-row"><span>名称</span><input id="pvName" placeholder="例如：画布中转" /></label>
+    <label class="form-row"><span>接口地址</span><input id="pvBase" placeholder="https://example.com/v1 或 https://example.com/canvas" /></label>
+    <label class="form-row"><span>API Key</span><input id="pvKey" placeholder="sk-..." /></label>
+    <div class="modal-actions">
+      <button class="btn ghost" id="modalCancel">取消</button>
+      <button class="btn primary" id="modalSave">保存并拉取模型</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal" id="manageModal">
+  <div class="modal-card wide">
+    <h3>模型与服务商</h3>
+
+    <div class="manage-section">
+      <div class="manage-head">
+        <span>服务商</span>
+        <button class="text-btn" id="manageAddProvider">＋ 新增服务商</button>
+      </div>
+      <div class="manage-list" id="providerList"></div>
+    </div>
+
+    <div class="manage-section">
+      <div class="manage-head">
+        <span>模型 · <em id="manageProviderName">—</em></span>
+        <button class="text-btn" id="manageRefreshModels">重新拉取</button>
+      </div>
+      <div class="manage-list" id="modelList"></div>
+    </div>
+
+    <div class="modal-actions">
+      <button class="btn ghost" id="manageClose">关闭</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal" id="layoutModal">
+  <div class="modal-card wide">
+    <h3>画幅管理</h3>
+    <p class="modal-note">画幅决定右侧 4 个结构段的写法（画幅 / 版面 / 质感 / 负面）；人物内容段所有画幅共用一份。新建会复制当前画幅的 4 段文字，建完请改「版面」那一段。</p>
+
+    <div class="manage-section" id="presetSection">
+      <div class="manage-head">
+        <span>常用预设 · 点击应用</span>
+        <em>画幅 + 比例 + 清晰度</em>
+      </div>
+      <div class="preset-grid" id="presetList"></div>
+    </div>
+
+    <div class="manage-section">
+      <div class="manage-head">
+        <span>画幅 · <em id="layoutCount">—</em></span>
+        <button class="text-btn" id="layoutReset" title="删掉 data/layouts.json，回到出厂 5 个画幅">恢复默认</button>
+      </div>
+      <div class="manage-list" id="layoutList"></div>
+    </div>
+
+    <div class="modal-actions">
+      <button class="btn ghost" id="layoutClose">关闭</button>
+      <button class="btn primary" id="layoutAdd">＋ 新建画幅</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal" id="varModal">
+  <div class="modal-card wide var-card">
+    <h3>提示词变量表</h3>
+    <p class="modal-note">右侧提示词里的 <code>{{变量}}</code> 会被左栏参数和顶栏设置实时替换。点任意一行可以跳到它的来源，并在最终提示词里高亮。</p>
+    <input class="var-search" id="varSearch" placeholder="搜索变量名 / 当前值 / 来源…" spellcheck="false" />
+    <div class="var-tools">
+      <div class="var-tabs" id="varTabs">
+        <button class="chip on" data-scope="used">当前提示词用到的</button>
+        <button class="chip" data-scope="all">全部变量</button>
+      </div>
+      <span class="var-hint">点一行 → 定位来源并高亮</span>
+    </div>
+    <div class="var-list" id="varList"></div>
+    <div class="modal-actions">
+      <button class="btn ghost" id="varClose">关闭</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal" id="trashModal">
+  <div class="modal-card wide trash-card">
+    <h3>回收站</h3>
+    <p class="modal-note">删除的图片和同名 JSON 会先放到这里，不会立刻消失。文件放在「output / _回收站 / 人物 / 性别」下；清空后才会永久删除。</p>
+    <div class="trash-tools">
+      <span id="trashCount" class="trash-count">—</span>
+      <span class="trash-tools-right">
+        <button class="text-btn" id="trashOpenDir">打开目录</button>
+        <button class="text-btn danger" id="trashEmptyBtn">清空回收站</button>
+      </span>
+    </div>
+    <div class="trash-list" id="trashList"></div>
+    <div class="modal-actions">
+      <button class="btn ghost" id="trashClose">关闭</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal" id="confirmModal">
+  <div class="modal-card confirm-card">
+    <h3 id="confirmTitle">确认操作</h3>
+    <p class="modal-note" id="confirmNote"></p>
+    <div class="modal-actions">
+      <button class="btn ghost" id="confirmCancel">取消</button>
+      <button class="btn danger-solid" id="confirmOk">删除</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal" id="paramModal">
+  <div class="modal-card wide param-detail-card">
+    <h3 id="paramTitle">参数详情</h3>
+    <div id="paramDetail" class="param-detail"></div>
+  </div>
+</div>
+
+<div class="modal" id="dictModal">
+  <div class="modal-card wide var-card">
+    <h3>人物参数词典</h3>
+    <p class="modal-note">全部人物参数：说明、当前词句、所在段与是否已接入提示词。点一行跳到左栏对应参数。</p>
+    <input class="var-search" id="dictSearch" placeholder="搜参数名 / 变量 / 选项…" spellcheck="false" />
+    <div class="var-tools">
+      <div class="var-tabs" id="dictTabs">
+        <button class="chip on" data-scope="all">全部</button>
+        <button class="chip" data-scope="core">核心</button>
+        <button class="chip" data-scope="advanced">进阶</button>
+      </div>
+      <span class="var-hint">点一行 → 跳到左栏</span>
+    </div>
+    <div class="var-list" id="dictList"></div>
+    <div class="modal-actions">
+      <button class="btn ghost" id="dictClose">关闭</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal" id="healthModal">
+  <div class="modal-card wide">
+    <h3>参数体检</h3>
+    <p class="modal-note">检查参数冲突、未接入的变量、提示词预算和记忆点数量。冲突只提示，不静默改你手选的值。</p>
+    <div id="healthBody" class="health-body"></div>
+    <div class="modal-actions">
+      <button class="btn ghost" id="healthClose">关闭</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal" id="profileModal">
+  <div class="modal-card profile-modal-card">
+    <h3>人物档案</h3>
+    <p class="modal-note">档案里的身份、性格、标签、风格关键词会写进「人物档案」段；简介只进存档，不进提示词。</p>
+    <div class="profile-form">
+      <div class="form-row"><span>姓名</span><div class="pf-inline"><input id="pfName" placeholder="例如：沈砚之" /><button class="mini" id="pfRollName" type="button">掷</button></div></div>
+      <div class="form-row"><span>身份</span><div class="pf-inline"><input id="pfIdentity" placeholder="例如：游侠" /><button class="mini" id="pfRollIdentity" type="button">掷</button></div></div>
+      <div class="form-row"><span>性格</span><div class="pf-inline"><input id="pfPersonality" placeholder="例如：外冷内热" /><button class="mini" id="pfRollPersonality" type="button">掷</button></div></div>
+      <div class="form-row"><span>标签（怪癖）</span><div class="pf-inline"><input id="pfTrait" placeholder="例如：怕水" /><button class="mini" id="pfRollTrait" type="button">掷</button></div></div>
+      <div class="form-row"><span>风格关键词（用、分隔，最多 4 个）</span><div class="pf-inline"><input id="pfStyle" placeholder="例如：清冷、书卷气" /><button class="mini" id="pfRollStyle" type="button">掷</button></div></div>
+      <div class="form-row"><span>简介（只进存档）</span><textarea id="pfBio" rows="3" placeholder="一句话写清这个人是谁"></textarea><button class="text-btn pf-gen" id="pfBioGen" type="button">按身份/性格/标签生成一句</button></div>
+    </div>
+    <div class="modal-actions">
+      <button class="btn ghost" id="profileCancel">取消</button>
+      <button class="btn primary" id="profileSave">保存</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script src="./app.js"></script>
+</body>
+</html>

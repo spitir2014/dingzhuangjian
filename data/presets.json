@@ -1,0 +1,95 @@
+{
+  "version": 1,
+  "presets": [
+    {
+      "id": "asset_card_16x9_2k",
+      "label": "正背卡 · 16:9 2K",
+      "group": "asset",
+      "layoutId": "sheet_2view",
+      "ratio": "16:9",
+      "res": "2K",
+      "recommended": true,
+      "note": "日常出卡：左 1/3 头像 + 右 2/3 正背全身"
+    },
+    {
+      "id": "asset_card_16x9_4k",
+      "label": "正背卡 · 16:9 4K 定稿",
+      "group": "asset",
+      "layoutId": "sheet_2view",
+      "ratio": "16:9",
+      "res": "4K",
+      "recommended": false,
+      "note": "定稿存档：3840×2160，放大看细节"
+    },
+    {
+      "id": "asset_3view_16x9_2k",
+      "label": "三视图 · 16:9 2K",
+      "group": "asset",
+      "layoutId": "sheet_3view",
+      "ratio": "16:9",
+      "res": "2K",
+      "recommended": false,
+      "note": "锁一致性：正面 / 侧面 / 背面并排"
+    },
+    {
+      "id": "asset_grid_1x1_2k",
+      "label": "表情九宫格 · 1:1 2K",
+      "group": "asset",
+      "layoutId": "expression_grid",
+      "ratio": "1:1",
+      "res": "2K",
+      "recommended": false,
+      "note": "3×3 表情矩阵，方形格不浪费边"
+    },
+    {
+      "id": "post_portrait_3x4_2k",
+      "label": "竖版肖像 · 3:4 2K",
+      "group": "publish",
+      "layoutId": "portrait",
+      "ratio": "3:4",
+      "res": "2K",
+      "recommended": false,
+      "note": "小红书首图 / 身份卡（3:4 原生）"
+    },
+    {
+      "id": "post_portrait_3x4_4k",
+      "label": "竖版肖像 · 3:4 4K 定稿",
+      "group": "publish",
+      "layoutId": "portrait",
+      "ratio": "3:4",
+      "res": "4K",
+      "recommended": false,
+      "note": "发布定稿：2304×3072"
+    },
+    {
+      "id": "post_fullbody_2x3_2k",
+      "label": "竖版立绘 · 2:3 2K",
+      "group": "publish",
+      "layoutId": "fullbody",
+      "ratio": "2:3",
+      "res": "2K",
+      "recommended": false,
+      "note": "立绘海报 / 4×6 印刷"
+    },
+    {
+      "id": "post_fullbody_9x16_2k",
+      "label": "竖版立绘 · 9:16 2K",
+      "group": "publish",
+      "layoutId": "fullbody",
+      "ratio": "9:16",
+      "res": "2K",
+      "recommended": false,
+      "note": "竖屏封面 / 故事板（单图）"
+    },
+    {
+      "id": "asset_costume_breakdown_16x9_2k",
+      "label": "服饰拆解与色卡 · 16:9 2K",
+      "group": "asset",
+      "layoutId": "costume_breakdown",
+      "ratio": "16:9",
+      "res": "2K",
+      "recommended": false,
+      "note": "人物全身像 + 首服、纹样、袖口、鞋履、面料与无文字色卡"
+    }
+  ]
+}

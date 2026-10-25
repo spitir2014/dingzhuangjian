@@ -1,0 +1,1961 @@
+{
+  "version": 2,
+  "eras": [
+    {
+      "id": "qing_early",
+      "label": "清·盛清",
+      "anchor": "乾隆—嘉庆（约 1735—1820）",
+      "region": "east_asia/china",
+      "years": [
+        1735,
+        1820
+      ],
+      "confidence": "A/B",
+      "identities": [
+        "文官",
+        "命妇",
+        "书生",
+        "商贾",
+        "农户",
+        "衙役",
+        "僧人"
+      ],
+      "paraphrases": {
+        "chest": "胸廓起伏被袍料遮住",
+        "larynx": "颈部被衣领遮住",
+        "bodyHair": "体表被衣物遮住",
+        "makeup": "薄妆，点唇"
+      },
+      "negative": "不要出现晚清大拉翅、花盆底、氅衣；不要明代交领、乌纱帽；不要和服、韩服；不要影楼缎面与亮片。",
+      "promptLead": "清代盛期"
+    },
+    {
+      "id": "qing_late",
+      "label": "清·晚清",
+      "anchor": "光绪—宣统（约 1880—1911）",
+      "region": "east_asia/china",
+      "years": [
+        1880,
+        1911
+      ],
+      "confidence": "A/B + D",
+      "identities": [
+        "文官",
+        "命妇",
+        "学堂生",
+        "商贾",
+        "农户",
+        "衙役",
+        "僧人"
+      ],
+      "promptLead": "清代晚期",
+      "paraphrases": {
+        "chest": "胸廓被衣物遮住",
+        "larynx": "颈部被衣领遮住",
+        "bodyHair": "体表被衣物遮住",
+        "makeup": "晚清妆容克制，不要现代浓妆"
+      },
+      "negative": "不要明制交领、宋明乌纱帽、和服、韩服、现代拉链、运动鞋、影楼亮片；不要把旗女服饰混给汉女或男性；按本卡身份与场合穿用，不添加未指定的龙纹或朝珠。"
+    }
+  ],
+  "communities": [
+    {
+      "id": "none",
+      "label": "未定"
+    },
+    {
+      "id": "manchu",
+      "label": "旗籍"
+    },
+    {
+      "id": "han_banner",
+      "label": "汉军旗"
+    },
+    {
+      "id": "han",
+      "label": "民籍"
+    }
+  ],
+  "roles": [
+    {
+      "id": "none",
+      "label": "未定",
+      "portable": ""
+    },
+    {
+      "id": "official_civil",
+      "label": "文官",
+      "portable": "official"
+    },
+    {
+      "id": "official_military",
+      "label": "武官",
+      "portable": "military"
+    },
+    {
+      "id": "noble",
+      "label": "宗室贵妇",
+      "portable": "noble"
+    },
+    {
+      "id": "literati",
+      "label": "士人",
+      "portable": "scholar"
+    },
+    {
+      "id": "merchant",
+      "label": "商贾",
+      "portable": "merchant"
+    },
+    {
+      "id": "artisan",
+      "label": "工匠",
+      "portable": "artisan"
+    },
+    {
+      "id": "farmer",
+      "label": "农户",
+      "portable": "farmer"
+    },
+    {
+      "id": "servant",
+      "label": "仆役",
+      "portable": "servant"
+    },
+    {
+      "id": "cleric",
+      "label": "僧人",
+      "portable": "cleric"
+    },
+    {
+      "id": "soldier",
+      "label": "兵丁",
+      "portable": "soldier"
+    },
+    {
+      "id": "marginal",
+      "label": "流民",
+      "portable": "marginal"
+    },
+    {
+      "id": "ruler",
+      "label": "帝后",
+      "portable": "ruler"
+    }
+  ],
+  "occasions": [
+    {
+      "id": "daily",
+      "label": "常服"
+    },
+    {
+      "id": "formal",
+      "label": "吉服"
+    },
+    {
+      "id": "ceremonial",
+      "label": "朝服"
+    }
+  ],
+  "slots": [
+    {
+      "id": "headwear",
+      "lead": "头戴",
+      "required": true
+    },
+    {
+      "id": "outer",
+      "lead": "身穿",
+      "required": true
+    },
+    {
+      "id": "inner",
+      "lead": "内穿",
+      "required": false
+    },
+    {
+      "id": "lower",
+      "lead": "下穿",
+      "required": false
+    },
+    {
+      "id": "shoes",
+      "lead": "足蹬",
+      "required": true
+    },
+    {
+      "id": "accessory",
+      "lead": "",
+      "required": false
+    },
+    {
+      "id": "pattern",
+      "lead": "",
+      "required": false
+    },
+    {
+      "id": "material",
+      "lead": "面料",
+      "required": false
+    },
+    {
+      "id": "color",
+      "lead": "主色",
+      "required": false
+    }
+  ],
+  "ranks": {
+    "civil": {
+      "1": {
+        "badge": "仙鹤",
+        "jewel": "红宝石",
+        "pearls": true
+      },
+      "2": {
+        "badge": "锦鸡",
+        "jewel": "珊瑚",
+        "pearls": true
+      },
+      "3": {
+        "badge": "孔雀",
+        "jewel": "蓝宝石",
+        "pearls": true
+      },
+      "4": {
+        "badge": "云雁",
+        "jewel": "青金石",
+        "pearls": true
+      },
+      "5": {
+        "badge": "白鹇",
+        "jewel": "水晶",
+        "pearls": true
+      },
+      "6": {
+        "badge": "鹭鸶",
+        "jewel": "砗磲",
+        "pearls": false
+      },
+      "7": {
+        "badge": "鸂鶒",
+        "jewel": "素金",
+        "pearls": false
+      },
+      "8": {
+        "badge": "鹌鹑",
+        "jewel": "阴文镂花金",
+        "pearls": false
+      },
+      "9": {
+        "badge": "练雀",
+        "jewel": "阳文镂花金",
+        "pearls": false
+      }
+    },
+    "military": {
+      "1": {
+        "badge": "麒麟",
+        "jewel": "红宝石",
+        "pearls": true
+      },
+      "2": {
+        "badge": "狮",
+        "jewel": "珊瑚",
+        "pearls": true
+      },
+      "3": {
+        "badge": "豹",
+        "jewel": "蓝宝石",
+        "pearls": true
+      },
+      "4": {
+        "badge": "虎",
+        "jewel": "青金石",
+        "pearls": true
+      },
+      "5": {
+        "badge": "熊",
+        "jewel": "水晶",
+        "pearls": false
+      },
+      "6": {
+        "badge": "彪",
+        "jewel": "砗磲",
+        "pearls": false
+      },
+      "7": {
+        "badge": "犀",
+        "jewel": "素金",
+        "pearls": false
+      },
+      "8": {
+        "badge": "犀",
+        "jewel": "阴文镂花金",
+        "pearls": false
+      },
+      "9": {
+        "badge": "海马",
+        "jewel": "阳文镂花金",
+        "pearls": false
+      }
+    }
+  },
+  "looks": [
+    {
+      "id": "qe_official_civil_1",
+      "label": "文官正一品·补褂",
+      "era": "qing_early",
+      "community": "manchu",
+      "role": "official_civil",
+      "rank": "1",
+      "occasion": "daily",
+      "slots": {
+        "headwear": "nuanmao",
+        "outer": "bufu",
+        "inner": "zhongyi",
+        "lower": "none",
+        "shoes": "zaoxue",
+        "accessory": "chaozhu",
+        "pattern": "buzi_civil",
+        "material": "zhuanghuaduan",
+        "color": "shiqing"
+      },
+      "overrides": {
+        "hairStyle": "queue",
+        "beard": "goatee",
+        "tattoo": "none",
+        "hairLength": "waist",
+        "bangs": "none",
+        "parting": "none"
+      },
+      "confidence": "A",
+      "refs": [
+        "S1",
+        "S8"
+      ],
+      "sex": "male",
+      "evidence": {
+        "level": "A",
+        "refs": [
+          "S1",
+          "S8"
+        ],
+        "note": "盛清身份卡；服饰形制按现有时代包和来源编号维护。",
+        "mode": "documented"
+      }
+    },
+    {
+      "id": "qe_manchu_lady",
+      "label": "旗人贵妇·盛装",
+      "era": "qing_early",
+      "community": "manchu",
+      "role": "noble",
+      "rank": "none",
+      "occasion": "daily",
+      "slots": {
+        "headwear": "dianzi",
+        "outer": "pao_gua",
+        "inner": "lingjin",
+        "lower": "none",
+        "shoes": "xiuxie",
+        "accessory": "hebao",
+        "pattern": "tuanhua",
+        "material": "anhuachou",
+        "color": "ouhe"
+      },
+      "overrides": {
+        "hairStyle": "qipan",
+        "beard": "peachfuzz",
+        "tattoo": "none",
+        "hairLength": "waist",
+        "bangs": "none",
+        "parting": "none"
+      },
+      "confidence": "B",
+      "refs": [
+        "S1",
+        "S16"
+      ],
+      "sex": "female",
+      "evidence": {
+        "level": "B",
+        "refs": [
+          "S1",
+          "S16"
+        ],
+        "note": "盛清身份卡；服饰形制按现有时代包和来源编号维护。",
+        "mode": "documented"
+      }
+    },
+    {
+      "id": "qe_han_lady",
+      "label": "汉人士人妻·常服",
+      "era": "qing_early",
+      "community": "han",
+      "role": "literati",
+      "rank": "none",
+      "occasion": "daily",
+      "slots": {
+        "headwear": "hanji",
+        "outer": "ao",
+        "inner": "moxiong",
+        "lower": "mamianqun",
+        "shoes": "buxie",
+        "accessory": "yunjian",
+        "pattern": "zhezhihua",
+        "material": "anhuachou",
+        "color": "yuebai"
+      },
+      "overrides": {
+        "hairStyle": "hanji_hair",
+        "makeup": "light",
+        "tattoo": "none",
+        "hairLength": "waist",
+        "bangs": "none",
+        "parting": "none"
+      },
+      "confidence": "B",
+      "refs": [
+        "S1",
+        "S21"
+      ],
+      "sex": "female",
+      "evidence": {
+        "level": "B",
+        "refs": [
+          "S1",
+          "S21"
+        ],
+        "note": "盛清身份卡；服饰形制按现有时代包和来源编号维护。",
+        "mode": "documented"
+      }
+    },
+    {
+      "id": "qe_han_commoner",
+      "label": "汉人平民男·便服",
+      "era": "qing_early",
+      "community": "han",
+      "role": "farmer",
+      "rank": "none",
+      "occasion": "daily",
+      "slots": {
+        "headwear": "zhanmao",
+        "outer": "duanao",
+        "inner": "none",
+        "lower": "dagangku",
+        "shoes": "buxie",
+        "accessory": "budai",
+        "pattern": "sumian",
+        "material": "cubumian",
+        "color": "benbai"
+      },
+      "overrides": {
+        "hairStyle": "queue",
+        "beard": "stubble",
+        "tattoo": "none",
+        "hairLength": "waist",
+        "bangs": "none",
+        "parting": "none"
+      },
+      "confidence": "B",
+      "refs": [
+        "S2",
+        "S3"
+      ],
+      "sex": "male",
+      "evidence": {
+        "level": "B",
+        "refs": [
+          "S2",
+          "S3"
+        ],
+        "note": "盛清身份卡；服饰形制按现有时代包和来源编号维护。",
+        "mode": "documented"
+      }
+    },
+    {
+      "id": "qe_merchant",
+      "label": "商贾·常服",
+      "era": "qing_early",
+      "community": "han",
+      "role": "merchant",
+      "rank": "none",
+      "occasion": "daily",
+      "confidence": "B",
+      "refs": [
+        "S2"
+      ],
+      "sex": "male",
+      "slots": {
+        "headwear": "guapimao",
+        "outer": "changpao",
+        "inner": "zhongyi",
+        "lower": "none",
+        "shoes": "buxie",
+        "accessory": "hebao",
+        "pattern": "sumian",
+        "material": "anhuachou",
+        "color": "jiangse"
+      },
+      "overrides": {
+        "hairStyle": "queue",
+        "beard": "goatee",
+        "tattoo": "none",
+        "hairLength": "waist",
+        "bangs": "none",
+        "parting": "none"
+      },
+      "evidence": {
+        "level": "B",
+        "refs": [
+          "S2"
+        ],
+        "note": "盛清身份卡；服饰形制按现有时代包和来源编号维护。",
+        "mode": "documented"
+      }
+    },
+    {
+      "id": "qe_farmer_w",
+      "label": "农妇·便服",
+      "era": "qing_early",
+      "community": "han",
+      "role": "farmer",
+      "rank": "none",
+      "occasion": "daily",
+      "confidence": "B",
+      "refs": [
+        "S2"
+      ],
+      "sex": "female",
+      "slots": {
+        "headwear": "zhanmao",
+        "outer": "duanao",
+        "inner": "none",
+        "lower": "dagangku",
+        "shoes": "buxie",
+        "accessory": "budai",
+        "pattern": "sumian",
+        "material": "cubumian",
+        "color": "diandlan"
+      },
+      "overrides": {
+        "hairStyle": "hanji_hair",
+        "makeup": "bare",
+        "tattoo": "none",
+        "hairLength": "waist",
+        "bangs": "none",
+        "parting": "none"
+      },
+      "evidence": {
+        "level": "B",
+        "refs": [
+          "S2"
+        ],
+        "note": "盛清身份卡；服饰形制按现有时代包和来源编号维护。",
+        "mode": "documented"
+      }
+    },
+    {
+      "id": "qe_yamen_runner",
+      "label": "衙役/皂隶·号衣",
+      "era": "qing_early",
+      "community": "han",
+      "role": "servant",
+      "rank": "none",
+      "occasion": "daily",
+      "confidence": "B",
+      "refs": [
+        "S2"
+      ],
+      "sex": "male",
+      "slots": {
+        "headwear": "zaomao",
+        "outer": "haoyi",
+        "inner": "zhongyi",
+        "lower": "dagangku",
+        "shoes": "kuaixue",
+        "accessory": "budai",
+        "pattern": "sumian",
+        "material": "gebu",
+        "color": "diandlan"
+      },
+      "overrides": {
+        "hairStyle": "queue",
+        "beard": "stubble",
+        "tattoo": "none",
+        "hairLength": "waist",
+        "bangs": "none",
+        "parting": "none"
+      },
+      "evidence": {
+        "level": "B",
+        "refs": [
+          "S2"
+        ],
+        "note": "盛清身份卡；服饰形制按现有时代包和来源编号维护。",
+        "mode": "documented"
+      }
+    },
+    {
+      "id": "qe_monk",
+      "label": "僧人·常服",
+      "era": "qing_early",
+      "community": "none",
+      "role": "cleric",
+      "rank": "none",
+      "occasion": "daily",
+      "confidence": "B",
+      "refs": [
+        "S2"
+      ],
+      "sex": "male",
+      "slots": {
+        "headwear": "sengmao",
+        "outer": "jiasha",
+        "inner": "zhongyi",
+        "lower": "none",
+        "shoes": "yunlv",
+        "accessory": "nianzhu",
+        "pattern": "sumian",
+        "material": "gebu",
+        "color": "zihei"
+      },
+      "overrides": {
+        "hairStyle": "shaved",
+        "beard": "none",
+        "tattoo": "none",
+        "hairLength": "buzz",
+        "bangs": "none",
+        "parting": "none"
+      },
+      "evidence": {
+        "level": "B",
+        "refs": [
+          "S2"
+        ],
+        "note": "盛清身份卡；服饰形制按现有时代包和来源编号维护。",
+        "mode": "documented"
+      }
+    },
+    {
+      "id": "qe_official_civil_1_formal",
+      "label": "文官正一品·吉服",
+      "era": "qing_early",
+      "community": "manchu",
+      "role": "official_civil",
+      "rank": "1",
+      "occasion": "formal",
+      "confidence": "A",
+      "refs": [
+        "S1",
+        "S15"
+      ],
+      "sex": "male",
+      "slots": {
+        "headwear": "nuanmao",
+        "outer": "jifupao",
+        "inner": "zhongyi",
+        "lower": "none",
+        "shoes": "zaoxue",
+        "accessory": "chaozhu",
+        "pattern": "mangwen",
+        "material": "zhuanghuaduan",
+        "color": "lanse"
+      },
+      "overrides": {
+        "hairStyle": "queue",
+        "beard": "goatee",
+        "tattoo": "none",
+        "hairLength": "waist",
+        "bangs": "none",
+        "parting": "none"
+      },
+      "evidence": {
+        "level": "A",
+        "refs": [
+          "S1",
+          "S15"
+        ],
+        "note": "盛清身份卡；服饰形制按现有时代包和来源编号维护。",
+        "mode": "documented"
+      }
+    },
+    {
+      "id": "qe_official_civil_1_ceremonial",
+      "label": "文官正一品·朝服",
+      "era": "qing_early",
+      "community": "manchu",
+      "role": "official_civil",
+      "rank": "1",
+      "occasion": "ceremonial",
+      "confidence": "A",
+      "refs": [
+        "S1",
+        "S15"
+      ],
+      "sex": "male",
+      "slots": {
+        "headwear": "chaoguan",
+        "outer": "chaofu",
+        "inner": "zhongyi",
+        "lower": "chaoshang",
+        "shoes": "zaoxue",
+        "accessory": "chaozhu",
+        "pattern": "mangwen",
+        "material": "zhuanghuaduan",
+        "color": "shiqing"
+      },
+      "overrides": {
+        "hairStyle": "queue",
+        "beard": "goatee",
+        "tattoo": "none",
+        "hairLength": "waist",
+        "bangs": "none",
+        "parting": "none"
+      },
+      "evidence": {
+        "level": "A",
+        "refs": [
+          "S1",
+          "S15"
+        ],
+        "note": "盛清身份卡；服饰形制按现有时代包和来源编号维护。",
+        "mode": "documented"
+      }
+    },
+    {
+      "id": "qe_civil_1",
+      "label": "文官正一品·补服",
+      "era": "qing_early",
+      "community": "manchu",
+      "role": "official_civil",
+      "rank": "1",
+      "occasion": "daily",
+      "sex": "male",
+      "slots": {
+        "headwear": "nuanmao",
+        "outer": "bufu",
+        "inner": "zhongyi",
+        "lower": "paoju",
+        "shoes": "zaoxue",
+        "accessory": "chaozhu",
+        "pattern": "buzi_civil",
+        "material": "zhuanghuaduan",
+        "color": "shiqing"
+      },
+      "overrides": {
+        "hairStyle": "queue",
+        "beard": "goatee",
+        "tattoo": "none",
+        "hairLength": "waist",
+        "bangs": "none",
+        "parting": "none"
+      },
+      "confidence": "A/B",
+      "refs": [
+        "S1",
+        "S2",
+        "S3",
+        "S5"
+      ],
+      "evidence": {
+        "level": "A/B",
+        "refs": [
+          "P2_COURT",
+          "S3",
+          "S5"
+        ],
+        "note": "补子、顶戴与朝珠资格按官修典制推导。 顶珠表按朝冠典制符号化，不代表所有时期平时暖帽/凉帽的唯一材料。",
+        "mode": "documented"
+      }
+    },
+    {
+      "id": "qe_civil_2",
+      "label": "文官正二品·补服",
+      "era": "qing_early",
+      "community": "manchu",
+      "role": "official_civil",
+      "rank": "2",
+      "occasion": "daily",
+      "sex": "male",
+      "slots": {
+        "headwear": "nuanmao",
+        "outer": "bufu",
+        "inner": "zhongyi",
+        "lower": "paoju",
+        "shoes": "zaoxue",
+        "accessory": "chaozhu",
+        "pattern": "buzi_civil",
+        "material": "zhuanghuaduan",
+        "color": "shiqing"
+      },
+      "overrides": {
+        "hairStyle": "queue",
+        "beard": "goatee",
+        "tattoo": "none",
+        "hairLength": "waist",
+        "bangs": "none",
+        "parting": "none"
+      },
+      "confidence": "A/B",
+      "refs": [
+        "S1",
+        "S2",
+        "S3",
+        "S5"
+      ],
+      "evidence": {
+        "level": "A/B",
+        "refs": [
+          "P2_COURT",
+          "S3",
+          "S5"
+        ],
+        "note": "补子、顶戴与朝珠资格按官修典制推导。 顶珠表按朝冠典制符号化，不代表所有时期平时暖帽/凉帽的唯一材料。",
+        "mode": "documented"
+      }
+    },
+    {
+      "id": "qe_civil_3",
+      "label": "文官正三品·补服",
+      "era": "qing_early",
+      "community": "manchu",
+      "role": "official_civil",
+      "rank": "3",
+      "occasion": "daily",
+      "sex": "male",
+      "slots": {
+        "headwear": "nuanmao",
+        "outer": "bufu",
+        "inner": "zhongyi",
+        "lower": "paoju",
+        "shoes": "zaoxue",
+        "accessory": "chaozhu",
+        "pattern": "buzi_civil",
+        "material": "zhuanghuaduan",
+        "color": "shiqing"
+      },
+      "overrides": {
+        "hairStyle": "queue",
+        "beard": "goatee",
+        "tattoo": "none",
+        "hairLength": "waist",
+        "bangs": "none",
+        "parting": "none"
+      },
+      "confidence": "A/B",
+      "refs": [
+        "S1",
+        "S2",
+        "S3",
+        "S5"
+      ],
+      "evidence": {
+        "level": "A/B",
+        "refs": [
+          "P2_COURT",
+          "S3",
+          "S5"
+        ],
+        "note": "补子、顶戴与朝珠资格按官修典制推导。 顶珠表按朝冠典制符号化，不代表所有时期平时暖帽/凉帽的唯一材料。",
+        "mode": "documented"
+      }
+    },
+    {
+      "id": "qe_civil_4",
+      "label": "文官正四品·补服",
+      "era": "qing_early",
+      "community": "manchu",
+      "role": "official_civil",
+      "rank": "4",
+      "occasion": "daily",
+      "sex": "male",
+      "slots": {
+        "headwear": "nuanmao",
+        "outer": "bufu",
+        "inner": "zhongyi",
+        "lower": "paoju",
+        "shoes": "zaoxue",
+        "accessory": "chaozhu",
+        "pattern": "buzi_civil",
+        "material": "zhuanghuaduan",
+        "color": "shiqing"
+      },
+      "overrides": {
+        "hairStyle": "queue",
+        "beard": "stubble",
+        "tattoo": "none",
+        "hairLength": "waist",
+        "bangs": "none",
+        "parting": "none"
+      },
+      "confidence": "A/B",
+      "refs": [
+        "S1",
+        "S2",
+        "S3",
+        "S5"
+      ],
+      "evidence": {
+        "level": "A/B",
+        "refs": [
+          "P2_COURT",
+          "S3",
+          "S5"
+        ],
+        "note": "补子、顶戴与朝珠资格按官修典制推导。 顶珠表按朝冠典制符号化，不代表所有时期平时暖帽/凉帽的唯一材料。",
+        "mode": "documented"
+      }
+    },
+    {
+      "id": "qe_civil_5",
+      "label": "文官正五品·补服",
+      "era": "qing_early",
+      "community": "manchu",
+      "role": "official_civil",
+      "rank": "5",
+      "occasion": "daily",
+      "sex": "male",
+      "slots": {
+        "headwear": "nuanmao",
+        "outer": "bufu",
+        "inner": "zhongyi",
+        "lower": "paoju",
+        "shoes": "zaoxue",
+        "accessory": "chaozhu",
+        "pattern": "buzi_civil",
+        "material": "zhuanghuaduan",
+        "color": "shiqing"
+      },
+      "overrides": {
+        "hairStyle": "queue",
+        "beard": "stubble",
+        "tattoo": "none",
+        "hairLength": "waist",
+        "bangs": "none",
+        "parting": "none"
+      },
+      "confidence": "A/B",
+      "refs": [
+        "S1",
+        "S2",
+        "S3",
+        "S5"
+      ],
+      "evidence": {
+        "level": "A/B",
+        "refs": [
+          "P2_COURT",
+          "S3",
+          "S5"
+        ],
+        "note": "补子、顶戴与朝珠资格按官修典制推导。 顶珠表按朝冠典制符号化，不代表所有时期平时暖帽/凉帽的唯一材料。",
+        "mode": "documented"
+      }
+    },
+    {
+      "id": "qe_civil_6",
+      "label": "文官正六品·补服",
+      "era": "qing_early",
+      "community": "manchu",
+      "role": "official_civil",
+      "rank": "6",
+      "occasion": "daily",
+      "sex": "male",
+      "slots": {
+        "headwear": "nuanmao",
+        "outer": "bufu",
+        "inner": "zhongyi",
+        "lower": "paoju",
+        "shoes": "zaoxue",
+        "accessory": "none",
+        "pattern": "buzi_civil",
+        "material": "zhuanghuaduan",
+        "color": "shiqing"
+      },
+      "overrides": {
+        "hairStyle": "queue",
+        "beard": "stubble",
+        "tattoo": "none",
+        "hairLength": "waist",
+        "bangs": "none",
+        "parting": "none"
+      },
+      "confidence": "A/B",
+      "refs": [
+        "S1",
+        "S2",
+        "S3",
+        "S5"
+      ],
+      "evidence": {
+        "level": "A/B",
+        "refs": [
+          "P2_COURT",
+          "S3",
+          "S5"
+        ],
+        "note": "补子、顶戴与朝珠资格按官修典制推导。 顶珠表按朝冠典制符号化，不代表所有时期平时暖帽/凉帽的唯一材料。",
+        "mode": "documented"
+      }
+    },
+    {
+      "id": "qe_civil_7",
+      "label": "文官正七品·补服",
+      "era": "qing_early",
+      "community": "manchu",
+      "role": "official_civil",
+      "rank": "7",
+      "occasion": "daily",
+      "sex": "male",
+      "slots": {
+        "headwear": "nuanmao",
+        "outer": "bufu",
+        "inner": "zhongyi",
+        "lower": "paoju",
+        "shoes": "zaoxue",
+        "accessory": "none",
+        "pattern": "buzi_civil",
+        "material": "zhuanghuaduan",
+        "color": "shiqing"
+      },
+      "overrides": {
+        "hairStyle": "queue",
+        "beard": "stubble",
+        "tattoo": "none",
+        "hairLength": "waist",
+        "bangs": "none",
+        "parting": "none"
+      },
+      "confidence": "A/B",
+      "refs": [
+        "S1",
+        "S2",
+        "S3",
+        "S5"
+      ],
+      "evidence": {
+        "level": "A/B",
+        "refs": [
+          "P2_COURT",
+          "S3",
+          "S5"
+        ],
+        "note": "补子、顶戴与朝珠资格按官修典制推导。 顶珠表按朝冠典制符号化，不代表所有时期平时暖帽/凉帽的唯一材料。",
+        "mode": "documented"
+      }
+    },
+    {
+      "id": "qe_civil_8",
+      "label": "文官正八品·补服",
+      "era": "qing_early",
+      "community": "manchu",
+      "role": "official_civil",
+      "rank": "8",
+      "occasion": "daily",
+      "sex": "male",
+      "slots": {
+        "headwear": "nuanmao",
+        "outer": "bufu",
+        "inner": "zhongyi",
+        "lower": "paoju",
+        "shoes": "zaoxue",
+        "accessory": "none",
+        "pattern": "buzi_civil",
+        "material": "zhuanghuaduan",
+        "color": "shiqing"
+      },
+      "overrides": {
+        "hairStyle": "queue",
+        "beard": "stubble",
+        "tattoo": "none",
+        "hairLength": "waist",
+        "bangs": "none",
+        "parting": "none"
+      },
+      "confidence": "A/B",
+      "refs": [
+        "S1",
+        "S2",
+        "S3",
+        "S5"
+      ],
+      "evidence": {
+        "level": "A/B",
+        "refs": [
+          "P2_COURT",
+          "S3",
+          "S5"
+        ],
+        "note": "补子、顶戴与朝珠资格按官修典制推导。 顶珠表按朝冠典制符号化，不代表所有时期平时暖帽/凉帽的唯一材料。",
+        "mode": "documented"
+      }
+    },
+    {
+      "id": "qe_civil_9",
+      "label": "文官正九品·补服",
+      "era": "qing_early",
+      "community": "manchu",
+      "role": "official_civil",
+      "rank": "9",
+      "occasion": "daily",
+      "sex": "male",
+      "slots": {
+        "headwear": "nuanmao",
+        "outer": "bufu",
+        "inner": "zhongyi",
+        "lower": "paoju",
+        "shoes": "zaoxue",
+        "accessory": "none",
+        "pattern": "buzi_civil",
+        "material": "zhuanghuaduan",
+        "color": "shiqing"
+      },
+      "overrides": {
+        "hairStyle": "queue",
+        "beard": "stubble",
+        "tattoo": "none",
+        "hairLength": "waist",
+        "bangs": "none",
+        "parting": "none"
+      },
+      "confidence": "A/B",
+      "refs": [
+        "S1",
+        "S2",
+        "S3",
+        "S5"
+      ],
+      "evidence": {
+        "level": "A/B",
+        "refs": [
+          "P2_COURT",
+          "S3",
+          "S5"
+        ],
+        "note": "补子、顶戴与朝珠资格按官修典制推导。 顶珠表按朝冠典制符号化，不代表所有时期平时暖帽/凉帽的唯一材料。",
+        "mode": "documented"
+      }
+    },
+    {
+      "id": "qe_military_1",
+      "label": "武官正一品·补服",
+      "era": "qing_early",
+      "community": "manchu",
+      "role": "official_military",
+      "rank": "1",
+      "occasion": "daily",
+      "sex": "male",
+      "slots": {
+        "headwear": "nuanmao",
+        "outer": "bufu",
+        "inner": "zhongyi",
+        "lower": "paoju",
+        "shoes": "zaoxue",
+        "accessory": "chaozhu",
+        "pattern": "buzi_military",
+        "material": "zhuanghuaduan",
+        "color": "shiqing"
+      },
+      "overrides": {
+        "hairStyle": "queue",
+        "beard": "goatee",
+        "tattoo": "none",
+        "hairLength": "waist",
+        "bangs": "none",
+        "parting": "none"
+      },
+      "confidence": "A/B",
+      "refs": [
+        "S1",
+        "S2",
+        "S3",
+        "S5"
+      ],
+      "evidence": {
+        "level": "A/B",
+        "refs": [
+          "P2_COURT",
+          "S3",
+          "S5"
+        ],
+        "note": "补子、顶戴与朝珠资格按官修典制推导。 顶珠表按朝冠典制符号化，不代表所有时期平时暖帽/凉帽的唯一材料。",
+        "mode": "documented"
+      }
+    },
+    {
+      "id": "qe_military_2",
+      "label": "武官正二品·补服",
+      "era": "qing_early",
+      "community": "manchu",
+      "role": "official_military",
+      "rank": "2",
+      "occasion": "daily",
+      "sex": "male",
+      "slots": {
+        "headwear": "nuanmao",
+        "outer": "bufu",
+        "inner": "zhongyi",
+        "lower": "paoju",
+        "shoes": "zaoxue",
+        "accessory": "chaozhu",
+        "pattern": "buzi_military",
+        "material": "zhuanghuaduan",
+        "color": "shiqing"
+      },
+      "overrides": {
+        "hairStyle": "queue",
+        "beard": "goatee",
+        "tattoo": "none",
+        "hairLength": "waist",
+        "bangs": "none",
+        "parting": "none"
+      },
+      "confidence": "A/B",
+      "refs": [
+        "S1",
+        "S2",
+        "S3",
+        "S5"
+      ],
+      "evidence": {
+        "level": "A/B",
+        "refs": [
+          "P2_COURT",
+          "S3",
+          "S5"
+        ],
+        "note": "补子、顶戴与朝珠资格按官修典制推导。 顶珠表按朝冠典制符号化，不代表所有时期平时暖帽/凉帽的唯一材料。",
+        "mode": "documented"
+      }
+    },
+    {
+      "id": "qe_military_3",
+      "label": "武官正三品·补服",
+      "era": "qing_early",
+      "community": "manchu",
+      "role": "official_military",
+      "rank": "3",
+      "occasion": "daily",
+      "sex": "male",
+      "slots": {
+        "headwear": "nuanmao",
+        "outer": "bufu",
+        "inner": "zhongyi",
+        "lower": "paoju",
+        "shoes": "zaoxue",
+        "accessory": "chaozhu",
+        "pattern": "buzi_military",
+        "material": "zhuanghuaduan",
+        "color": "shiqing"
+      },
+      "overrides": {
+        "hairStyle": "queue",
+        "beard": "goatee",
+        "tattoo": "none",
+        "hairLength": "waist",
+        "bangs": "none",
+        "parting": "none"
+      },
+      "confidence": "A/B",
+      "refs": [
+        "S1",
+        "S2",
+        "S3",
+        "S5"
+      ],
+      "evidence": {
+        "level": "A/B",
+        "refs": [
+          "P2_COURT",
+          "S3",
+          "S5"
+        ],
+        "note": "补子、顶戴与朝珠资格按官修典制推导。 顶珠表按朝冠典制符号化，不代表所有时期平时暖帽/凉帽的唯一材料。",
+        "mode": "documented"
+      }
+    },
+    {
+      "id": "qe_military_4",
+      "label": "武官正四品·补服",
+      "era": "qing_early",
+      "community": "manchu",
+      "role": "official_military",
+      "rank": "4",
+      "occasion": "daily",
+      "sex": "male",
+      "slots": {
+        "headwear": "nuanmao",
+        "outer": "bufu",
+        "inner": "zhongyi",
+        "lower": "paoju",
+        "shoes": "zaoxue",
+        "accessory": "chaozhu",
+        "pattern": "buzi_military",
+        "material": "zhuanghuaduan",
+        "color": "shiqing"
+      },
+      "overrides": {
+        "hairStyle": "queue",
+        "beard": "stubble",
+        "tattoo": "none",
+        "hairLength": "waist",
+        "bangs": "none",
+        "parting": "none"
+      },
+      "confidence": "A/B",
+      "refs": [
+        "S1",
+        "S2",
+        "S3",
+        "S5"
+      ],
+      "evidence": {
+        "level": "A/B",
+        "refs": [
+          "P2_COURT",
+          "S3",
+          "S5"
+        ],
+        "note": "补子、顶戴与朝珠资格按官修典制推导。 顶珠表按朝冠典制符号化，不代表所有时期平时暖帽/凉帽的唯一材料。",
+        "mode": "documented"
+      }
+    },
+    {
+      "id": "qe_military_5",
+      "label": "武官正五品·补服",
+      "era": "qing_early",
+      "community": "manchu",
+      "role": "official_military",
+      "rank": "5",
+      "occasion": "daily",
+      "sex": "male",
+      "slots": {
+        "headwear": "nuanmao",
+        "outer": "bufu",
+        "inner": "zhongyi",
+        "lower": "paoju",
+        "shoes": "zaoxue",
+        "accessory": "none",
+        "pattern": "buzi_military",
+        "material": "zhuanghuaduan",
+        "color": "shiqing"
+      },
+      "overrides": {
+        "hairStyle": "queue",
+        "beard": "stubble",
+        "tattoo": "none",
+        "hairLength": "waist",
+        "bangs": "none",
+        "parting": "none"
+      },
+      "confidence": "A/B",
+      "refs": [
+        "S1",
+        "S2",
+        "S3",
+        "S5"
+      ],
+      "evidence": {
+        "level": "A/B",
+        "refs": [
+          "P2_COURT",
+          "S3",
+          "S5"
+        ],
+        "note": "补子、顶戴与朝珠资格按官修典制推导。 顶珠表按朝冠典制符号化，不代表所有时期平时暖帽/凉帽的唯一材料。",
+        "mode": "documented"
+      }
+    },
+    {
+      "id": "qe_military_6",
+      "label": "武官正六品·补服",
+      "era": "qing_early",
+      "community": "manchu",
+      "role": "official_military",
+      "rank": "6",
+      "occasion": "daily",
+      "sex": "male",
+      "slots": {
+        "headwear": "nuanmao",
+        "outer": "bufu",
+        "inner": "zhongyi",
+        "lower": "paoju",
+        "shoes": "zaoxue",
+        "accessory": "none",
+        "pattern": "buzi_military",
+        "material": "zhuanghuaduan",
+        "color": "shiqing"
+      },
+      "overrides": {
+        "hairStyle": "queue",
+        "beard": "stubble",
+        "tattoo": "none",
+        "hairLength": "waist",
+        "bangs": "none",
+        "parting": "none"
+      },
+      "confidence": "A/B",
+      "refs": [
+        "S1",
+        "S2",
+        "S3",
+        "S5"
+      ],
+      "evidence": {
+        "level": "A/B",
+        "refs": [
+          "P2_COURT",
+          "S3",
+          "S5"
+        ],
+        "note": "补子、顶戴与朝珠资格按官修典制推导。 顶珠表按朝冠典制符号化，不代表所有时期平时暖帽/凉帽的唯一材料。",
+        "mode": "documented"
+      }
+    },
+    {
+      "id": "qe_military_7",
+      "label": "武官正七品·补服",
+      "era": "qing_early",
+      "community": "manchu",
+      "role": "official_military",
+      "rank": "7",
+      "occasion": "daily",
+      "sex": "male",
+      "slots": {
+        "headwear": "nuanmao",
+        "outer": "bufu",
+        "inner": "zhongyi",
+        "lower": "paoju",
+        "shoes": "zaoxue",
+        "accessory": "none",
+        "pattern": "buzi_military",
+        "material": "zhuanghuaduan",
+        "color": "shiqing"
+      },
+      "overrides": {
+        "hairStyle": "queue",
+        "beard": "stubble",
+        "tattoo": "none",
+        "hairLength": "waist",
+        "bangs": "none",
+        "parting": "none"
+      },
+      "confidence": "A（异说）",
+      "refs": [
+        "S1",
+        "S2",
+        "S3",
+        "S5"
+      ],
+      "evidence": {
+        "level": "A（异说）",
+        "refs": [
+          "P2_COURT",
+          "S3",
+          "S5"
+        ],
+        "note": "《清史稿》作犀牛，《大清律例》有与六品同（彪）异说；本项目默认犀牛。 顶珠表按朝冠典制符号化，不代表所有时期平时暖帽/凉帽的唯一材料。",
+        "mode": "documented"
+      }
+    },
+    {
+      "id": "qe_military_8",
+      "label": "武官正八品·补服",
+      "era": "qing_early",
+      "community": "manchu",
+      "role": "official_military",
+      "rank": "8",
+      "occasion": "daily",
+      "sex": "male",
+      "slots": {
+        "headwear": "nuanmao",
+        "outer": "bufu",
+        "inner": "zhongyi",
+        "lower": "paoju",
+        "shoes": "zaoxue",
+        "accessory": "none",
+        "pattern": "buzi_military",
+        "material": "zhuanghuaduan",
+        "color": "shiqing"
+      },
+      "overrides": {
+        "hairStyle": "queue",
+        "beard": "stubble",
+        "tattoo": "none",
+        "hairLength": "waist",
+        "bangs": "none",
+        "parting": "none"
+      },
+      "confidence": "A/B",
+      "refs": [
+        "S1",
+        "S2",
+        "S3",
+        "S5"
+      ],
+      "evidence": {
+        "level": "A/B",
+        "refs": [
+          "P2_COURT",
+          "S3",
+          "S5"
+        ],
+        "note": "补子、顶戴与朝珠资格按官修典制推导。 顶珠表按朝冠典制符号化，不代表所有时期平时暖帽/凉帽的唯一材料。",
+        "mode": "documented"
+      }
+    },
+    {
+      "id": "qe_military_9",
+      "label": "武官正九品·补服",
+      "era": "qing_early",
+      "community": "manchu",
+      "role": "official_military",
+      "rank": "9",
+      "occasion": "daily",
+      "sex": "male",
+      "slots": {
+        "headwear": "nuanmao",
+        "outer": "bufu",
+        "inner": "zhongyi",
+        "lower": "paoju",
+        "shoes": "zaoxue",
+        "accessory": "none",
+        "pattern": "buzi_military",
+        "material": "zhuanghuaduan",
+        "color": "shiqing"
+      },
+      "overrides": {
+        "hairStyle": "queue",
+        "beard": "stubble",
+        "tattoo": "none",
+        "hairLength": "waist",
+        "bangs": "none",
+        "parting": "none"
+      },
+      "confidence": "A/B",
+      "refs": [
+        "S1",
+        "S2",
+        "S3",
+        "S5"
+      ],
+      "evidence": {
+        "level": "A/B",
+        "refs": [
+          "P2_COURT",
+          "S3",
+          "S5"
+        ],
+        "note": "补子、顶戴与朝珠资格按官修典制推导。 顶珠表按朝冠典制符号化，不代表所有时期平时暖帽/凉帽的唯一材料。",
+        "mode": "documented"
+      }
+    },
+    {
+      "id": "qe_emperor_ceremony",
+      "label": "皇帝·朝服",
+      "era": "qing_early",
+      "community": "manchu",
+      "role": "ruler",
+      "rank": "none",
+      "occasion": "ceremonial",
+      "sex": "male",
+      "slots": {
+        "headwear": "huangdi_chaoguan",
+        "outer": "huangdi_chaofu",
+        "inner": "zhongyi",
+        "lower": "chaoshang",
+        "shoes": "zaoxue",
+        "accessory": "dongzhu_chaozhu",
+        "pattern": "wuzhua_jinlong",
+        "material": "kesi",
+        "color": "minghuang"
+      },
+      "overrides": {
+        "hairStyle": "queue",
+        "beard": "none",
+        "tattoo": "none",
+        "hairLength": "waist",
+        "bangs": "none",
+        "parting": "none"
+      },
+      "confidence": "A/B",
+      "refs": [
+        "S1",
+        "S2"
+      ],
+      "evidence": {
+        "level": "A/B",
+        "refs": [
+          "P2_COURT"
+        ],
+        "note": "皇帝朝服采用典制基线；细部珠数不强制给生图模型。",
+        "mode": "documented"
+      }
+    },
+    {
+      "id": "qe_empress_ceremony",
+      "label": "皇后·朝褂",
+      "era": "qing_early",
+      "community": "manchu",
+      "role": "ruler",
+      "rank": "none",
+      "occasion": "ceremonial",
+      "sex": "female",
+      "slots": {
+        "headwear": "huanghou_chaoguan",
+        "outer": "huanghou_chaogua",
+        "inner": "empress_chaopao",
+        "lower": "empress_chaoqun",
+        "shoes": "court_shoes",
+        "accessory": "empress_pearls",
+        "pattern": "wuzhua_jinlong",
+        "material": "kesi",
+        "color": "shiqing"
+      },
+      "overrides": {
+        "hairStyle": "qipan",
+        "beard": "none",
+        "tattoo": "none",
+        "hairLength": "waist",
+        "bangs": "none",
+        "parting": "none"
+      },
+      "confidence": "A/B",
+      "refs": [
+        "S1",
+        "S8"
+      ],
+      "evidence": {
+        "mode": "documented",
+        "level": "A/B",
+        "refs": [
+          "P2_COURT",
+          "P2_VA"
+        ],
+        "note": "朝裙、朝袍、石青朝褂分层；朝服三盘朝珠。不得将内层袍色代替石青朝褂色。"
+      }
+    },
+    {
+      "id": "qe_qinwang_daily",
+      "label": "宗室亲王·补服",
+      "era": "qing_early",
+      "community": "manchu",
+      "role": "noble",
+      "rank": "none",
+      "occasion": "daily",
+      "sex": "male",
+      "slots": {
+        "headwear": "qinwang_chaoguan",
+        "outer": "qinwang_bufu",
+        "inner": "zhongyi",
+        "lower": "paoju",
+        "shoes": "zaoxue",
+        "accessory": "huangjin_chaodai",
+        "pattern": "tuanlong",
+        "material": "zhuanghuaduan",
+        "color": "shiqing"
+      },
+      "overrides": {
+        "hairStyle": "queue",
+        "beard": "none",
+        "tattoo": "none",
+        "hairLength": "waist",
+        "bangs": "none",
+        "parting": "none"
+      },
+      "confidence": "A",
+      "refs": [
+        "S1",
+        "S2"
+      ],
+      "evidence": {
+        "level": "A",
+        "refs": [
+          "P2_COURT"
+        ],
+        "note": "石青补服四团五爪金龙：前后正龙、两肩行龙；朝冠与朝带是典礼搭配。常服与赐金黄不得混为一套。",
+        "mode": "documented"
+      }
+    },
+    {
+      "id": "ql_noble_lady",
+      "label": "晚清旗人贵妇·氅衣",
+      "era": "qing_late",
+      "community": "manchu",
+      "role": "noble",
+      "rank": "none",
+      "occasion": "daily",
+      "sex": "female",
+      "slots": {
+        "headwear": "dalachi",
+        "outer": "late_qing_changyi",
+        "inner": "late_qing_shenyi",
+        "lower": "none",
+        "shoes": "huapendi",
+        "accessory": "hebao",
+        "pattern": "tuanhua",
+        "material": "anhuachou",
+        "color": "ouhe"
+      },
+      "overrides": {
+        "hairStyle": "qipan",
+        "beard": "none",
+        "tattoo": "none",
+        "hairLength": "waist",
+        "bangs": "none",
+        "parting": "none"
+      },
+      "confidence": "D",
+      "refs": [
+        "S11"
+      ],
+      "evidence": {
+        "mode": "realistic",
+        "level": "B/D",
+        "refs": [
+          "P2_SHOES",
+          "P2_LATE"
+        ],
+        "note": "高底夹鞋有光绪馆藏实物；大拉翅、氅衣与配色的整套搭配为写实组合，不推断首次出现年代。"
+      }
+    },
+    {
+      "id": "ql_xinjun",
+      "label": "晚清新军·操演",
+      "era": "qing_late",
+      "community": "han",
+      "role": "soldier",
+      "rank": "none",
+      "occasion": "daily",
+      "sex": "male",
+      "slots": {
+        "headwear": "xinjun_cap",
+        "outer": "xinjun_uniform",
+        "inner": "zhongyi",
+        "lower": "uniform_trousers",
+        "shoes": "leather_boot",
+        "accessory": "none",
+        "pattern": "sumian",
+        "material": "none",
+        "color": "zangqing"
+      },
+      "overrides": {
+        "hairStyle": "queue",
+        "beard": "none",
+        "tattoo": "none",
+        "hairLength": "waist",
+        "bangs": "none",
+        "parting": "none"
+      },
+      "confidence": "D",
+      "refs": [
+        "S16"
+      ],
+      "evidence": {
+        "mode": "interpretation",
+        "level": "D/E",
+        "refs": [
+          "P2_MODERN"
+        ],
+        "note": "晚清概括性演绎，非特定军镇/学校制式；扣数、帽制、辫制未核，不宣称精确复原。"
+      }
+    },
+    {
+      "id": "ql_student",
+      "label": "晚清学堂生·操衣",
+      "era": "qing_late",
+      "community": "han",
+      "role": "literati",
+      "rank": "none",
+      "occasion": "daily",
+      "sex": "male",
+      "slots": {
+        "headwear": "student_cap",
+        "outer": "cao_yi",
+        "inner": "zhongyi",
+        "lower": "uniform_trousers",
+        "shoes": "buxie",
+        "accessory": "none",
+        "pattern": "sumian",
+        "material": "gebu",
+        "color": "zangqing"
+      },
+      "overrides": {
+        "hairStyle": "queue",
+        "beard": "none",
+        "tattoo": "none",
+        "hairLength": "waist",
+        "bangs": "none",
+        "parting": "none"
+      },
+      "confidence": "D",
+      "refs": [
+        "S16"
+      ],
+      "evidence": {
+        "mode": "interpretation",
+        "level": "D/E",
+        "refs": [
+          "P2_MODERN"
+        ],
+        "note": "晚清概括性演绎，非特定军镇/学校制式；扣数、帽制、辫制未核，不宣称精确复原。"
+      }
+    },
+    {
+      "id": "ql_donated_merchant",
+      "label": "晚清捐纳职衔商人·正三品补服",
+      "era": "qing_late",
+      "community": "han",
+      "role": "merchant",
+      "rank": "3",
+      "occasion": "daily",
+      "sex": "male",
+      "slots": {
+        "headwear": "nuanmao",
+        "outer": "bufu",
+        "inner": "zhongyi",
+        "lower": "paoju",
+        "shoes": "zaoxue",
+        "accessory": "chaozhu",
+        "pattern": "buzi_civil",
+        "material": "anhuachou",
+        "color": "shiqing"
+      },
+      "overrides": {
+        "hairStyle": "queue",
+        "beard": "none",
+        "tattoo": "none",
+        "hairLength": "waist",
+        "bangs": "none",
+        "parting": "none"
+      },
+      "confidence": "A/D",
+      "refs": [
+        "S4",
+        "S1"
+      ],
+      "evidence": {
+        "mode": "documented",
+        "level": "A（有条件）",
+        "refs": [
+          "S4",
+          "P2_COURT"
+        ],
+        "note": "仅限有捐纳职衔的商人，冠服从其品；不等于普通商贾可随意佩戴顶戴方补。"
+      }
+    },
+    {
+      "id": "ql_civil_1",
+      "label": "晚清文官正一品·补服",
+      "era": "qing_late",
+      "community": "manchu",
+      "role": "official_civil",
+      "rank": "1",
+      "occasion": "daily",
+      "sex": "male",
+      "slots": {
+        "headwear": "nuanmao",
+        "outer": "bufu",
+        "inner": "zhongyi",
+        "lower": "paoju",
+        "shoes": "zaoxue",
+        "accessory": "chaozhu",
+        "pattern": "buzi_civil",
+        "material": "zhuanghuaduan",
+        "color": "shiqing"
+      },
+      "overrides": {
+        "hairStyle": "queue",
+        "beard": "goatee",
+        "tattoo": "none",
+        "hairLength": "waist",
+        "bangs": "none",
+        "parting": "none"
+      },
+      "confidence": "A/B",
+      "refs": [
+        "S1",
+        "S2",
+        "S3",
+        "S5"
+      ],
+      "evidence": {
+        "mode": "documented",
+        "level": "A/B",
+        "refs": [
+          "P2_COURT",
+          "S5"
+        ],
+        "note": "以典制与道光补服实物作基线，不声称晚清所有实穿一致。"
+      }
+    }
+  ],
+  "refs": {
+    "S1": "《清史稿·舆服志二》（官修典制，A）",
+    "S2": "《大清会典·冠服通例》（官修典制，A）",
+    "S3": "《大清律例》卷十七·服舍违式（官修典制，A）",
+    "S8": "故宫·石青地缂金文一品补服（继承P1来源编号）",
+    "S16": "故宫·绿松石朝珠（继承P1来源编号）",
+    "S21": "东华大学·清朝闺秀服饰展",
+    "S4": "《吾学录初编》卷八引会典/通礼：商贾捐纳职衔者冠服从品（A；非当朝会典原刊）",
+    "S5": "故宫博物院《石青地缂金文一品补服》（馆藏实物，B）",
+    "S11": "花盆底鞋与旗鞋时序研究（D）",
+    "S15": "《清史稿》卷一〇三·舆服志二，朝服与吉服条文（A；具体版本差异见P2核验报告）",
+    "P2_COURT": "《清史稿》卷一〇三·舆服志二（A；维基文库全文）",
+    "P2_SHOES": "故宫：雪灰色缎绣竹蝶纹嵌珠花盆底夹鞋，清光绪（馆藏实物B）",
+    "P2_LATE": "晚清旗女造型组合，实物只支持单件形制，不证明所有搭配；组合为D级演绎",
+    "P2_MODERN": "晚清新军/学堂概括性造型，帽制、军衔、扣数、剪辫时点未定，D/E级演绎，不作为典制复原",
+    "P2_VA": "V&A 帝妃朝褂，O485749（馆藏，访问状态见核验报告）"
+  },
+  "sources": {
+    "P2_COURT": {
+      "title": "《清史稿》卷103·舆服志二",
+      "url": "https://zh.wikisource.org/wiki/清史稿/卷103",
+      "type": "A",
+      "status": "text-verified"
+    },
+    "S3": {
+      "title": "《大清律例》卷十七",
+      "url": "https://zh.wikisource.org/wiki/大清律例/卷十七",
+      "type": "A",
+      "status": "inherited-research"
+    },
+    "S4": {
+      "title": "《吾学录初编》卷八·商贾捐纳冠服",
+      "url": "https://www.shidianguji.com/book/CADAL02088687/chapter/1lawhs83i0d2i",
+      "type": "A",
+      "status": "text-verified"
+    },
+    "S5": {
+      "title": "故宫·石青地缂金文一品补服",
+      "url": "https://www.dpm.org.cn/collection/embroider/230386.html",
+      "type": "B",
+      "status": "inherited-research"
+    },
+    "P2_SHOES": {
+      "title": "故宫：雪灰色缎绣竹蝶纹嵌珠花盆底夹鞋（清光绪）",
+      "url": "https://intl.dpm.org.cn/Textiles/32393.html",
+      "type": "B",
+      "status": "text-verified"
+    },
+    "P2_VA": {
+      "title": "V&A 朝褂 O485749",
+      "url": "https://collections.vam.ac.uk/item/O485749/chaogua-robe-unknown/",
+      "type": "B",
+      "status": "not-reverified"
+    },
+    "P2_LATE": {
+      "title": "晚清旗女组合（实物与照片参考，整套配搭D级）",
+      "url": "",
+      "type": "B/D",
+      "status": "composition"
+    },
+    "P2_MODERN": {
+      "title": "新军/学堂演绎，未核具体制式",
+      "url": "",
+      "type": "D/E",
+      "status": "unverified"
+    }
+  }
+}

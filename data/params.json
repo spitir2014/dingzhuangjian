@@ -1,0 +1,6549 @@
+{
+  "version": 4,
+  "groups": [
+    {
+      "id": "identity",
+      "layer": "L0",
+      "label": "身份",
+      "hint": "先定是谁，再定长什么样",
+      "params": [
+        {
+          "id": "era",
+          "label": "时代",
+          "type": "choice",
+          "default": "none",
+          "tier": "core",
+          "virtual": true,
+          "note": "时代 / 文化包决定发式、首服、衣制、鞋履与颜色制度；选「素体」时整套服饰不参与提示词。",
+          "impact": "决定「服饰」组是否出现，并接管发型、胡须、纹身等参数；服饰句写进「着装」段。",
+          "options": [
+            {
+              "value": "none",
+              "label": "素体",
+              "phrase": "素体",
+              "w": {
+                "male": 1,
+                "female": 1,
+                "neutral": 1
+              },
+              "desc": "不穿朝代服饰，保留现在的素体设定稿。"
+            },
+            {
+              "value": "qing_early",
+              "label": "清·盛清",
+              "phrase": "清·盛清",
+              "w": {
+                "male": 1,
+                "female": 1,
+                "neutral": 1
+              },
+              "desc": "乾隆—嘉庆断面：暖帽/凉帽、补褂、袍/褂、钿子、平底鞋。"
+            },
+            {
+              "value": "qing_late",
+              "label": "清·晚清",
+              "phrase": "清·晚清",
+              "w": {
+                "male": 1,
+                "female": 1,
+                "neutral": 1
+              },
+              "desc": "约 1880—1911：大拉翅、花盆底、氅衣、新军与学堂等晚清断面；与盛清形制分开。"
+            }
+          ]
+        },
+        {
+          "id": "community",
+          "label": "旗分",
+          "type": "choice",
+          "default": "none",
+          "tier": "core",
+          "virtual": true,
+          "ctx": [
+            "qing_early",
+            "qing_late"
+          ],
+          "note": "旗籍与民籍决定女装是两套衣服：旗女袍服、汉女袄裙。",
+          "impact": "门控首服（钿子/汉髻）、下装（马面裙）、鞋；也影响旗女不缠足等硬约束。",
+          "options": [
+            {
+              "value": "none",
+              "label": "未定",
+              "phrase": "未定",
+              "w": {
+                "male": 1,
+                "female": 1,
+                "neutral": 1
+              },
+              "desc": "不限定旗汉，只按身份与槽位组合。"
+            },
+            {
+              "value": "manchu",
+              "label": "旗籍",
+              "phrase": "旗籍",
+              "w": {
+                "male": 1,
+                "female": 1,
+                "neutral": 1
+              },
+              "desc": "满洲/蒙古/汉军旗；女性穿袍，梳旗头，一耳三钳。"
+            },
+            {
+              "value": "han_banner",
+              "label": "汉军旗",
+              "phrase": "汉军旗",
+              "w": {
+                "male": 1,
+                "female": 1,
+                "neutral": 1
+              },
+              "desc": "汉军旗人，服饰近旗籍。"
+            },
+            {
+              "value": "han",
+              "label": "民籍",
+              "phrase": "民籍",
+              "w": {
+                "male": 1,
+                "female": 1,
+                "neutral": 1
+              },
+              "desc": "汉人民籍；女性袄裙、马面裙。"
+            }
+          ]
+        },
+        {
+          "id": "role",
+          "label": "身份",
+          "type": "choice",
+          "default": "none",
+          "tier": "core",
+          "virtual": true,
+          "ctx": [
+            "qing_early",
+            "qing_late"
+          ],
+          "note": "可迁移身份原型：它是视觉/功能角色，不是法学阶级，方便以后扩到别的文化。",
+          "impact": "决定品级是否可用、槽位的默认门控，以及服饰句开头的身份词。",
+          "options": [
+            {
+              "value": "none",
+              "label": "未定",
+              "phrase": "未定",
+              "w": {
+                "male": 1,
+                "female": 1,
+                "neutral": 1
+              }
+            },
+            {
+              "value": "official_civil",
+              "label": "文官",
+              "phrase": "文官",
+              "w": {
+                "male": 1,
+                "female": 1,
+                "neutral": 1
+              },
+              "desc": "有品级的文职官员；补子用禽纹。"
+            },
+            {
+              "value": "official_military",
+              "label": "武官",
+              "phrase": "武官",
+              "w": {
+                "male": 1,
+                "female": 1,
+                "neutral": 1
+              },
+              "desc": "有品级的武职官员；补子用兽纹。"
+            },
+            {
+              "value": "noble",
+              "label": "宗室/贵妇",
+              "phrase": "宗室贵妇",
+              "w": {
+                "male": 1,
+                "female": 1,
+                "neutral": 1
+              },
+              "desc": "宗室成员或受封命妇；圆补/团纹、钿子。"
+            },
+            {
+              "value": "literati",
+              "label": "士人",
+              "phrase": "士人",
+              "w": {
+                "male": 1,
+                "female": 1,
+                "neutral": 1
+              },
+              "desc": "举贡监生与读书人；长衫、瓜皮帽、布鞋。"
+            },
+            {
+              "value": "merchant",
+              "label": "商贾",
+              "phrase": "商贾",
+              "w": {
+                "male": 1,
+                "female": 1,
+                "neutral": 1
+              },
+              "desc": "商人；绸袍马褂，有捐纳职衔者冠服从品。"
+            },
+            {
+              "value": "artisan",
+              "label": "工匠",
+              "phrase": "匠人",
+              "w": {
+                "male": 1,
+                "female": 1,
+                "neutral": 1
+              },
+              "desc": "短打加围裙，粗布。"
+            },
+            {
+              "value": "farmer",
+              "label": "农户",
+              "phrase": "农户",
+              "w": {
+                "male": 1,
+                "female": 1,
+                "neutral": 1
+              },
+              "desc": "短袄大裆裤，粗棉布，包头或毡帽。"
+            },
+            {
+              "value": "servant",
+              "label": "仆役",
+              "phrase": "仆役",
+              "w": {
+                "male": 1,
+                "female": 1,
+                "neutral": 1
+              },
+              "desc": "号衣/短褂；禁石青衣，许茧绸毛褐葛布。"
+            },
+            {
+              "value": "cleric",
+              "label": "僧人",
+              "phrase": "僧人",
+              "w": {
+                "male": 1,
+                "female": 1,
+                "neutral": 1
+              },
+              "desc": "僧剃发披袈裟，道束发穿道袍；常服缁黑。"
+            },
+            {
+              "value": "soldier",
+              "label": "兵丁",
+              "phrase": "兵丁",
+              "w": {
+                "male": 1,
+                "female": 1,
+                "neutral": 1
+              },
+              "desc": "八旗袍褂或绿营号衣；晚清新军西式。"
+            },
+            {
+              "value": "marginal",
+              "label": "流民",
+              "phrase": "流民",
+              "w": {
+                "male": 1,
+                "female": 1,
+                "neutral": 1
+              },
+              "desc": "乞丐、艺人等；破旧短褐，无纹无补。"
+            },
+            {
+              "value": "ruler",
+              "label": "帝后",
+              "phrase": "帝后",
+              "w": {
+                "male": 1,
+                "female": 1,
+                "neutral": 1
+              },
+              "desc": "帝后高风险服制通过身份卡进入，手改槽位后证据标记降为自定义待核。"
+            }
+          ]
+        },
+        {
+          "id": "rank",
+          "label": "品级",
+          "type": "choice",
+          "default": "none",
+          "tier": "core",
+          "virtual": true,
+          "ctx": [
+            "qing_early",
+            "qing_late"
+          ],
+          "note": "品级是修正层：选中后自动写补子禽兽、顶珠、朝珠资格，不需要逐张卡做九品。",
+          "impact": "改写「纹样」「配饰」「色」三个槽位，并在服饰句里补「帽顶嵌 X 顶珠」。",
+          "options": [
+            {
+              "value": "none",
+              "label": "无品级",
+              "phrase": "无品级",
+              "w": {
+                "male": 1,
+                "female": 1,
+                "neutral": 1
+              }
+            },
+            {
+              "value": "1",
+              "label": "正一品",
+              "phrase": "正一品",
+              "w": {
+                "male": 1,
+                "female": 1,
+                "neutral": 1
+              },
+              "g": {
+                "role": [
+                  "official_civil",
+                  "official_military",
+                  "merchant"
+                ]
+              }
+            },
+            {
+              "value": "2",
+              "label": "正二品",
+              "phrase": "正二品",
+              "w": {
+                "male": 1,
+                "female": 1,
+                "neutral": 1
+              },
+              "g": {
+                "role": [
+                  "official_civil",
+                  "official_military",
+                  "merchant"
+                ]
+              }
+            },
+            {
+              "value": "3",
+              "label": "正三品",
+              "phrase": "正三品",
+              "w": {
+                "male": 1,
+                "female": 1,
+                "neutral": 1
+              },
+              "g": {
+                "role": [
+                  "official_civil",
+                  "official_military",
+                  "merchant"
+                ]
+              }
+            },
+            {
+              "value": "4",
+              "label": "正四品",
+              "phrase": "正四品",
+              "w": {
+                "male": 1,
+                "female": 1,
+                "neutral": 1
+              },
+              "g": {
+                "role": [
+                  "official_civil",
+                  "official_military",
+                  "merchant"
+                ]
+              }
+            },
+            {
+              "value": "5",
+              "label": "正五品",
+              "phrase": "正五品",
+              "w": {
+                "male": 1,
+                "female": 1,
+                "neutral": 1
+              },
+              "g": {
+                "role": [
+                  "official_civil",
+                  "official_military",
+                  "merchant"
+                ]
+              }
+            },
+            {
+              "value": "6",
+              "label": "正六品",
+              "phrase": "正六品",
+              "w": {
+                "male": 1,
+                "female": 1,
+                "neutral": 1
+              },
+              "g": {
+                "role": [
+                  "official_civil",
+                  "official_military",
+                  "merchant"
+                ]
+              }
+            },
+            {
+              "value": "7",
+              "label": "正七品",
+              "phrase": "正七品",
+              "w": {
+                "male": 1,
+                "female": 1,
+                "neutral": 1
+              },
+              "g": {
+                "role": [
+                  "official_civil",
+                  "official_military",
+                  "merchant"
+                ]
+              }
+            },
+            {
+              "value": "8",
+              "label": "正八品",
+              "phrase": "正八品",
+              "w": {
+                "male": 1,
+                "female": 1,
+                "neutral": 1
+              },
+              "g": {
+                "role": [
+                  "official_civil",
+                  "official_military",
+                  "merchant"
+                ]
+              }
+            },
+            {
+              "value": "9",
+              "label": "正九品",
+              "phrase": "正九品",
+              "w": {
+                "male": 1,
+                "female": 1,
+                "neutral": 1
+              },
+              "g": {
+                "role": [
+                  "official_civil",
+                  "official_military",
+                  "merchant"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "id": "occasion",
+          "label": "场合",
+          "type": "choice",
+          "default": "daily",
+          "tier": "advanced",
+          "virtual": true,
+          "ctx": [
+            "qing_early",
+            "qing_late"
+          ],
+          "note": "朝服、吉服、补服按身份卡成套选择；手改场合会同步冠服组合。",
+          "impact": "决定冠服组合与披领、朝珠等配件是否出现。",
+          "options": [
+            {
+              "value": "daily",
+              "label": "常服",
+              "phrase": "常服",
+              "w": {
+                "male": 1,
+                "female": 1,
+                "neutral": 1
+              },
+              "desc": "日常与一般正式场合；补服/袍褂。"
+            },
+            {
+              "value": "formal",
+              "label": "吉服",
+              "phrase": "吉服",
+              "w": {
+                "male": 1,
+                "female": 1,
+                "neutral": 1
+              },
+              "desc": "吉庆典礼；吉服袍、蟒袍。"
+            },
+            {
+              "value": "ceremonial",
+              "label": "朝服",
+              "phrase": "朝服",
+              "w": {
+                "male": 1,
+                "female": 1,
+                "neutral": 1
+              },
+              "desc": "大典；披领、朝袍、马蹄袖。"
+            }
+          ]
+        },
+        {
+          "id": "sex",
+          "label": "性别",
+          "type": "sex",
+          "default": "male",
+          "note": "性别是硬约束，决定哪些特征可能出现。",
+          "options": [
+            {
+              "value": "male",
+              "label": "男",
+              "phrase": "男性",
+              "desc": "骨架偏宽、喉结明显、体毛较多、可长胡须"
+            },
+            {
+              "value": "female",
+              "label": "女",
+              "phrase": "女性",
+              "desc": "骨盆偏宽、胸部发育、体毛较少、不长大胡子"
+            },
+            {
+              "value": "neutral",
+              "label": "中性",
+              "phrase": "中性",
+              "desc": "骨架居中、第二性征弱、胡须与胸部都偏不明显"
+            }
+          ],
+          "weights": {
+            "male": 42,
+            "female": 42,
+            "neutral": 16
+          },
+          "tier": "core",
+          "impact": "写进「人物」「性别词句」和素体遮挡规则；不是滑杆。"
+        },
+        {
+          "id": "age",
+          "label": "年龄",
+          "type": "number",
+          "min": 18,
+          "max": 72,
+          "step": 1,
+          "default": 26,
+          "unit": "岁",
+          "bands": [
+            {
+              "max": 22,
+              "phrase": "脸上还带着没褪干净的少年气，皮肤紧致"
+            },
+            {
+              "max": 30,
+              "phrase": "面部轮廓清晰利落，皮肤状态很好"
+            },
+            {
+              "max": 42,
+              "phrase": "眼角有浅浅的纹路，气质沉稳下来"
+            },
+            {
+              "max": 55,
+              "phrase": "面中有中年痕迹，法令纹与眼下细纹明显"
+            },
+            {
+              "max": 100,
+              "phrase": "面容明显苍老，皮肤松弛，皱纹较深"
+            }
+          ],
+          "tier": "core",
+          "note": "年龄决定皮肤状态、面部纹路和整体气质。",
+          "impact": "写进「人物」；年龄感词句进「面目」；还会联动发色、胡须、面部纹路。"
+        },
+        {
+          "id": "ethnicity",
+          "label": "族群",
+          "type": "choice",
+          "default": "east_asian",
+          "options": [
+            {
+              "value": "east_asian",
+              "label": "东亚",
+              "phrase": "东亚",
+              "w": {
+                "male": 1,
+                "female": 1,
+                "neutral": 1
+              }
+            },
+            {
+              "value": "southeast_asian",
+              "label": "东南亚",
+              "phrase": "东南亚",
+              "w": {
+                "male": 1,
+                "female": 1,
+                "neutral": 1
+              }
+            },
+            {
+              "value": "south_asian",
+              "label": "南亚",
+              "phrase": "南亚",
+              "w": {
+                "male": 1,
+                "female": 1,
+                "neutral": 1
+              }
+            },
+            {
+              "value": "west_asian",
+              "label": "西亚",
+              "phrase": "西亚",
+              "w": {
+                "male": 1,
+                "female": 1,
+                "neutral": 1
+              }
+            }
+          ],
+          "tier": "core",
+          "note": "族群影响骨相、肤色与五官的默认偏向。",
+          "impact": "写进「人物」；只给模型一个地域基底，不替代具体五官。"
+        },
+        {
+          "id": "presentation",
+          "label": "气质",
+          "type": "number",
+          "min": 0,
+          "max": 100,
+          "step": 1,
+          "default": 50,
+          "unit": "",
+          "sexRanges": {
+            "male": [
+              35,
+              100
+            ],
+            "female": [
+              0,
+              65
+            ],
+            "neutral": [
+              25,
+              75
+            ]
+          },
+          "note": "气质是同一性别内的表达偏向，不改生理结构。",
+          "bands": [
+            {
+              "max": 20,
+              "phrase": "气质极度柔和，举止轻缓，线条细腻"
+            },
+            {
+              "max": 40,
+              "phrase": "气质偏柔和，神态温软"
+            },
+            {
+              "max": 60,
+              "phrase": "气质中性，不偏向任何一端"
+            },
+            {
+              "max": 80,
+              "phrase": "气质偏硬朗，轮廓利落"
+            },
+            {
+              "max": 100,
+              "phrase": "气质硬朗，存在感强，眼神有压迫感"
+            }
+          ],
+          "tier": "core",
+          "impact": "写进「人物」；数值越高越硬朗，越低越柔和。"
+        }
+      ]
+    },
+    {
+      "id": "frame",
+      "layer": "L1",
+      "label": "骨架",
+      "hint": "身高、肩胯、头身比",
+      "params": [
+        {
+          "id": "height",
+          "label": "身高",
+          "type": "number",
+          "min": 145,
+          "max": 198,
+          "step": 1,
+          "default": 172,
+          "unit": "cm",
+          "sexRanges": {
+            "male": [
+              160,
+              196
+            ],
+            "female": [
+              148,
+              182
+            ],
+            "neutral": [
+              152,
+              190
+            ]
+          },
+          "tier": "core",
+          "note": "身高决定整体比例和画面里的体量感。",
+          "impact": "写进「人物」和左上角文字；和头身比、腿身比一起看。"
+        },
+        {
+          "id": "frameWidth",
+          "label": "骨架",
+          "type": "choice",
+          "default": "mid",
+          "note": "骨量粗细，不是胖瘦。",
+          "options": [
+            {
+              "value": "slim",
+              "label": "纤细",
+              "phrase": "骨架纤细，锁骨与腕骨明显",
+              "w": {
+                "male": 1,
+                "female": 6,
+                "neutral": 3
+              }
+            },
+            {
+              "value": "mid",
+              "label": "中等",
+              "phrase": "骨架中等，比例协调",
+              "w": {
+                "male": 5,
+                "female": 4,
+                "neutral": 5
+              }
+            },
+            {
+              "value": "broad",
+              "label": "粗壮",
+              "phrase": "骨架粗壮，骨点厚重",
+              "w": {
+                "male": 6,
+                "female": 1,
+                "neutral": 3
+              }
+            }
+          ],
+          "tier": "core",
+          "impact": "写进「体量」；决定肩、腕、踝的骨点是否明显。"
+        },
+        {
+          "id": "shoulder",
+          "label": "肩",
+          "type": "choice",
+          "default": "mid",
+          "options": [
+            {
+              "value": "narrow",
+              "label": "窄",
+              "phrase": "肩线偏窄",
+              "w": {
+                "male": 1,
+                "female": 5,
+                "neutral": 3
+              }
+            },
+            {
+              "value": "mid",
+              "label": "中",
+              "phrase": "肩宽适中",
+              "w": {
+                "male": 4,
+                "female": 4,
+                "neutral": 4
+              }
+            },
+            {
+              "value": "wide",
+              "label": "宽",
+              "phrase": "肩宽背阔",
+              "w": {
+                "male": 5,
+                "female": 1,
+                "neutral": 3
+              }
+            }
+          ],
+          "tier": "core",
+          "note": "肩宽决定上半身的横向体量。",
+          "impact": "写进「体量」；和肩型、骨架一起决定肩线。"
+        },
+        {
+          "id": "shoulderSlope",
+          "label": "肩型",
+          "type": "choice",
+          "default": "square",
+          "note": "肩线的平/溜，影响颈肩过渡。",
+          "options": [
+            {
+              "value": "square",
+              "label": "平肩",
+              "phrase": "肩线平直，肩峰清楚",
+              "w": {
+                "male": 6,
+                "female": 3,
+                "neutral": 4
+              }
+            },
+            {
+              "value": "slight",
+              "label": "微溜",
+              "phrase": "肩线略向下，颈肩线条柔和",
+              "w": {
+                "male": 3,
+                "female": 5,
+                "neutral": 4
+              }
+            },
+            {
+              "value": "slope",
+              "label": "溜肩",
+              "phrase": "肩部明显下溜，颈肩线条柔和",
+              "w": {
+                "male": 1,
+                "female": 4,
+                "neutral": 2
+              }
+            }
+          ],
+          "tier": "advanced",
+          "impact": "写进「比例与体态」；平肩显利落，溜肩显柔和。"
+        },
+        {
+          "id": "hip",
+          "label": "胯",
+          "type": "choice",
+          "default": "mid",
+          "options": [
+            {
+              "value": "narrow",
+              "label": "窄",
+              "phrase": "骨盆偏窄，胯线收敛",
+              "w": {
+                "male": 5,
+                "female": 1,
+                "neutral": 3
+              }
+            },
+            {
+              "value": "mid",
+              "label": "中",
+              "phrase": "胯宽适中",
+              "w": {
+                "male": 4,
+                "female": 3,
+                "neutral": 4
+              }
+            },
+            {
+              "value": "wide",
+              "label": "宽",
+              "phrase": "骨盆偏宽，胯线圆润",
+              "w": {
+                "male": 1,
+                "female": 6,
+                "neutral": 3
+              }
+            }
+          ],
+          "tier": "core",
+          "note": "胯宽决定下半身的横向轮廓。",
+          "impact": "写进「体量」；和腰线、腿身比一起看。"
+        },
+        {
+          "id": "waistline",
+          "label": "腰线",
+          "type": "choice",
+          "default": "mid",
+          "note": "腰线高低决定上下身的分割。",
+          "options": [
+            {
+              "value": "high",
+              "label": "偏高",
+              "phrase": "腰线偏高，下半身显得修长",
+              "w": {
+                "male": 3,
+                "female": 4,
+                "neutral": 3
+              }
+            },
+            {
+              "value": "mid",
+              "label": "标准",
+              "phrase": "腰线位置标准",
+              "w": {
+                "male": 5,
+                "female": 5,
+                "neutral": 5
+              }
+            },
+            {
+              "value": "low",
+              "label": "偏低",
+              "phrase": "腰线偏低，躯干显长",
+              "w": {
+                "male": 3,
+                "female": 3,
+                "neutral": 3
+              }
+            }
+          ],
+          "tier": "advanced",
+          "impact": "写进「比例与体态」；腰线高显腿长。"
+        },
+        {
+          "id": "legRatio",
+          "label": "腿身比",
+          "type": "choice",
+          "default": "mid",
+          "options": [
+            {
+              "value": "short",
+              "label": "短",
+              "phrase": "腿身比偏短，躯干较长",
+              "w": {
+                "male": 2,
+                "female": 3,
+                "neutral": 2
+              }
+            },
+            {
+              "value": "mid",
+              "label": "中",
+              "phrase": "腿身比适中",
+              "w": {
+                "male": 5,
+                "female": 4,
+                "neutral": 5
+              }
+            },
+            {
+              "value": "long",
+              "label": "长",
+              "phrase": "腿身比偏长，小腿修长",
+              "w": {
+                "male": 3,
+                "female": 3,
+                "neutral": 3
+              }
+            }
+          ],
+          "tier": "advanced",
+          "note": "腿身比是躯干与腿的长度关系。",
+          "impact": "写进「体量」；和头身比、腿型联动。"
+        },
+        {
+          "id": "headBodyRatio",
+          "label": "头身比",
+          "type": "choice",
+          "default": "seven",
+          "note": "头身比决定整体是写实还是偏造型化。",
+          "options": [
+            {
+              "value": "six_half",
+              "label": "6.5 头身",
+              "phrase": "约六头半身，头略大，身形偏短",
+              "w": {
+                "male": 2,
+                "female": 3,
+                "neutral": 5
+              }
+            },
+            {
+              "value": "seven",
+              "label": "7 头身",
+              "phrase": "约七头身，比例接近现实",
+              "w": {
+                "male": 5,
+                "female": 5,
+                "neutral": 5
+              }
+            },
+            {
+              "value": "seven_half",
+              "label": "7.5 头身",
+              "phrase": "约七头半身，比例匀称修长",
+              "w": {
+                "male": 5,
+                "female": 5,
+                "neutral": 4
+              }
+            },
+            {
+              "value": "eight",
+              "label": "8 头身",
+              "phrase": "约八头身，四肢修长，接近模特比例",
+              "w": {
+                "male": 3,
+                "female": 3,
+                "neutral": 2
+              }
+            },
+            {
+              "value": "eight_half",
+              "label": "8.5 头身",
+              "phrase": "约八头半身，腿长醒目，超模比例",
+              "w": {
+                "male": 1,
+                "female": 1,
+                "neutral": 1
+              }
+            }
+          ],
+          "tier": "advanced",
+          "impact": "写进「比例与体态」；8 头身以上偏模特比例。"
+        },
+        {
+          "id": "legShape",
+          "label": "腿型",
+          "type": "choice",
+          "default": "straight",
+          "note": "腿型决定站立时膝盖与小腿的间隙。",
+          "options": [
+            {
+              "value": "straight",
+              "label": "笔直",
+              "phrase": "双腿笔直，膝盖并拢时小腿间隙很小",
+              "w": {
+                "male": 5,
+                "female": 5,
+                "neutral": 5
+              }
+            },
+            {
+              "value": "slight_o",
+              "label": "微O",
+              "phrase": "放松站立时膝盖间有小空隙，小腿外侧略呈弧线",
+              "w": {
+                "male": 2,
+                "female": 2,
+                "neutral": 2
+              }
+            },
+            {
+              "value": "slight_x",
+              "label": "微X",
+              "phrase": "膝盖并拢时小腿分开，膝部略微内旋",
+              "w": {
+                "male": 2,
+                "female": 3,
+                "neutral": 2
+              }
+            }
+          ],
+          "tier": "advanced",
+          "impact": "写进「比例与体态」；只在全身/三视图里明显。"
+        },
+        {
+          "id": "neck",
+          "label": "颈",
+          "type": "choice",
+          "default": "mid",
+          "options": [
+            {
+              "value": "slim",
+              "label": "细长",
+              "phrase": "颈部细长",
+              "w": {
+                "male": 2,
+                "female": 4,
+                "neutral": 3
+              }
+            },
+            {
+              "value": "mid",
+              "label": "适中",
+              "phrase": "颈部长度适中",
+              "w": {
+                "male": 5,
+                "female": 5,
+                "neutral": 5
+              }
+            },
+            {
+              "value": "thick",
+              "label": "粗短",
+              "phrase": "颈部粗短，斜方肌明显",
+              "w": {
+                "male": 3,
+                "female": 1,
+                "neutral": 2
+              }
+            }
+          ],
+          "tier": "advanced",
+          "note": "颈部长度与粗细影响头肩关系。",
+          "impact": "写进「体量」；细长显轻，粗短显力量。"
+        }
+      ]
+    },
+    {
+      "id": "body",
+      "layer": "L2",
+      "label": "体表",
+      "hint": "胖瘦、体态、肌肉、皮肤",
+      "params": [
+        {
+          "id": "bodyBuild",
+          "label": "体型",
+          "type": "choice",
+          "default": "balanced",
+          "options": [
+            {
+              "value": "slim",
+              "label": "清瘦",
+              "phrase": "清瘦，腰腹平整，四肢修长",
+              "w": {
+                "male": 3,
+                "female": 2,
+                "neutral": 3
+              }
+            },
+            {
+              "value": "balanced",
+              "label": "匀称",
+              "phrase": "体型匀称，比例协调",
+              "w": {
+                "male": 5,
+                "female": 5,
+                "neutral": 5
+              }
+            },
+            {
+              "value": "sturdy",
+              "label": "结实",
+              "phrase": "体格结实，肩背厚实，胸廓饱满",
+              "w": {
+                "male": 6,
+                "female": 1,
+                "neutral": 2
+              }
+            },
+            {
+              "value": "soft",
+              "label": "微胖",
+              "phrase": "微胖，腰腹略有赘肉，脸型饱满",
+              "w": {
+                "male": 2,
+                "female": 3,
+                "neutral": 2
+              }
+            },
+            {
+              "value": "plump",
+              "label": "丰腴",
+              "phrase": "体态丰腴，脂肪集中在腰腹与大腿，轮廓圆润",
+              "w": {
+                "male": 1,
+                "female": 3,
+                "neutral": 1
+              }
+            }
+          ],
+          "tier": "core",
+          "note": "体型是脂肪与肌肉的整体分布。",
+          "impact": "写进「体量」；联动肌肉、胸部、脸型饱满度。"
+        },
+        {
+          "id": "posture",
+          "label": "体态",
+          "type": "choice",
+          "default": "natural",
+          "note": "体态是脊柱与肩颈的站姿习惯。",
+          "options": [
+            {
+              "value": "upright",
+              "label": "挺拔",
+              "phrase": "脊背挺直，肩颈舒展，重心稳",
+              "w": {
+                "male": 4,
+                "female": 3,
+                "neutral": 3
+              }
+            },
+            {
+              "value": "natural",
+              "label": "自然",
+              "phrase": "站姿自然放松",
+              "w": {
+                "male": 5,
+                "female": 5,
+                "neutral": 5
+              }
+            },
+            {
+              "value": "closed",
+              "label": "含胸",
+              "phrase": "肩膀微微内收，胸部略含",
+              "w": {
+                "male": 2,
+                "female": 4,
+                "neutral": 3
+              }
+            },
+            {
+              "value": "rounded",
+              "label": "圆肩",
+              "phrase": "双肩前扣，上背略有弧度",
+              "w": {
+                "male": 2,
+                "female": 3,
+                "neutral": 3
+              }
+            },
+            {
+              "value": "hunched",
+              "label": "微驼",
+              "phrase": "上背微驼，颈部略前倾",
+              "w": {
+                "male": 1,
+                "female": 2,
+                "neutral": 2
+              }
+            }
+          ],
+          "tier": "core",
+          "impact": "写进「比例与体态」；含胸/圆肩/微驼会改变轮廓。"
+        },
+        {
+          "id": "muscle",
+          "label": "肌肉",
+          "type": "choice",
+          "default": "light",
+          "options": [
+            {
+              "value": "none",
+              "label": "无",
+              "phrase": "肌肉不显，线条柔和",
+              "w": {
+                "male": 1,
+                "female": 6,
+                "neutral": 3
+              }
+            },
+            {
+              "value": "light",
+              "label": "轻",
+              "phrase": "有轻微肌肉线条，整体仍偏柔和",
+              "w": {
+                "male": 4,
+                "female": 4,
+                "neutral": 5
+              }
+            },
+            {
+              "value": "clear",
+              "label": "明显",
+              "phrase": "肌肉线条清晰，胸腹与手臂有训练痕迹",
+              "w": {
+                "male": 6,
+                "female": 1,
+                "neutral": 3
+              }
+            }
+          ],
+          "tier": "core",
+          "note": "肌肉量决定线条是否清晰。",
+          "impact": "写进「体量」；和体型、体脂一起看。"
+        },
+        {
+          "id": "chest",
+          "label": "胸部",
+          "type": "choice",
+          "default": "flat",
+          "note": "胸部轮廓是性别与体型的交叉项。",
+          "options": [
+            {
+              "value": "flat",
+              "label": "平坦",
+              "phrase": "胸部平坦，胸廓线条干净",
+              "w": {
+                "male": 9,
+                "female": 0,
+                "neutral": 4
+              }
+            },
+            {
+              "value": "defined",
+              "label": "胸肌",
+              "phrase": "胸肌轮廓明显，胸线硬朗",
+              "w": {
+                "male": 5,
+                "female": 0.4,
+                "neutral": 2
+              }
+            },
+            {
+              "value": "slight",
+              "label": "微隆",
+              "phrase": "胸部轮廓微微隆起，线条柔和",
+              "w": {
+                "male": 0,
+                "female": 2,
+                "neutral": 6
+              }
+            },
+            {
+              "value": "small",
+              "label": "小巧",
+              "phrase": "胸部轮廓小巧自然",
+              "w": {
+                "male": 0,
+                "female": 5,
+                "neutral": 0.4
+              }
+            },
+            {
+              "value": "medium",
+              "label": "适中",
+              "phrase": "胸部轮廓适中自然",
+              "w": {
+                "male": 0,
+                "female": 6,
+                "neutral": 0
+              }
+            },
+            {
+              "value": "full",
+              "label": "丰满",
+              "phrase": "胸部轮廓丰满自然",
+              "w": {
+                "male": 0,
+                "female": 3,
+                "neutral": 0
+              }
+            }
+          ],
+          "tier": "core",
+          "impact": "写进「体量」；分性别权重，避免不可能的组合。"
+        },
+        {
+          "id": "larynx",
+          "label": "喉结",
+          "type": "choice",
+          "default": "mid",
+          "options": [
+            {
+              "value": "soft",
+              "label": "不明显",
+              "phrase": "颈部线条平顺，喉结不明显",
+              "w": {
+                "male": 0.4,
+                "female": 10,
+                "neutral": 5
+              }
+            },
+            {
+              "value": "mid",
+              "label": "一般",
+              "phrase": "喉结隐约可见",
+              "w": {
+                "male": 5,
+                "female": 0.5,
+                "neutral": 5
+              }
+            },
+            {
+              "value": "clear",
+              "label": "明显",
+              "phrase": "喉结明显突出",
+              "w": {
+                "male": 9,
+                "female": 0,
+                "neutral": 1
+              }
+            }
+          ],
+          "tier": "advanced",
+          "note": "喉结是男性第二性征的可见项。",
+          "impact": "写进「体量」；女性/中性默认不明显。"
+        },
+        {
+          "id": "bodyHair",
+          "label": "体毛",
+          "type": "choice",
+          "default": "light",
+          "options": [
+            {
+              "value": "very_light",
+              "label": "极少",
+              "phrase": "体毛极少，几乎看不到汗毛",
+              "w": {
+                "male": 1,
+                "female": 7,
+                "neutral": 4
+              }
+            },
+            {
+              "value": "light",
+              "label": "少",
+              "phrase": "体毛稀疏，手臂与小腿有细软汗毛",
+              "w": {
+                "male": 3,
+                "female": 4,
+                "neutral": 5
+              }
+            },
+            {
+              "value": "mid",
+              "label": "中等",
+              "phrase": "体毛中等，小腿与手臂有明显汗毛",
+              "w": {
+                "male": 5,
+                "female": 1,
+                "neutral": 4
+              }
+            },
+            {
+              "value": "heavy",
+              "label": "浓密",
+              "phrase": "体毛浓密，胸口与腹部也有",
+              "w": {
+                "male": 4,
+                "female": 0,
+                "neutral": 1
+              }
+            }
+          ],
+          "tier": "advanced",
+          "note": "体毛密度影响皮肤与四肢的质感。",
+          "impact": "写进「体量」；和肤色、肤质一起看。"
+        },
+        {
+          "id": "skinTone",
+          "label": "肤色",
+          "type": "choice",
+          "default": "natural",
+          "options": [
+            {
+              "value": "fair",
+              "label": "白皙",
+              "phrase": "白皙",
+              "w": {
+                "male": 1,
+                "female": 1,
+                "neutral": 1
+              }
+            },
+            {
+              "value": "natural",
+              "label": "自然",
+              "phrase": "自然",
+              "w": {
+                "male": 1,
+                "female": 1,
+                "neutral": 1
+              }
+            },
+            {
+              "value": "wheat",
+              "label": "小麦",
+              "phrase": "小麦色",
+              "w": {
+                "male": 1,
+                "female": 1,
+                "neutral": 1
+              }
+            },
+            {
+              "value": "honey",
+              "label": "蜜色",
+              "phrase": "蜜色",
+              "w": {
+                "male": 1,
+                "female": 1,
+                "neutral": 1
+              }
+            },
+            {
+              "value": "tan",
+              "label": "古铜",
+              "phrase": "古铜色",
+              "w": {
+                "male": 3,
+                "female": 1,
+                "neutral": 2
+              }
+            },
+            {
+              "value": "deep",
+              "label": "深棕",
+              "phrase": "深棕色",
+              "w": {
+                "male": 2,
+                "female": 1,
+                "neutral": 2
+              }
+            }
+          ],
+          "tier": "core",
+          "note": "肤色是整体明度与色相。",
+          "impact": "写进「面目」；和冷暖、血色、肤质叠加。"
+        },
+        {
+          "id": "skinTexture",
+          "label": "肤质",
+          "type": "choice",
+          "default": "natural",
+          "note": "肤质决定毛孔、粗糙度和真实感。",
+          "options": [
+            {
+              "value": "smooth",
+              "label": "细腻",
+              "phrase": "皮肤细腻，但近看仍有细小毛孔",
+              "w": {
+                "male": 3,
+                "female": 4,
+                "neutral": 3
+              }
+            },
+            {
+              "value": "natural",
+              "label": "自然",
+              "phrase": "皮肤质感自然，毛孔细微可见",
+              "w": {
+                "male": 5,
+                "female": 5,
+                "neutral": 5
+              }
+            },
+            {
+              "value": "pores",
+              "label": "毛孔明显",
+              "phrase": "毛孔较明显，皮肤有真实颗粒感",
+              "w": {
+                "male": 2,
+                "female": 1,
+                "neutral": 2
+              }
+            },
+            {
+              "value": "rough",
+              "label": "粗糙",
+              "phrase": "皮肤偏粗糙，带一点痘印与色差",
+              "w": {
+                "male": 1,
+                "female": 1,
+                "neutral": 1
+              }
+            }
+          ],
+          "tier": "advanced",
+          "impact": "写进「皮肤与毛发」；越细越像棚拍，越粗越有生活感。"
+        },
+        {
+          "id": "freckles",
+          "label": "雀斑",
+          "type": "choice",
+          "default": "none",
+          "options": [
+            {
+              "value": "none",
+              "label": "无",
+              "phrase": "没有雀斑",
+              "w": {
+                "male": 5,
+                "female": 5,
+                "neutral": 5
+              }
+            },
+            {
+              "value": "light",
+              "label": "少量",
+              "phrase": "鼻梁与面颊有少量浅色雀斑",
+              "w": {
+                "male": 2,
+                "female": 2,
+                "neutral": 2
+              }
+            },
+            {
+              "value": "heavy",
+              "label": "明显",
+              "phrase": "鼻梁、面颊与肩头有明显雀斑",
+              "w": {
+                "male": 1,
+                "female": 1,
+                "neutral": 1
+              }
+            }
+          ],
+          "tier": "advanced",
+          "note": "雀斑是面部的小面积色差。",
+          "impact": "写进「皮肤与毛发」；少量最自然，明显会抢五官。"
+        },
+        {
+          "id": "undertone",
+          "label": "肤色冷暖",
+          "type": "choice",
+          "default": "neutral",
+          "options": [
+            {
+              "value": "cool",
+              "label": "冷调",
+              "phrase": "肤色偏冷，透出一点粉调",
+              "w": {
+                "male": 4,
+                "female": 4,
+                "neutral": 3
+              }
+            },
+            {
+              "value": "neutral",
+              "label": "中性",
+              "phrase": "肤色中性，不偏冷也不偏暖",
+              "w": {
+                "male": 5,
+                "female": 5,
+                "neutral": 5
+              }
+            },
+            {
+              "value": "warm",
+              "label": "暖调",
+              "phrase": "肤色偏暖，透出一点蜜黄",
+              "w": {
+                "male": 4,
+                "female": 4,
+                "neutral": 5
+              }
+            }
+          ],
+          "tier": "advanced",
+          "note": "肤色冷暖决定红/黄倾向。",
+          "impact": "写进「皮肤与毛发」；和肤色、唇色、血色一起看。"
+        },
+        {
+          "id": "handShape",
+          "label": "手型",
+          "type": "choice",
+          "default": "even",
+          "options": [
+            {
+              "value": "long",
+              "label": "修长",
+              "phrase": "手指修长，指节分明",
+              "w": {
+                "male": 2,
+                "female": 4,
+                "neutral": 3
+              }
+            },
+            {
+              "value": "even",
+              "label": "匀称",
+              "phrase": "手型匀称，手指比例自然",
+              "w": {
+                "male": 5,
+                "female": 5,
+                "neutral": 5
+              }
+            },
+            {
+              "value": "broad",
+              "label": "宽厚",
+              "phrase": "手掌宽厚，手指偏短",
+              "w": {
+                "male": 3,
+                "female": 1,
+                "neutral": 2
+              }
+            },
+            {
+              "value": "bony",
+              "label": "骨节明显",
+              "phrase": "手背骨节与静脉明显",
+              "w": {
+                "male": 3,
+                "female": 1,
+                "neutral": 2
+              }
+            }
+          ],
+          "tier": "advanced",
+          "note": "手型决定手指长度与手掌厚薄。",
+          "impact": "写进「比例与体态」；半身/全身里都能看到。"
+        },
+        {
+          "id": "bodyShape",
+          "label": "身形",
+          "type": "choice",
+          "tier": "advanced",
+          "note": "躯干的厚薄：圆身、标准、扁身，影响正面/侧面的体量。",
+          "impact": "写进「体表与毛发进阶」；和「体型」「骨架」一起看。",
+          "default": "standard",
+          "options": [
+            {
+              "value": "round",
+              "label": "圆身",
+              "phrase": "躯干偏圆，肩背与腰腹有厚度",
+              "desc": "侧面厚，正面轮廓圆。",
+              "w": {
+                "male": 3,
+                "female": 3,
+                "neutral": 3
+              }
+            },
+            {
+              "value": "standard",
+              "label": "标准",
+              "phrase": "躯干厚薄适中，正面与侧面比例均衡",
+              "desc": "最通用的身形。",
+              "w": {
+                "male": 5,
+                "female": 5,
+                "neutral": 5
+              }
+            },
+            {
+              "value": "flat",
+              "label": "扁身",
+              "phrase": "躯干偏扁，侧面薄，肩胛与锁骨明显",
+              "desc": "侧面薄，骨点清楚。",
+              "w": {
+                "male": 3,
+                "female": 3,
+                "neutral": 3
+              }
+            }
+          ]
+        },
+        {
+          "id": "handDetail",
+          "label": "手部细节",
+          "type": "choice",
+          "tier": "advanced",
+          "note": "手背骨节、静脉与指甲的状态。",
+          "impact": "写进「体表与毛发进阶」；半身/全身/手部特写里可见。",
+          "default": "natural",
+          "options": [
+            {
+              "value": "natural",
+              "label": "自然",
+              "phrase": "手部自然，手指比例正常",
+              "desc": "没有特别突出的骨节或青筋。",
+              "w": {
+                "male": 4,
+                "female": 4,
+                "neutral": 4
+              }
+            },
+            {
+              "value": "bony",
+              "label": "骨节明显",
+              "phrase": "手背骨节与静脉明显",
+              "desc": "指节突出，手背有沟。",
+              "w": {
+                "male": 3,
+                "female": 2,
+                "neutral": 3
+              }
+            },
+            {
+              "value": "veins",
+              "label": "青筋",
+              "phrase": "手背青筋明显，皮肤偏薄",
+              "desc": "静脉呈蓝色，显瘦。",
+              "w": {
+                "male": 3,
+                "female": 1,
+                "neutral": 2
+              }
+            },
+            {
+              "value": "nails",
+              "label": "指甲修长",
+              "phrase": "指甲修长干净，甲缘整齐",
+              "desc": "指甲长而干净，手部显精致。",
+              "w": {
+                "male": 1,
+                "female": 4,
+                "neutral": 2
+              }
+            }
+          ]
+        },
+        {
+          "id": "complexion",
+          "label": "血色",
+          "type": "choice",
+          "tier": "core",
+          "note": "面部的红润/苍白程度，是\"活人感\"的核心。",
+          "impact": "写进「体表与毛发进阶」；和「肤色」「冷暖」「唇色」叠加。",
+          "default": "natural",
+          "options": [
+            {
+              "value": "fair_pink",
+              "label": "白皙透粉",
+              "phrase": "肤色白皙，面颊透出一点粉",
+              "desc": "白里透粉，像刚运动完。",
+              "w": {
+                "male": 2,
+                "female": 4,
+                "neutral": 3
+              }
+            },
+            {
+              "value": "natural",
+              "label": "自然血色",
+              "phrase": "肤色有自然血色，面颊与鼻翼微微泛红",
+              "desc": "不白不红，最像真人。",
+              "w": {
+                "male": 5,
+                "female": 4,
+                "neutral": 5
+              }
+            },
+            {
+              "value": "flush",
+              "label": "易泛红",
+              "phrase": "面颊容易泛红，鼻翼也有红感",
+              "desc": "两颊红血丝明显，像敏感肌。",
+              "w": {
+                "male": 3,
+                "female": 3,
+                "neutral": 3
+              }
+            },
+            {
+              "value": "pale",
+              "label": "苍白",
+              "phrase": "肤色偏白，血色淡，唇色也浅",
+              "desc": "几乎没有血色，显病弱。",
+              "w": {
+                "male": 1,
+                "female": 2,
+                "neutral": 2
+              }
+            },
+            {
+              "value": "ruddy",
+              "label": "红润",
+              "phrase": "面色红润，血气足",
+              "desc": "脸颊偏红，显健康。",
+              "w": {
+                "male": 3,
+                "female": 2,
+                "neutral": 2
+              }
+            }
+          ]
+        },
+        {
+          "id": "moles",
+          "label": "痣",
+          "type": "choice",
+          "tier": "core",
+          "note": "脸上的小痣，是最省力的辨识点。",
+          "impact": "写进「体表与毛发进阶」；和「胎记」「雀斑」区分。",
+          "default": "none",
+          "options": [
+            {
+              "value": "none",
+              "label": "无",
+              "phrase": "脸上没有明显的痣",
+              "desc": "干净脸，最通用。",
+              "w": {
+                "male": 5,
+                "female": 4,
+                "neutral": 4
+              }
+            },
+            {
+              "value": "tear",
+              "label": "眼角泪痣",
+              "phrase": "眼角下方有一颗泪痣",
+              "desc": "眼下外侧一颗小痣，显柔。",
+              "w": {
+                "male": 1,
+                "female": 3,
+                "neutral": 2
+              }
+            },
+            {
+              "value": "nose",
+              "label": "鼻梁小痣",
+              "phrase": "鼻梁上有一颗小痣",
+              "desc": "鼻背一颗浅色小痣。",
+              "w": {
+                "male": 2,
+                "female": 2,
+                "neutral": 2
+              }
+            },
+            {
+              "value": "lip",
+              "label": "唇边痣",
+              "phrase": "嘴角上方有一颗小痣",
+              "desc": "嘴角斜上方一颗痣，显俏。",
+              "w": {
+                "male": 1,
+                "female": 2,
+                "neutral": 1
+              }
+            },
+            {
+              "value": "cheek",
+              "label": "面颊痣",
+              "phrase": "面颊上有一颗浅色小痣",
+              "desc": "颧骨下方一颗小痣。",
+              "w": {
+                "male": 2,
+                "female": 2,
+                "neutral": 2
+              }
+            },
+            {
+              "value": "neck",
+              "label": "颈部痣",
+              "phrase": "颈部侧面有一颗小痣",
+              "desc": "颈侧一颗小痣。",
+              "w": {
+                "male": 1,
+                "female": 2,
+                "neutral": 1
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "face",
+      "layer": "L3",
+      "label": "面目",
+      "hint": "捏脸的主战场",
+      "params": [
+        {
+          "id": "faceShape",
+          "label": "脸型",
+          "type": "choice",
+          "default": "oval",
+          "options": [
+            {
+              "value": "oval",
+              "label": "鹅蛋",
+              "phrase": "鹅蛋脸，轮廓柔和",
+              "w": {
+                "male": 4,
+                "female": 5,
+                "neutral": 4
+              },
+              "desc": "额头与下颌圆润，脸长约为脸宽的 1.4 倍，最通用的柔和脸型。"
+            },
+            {
+              "value": "round",
+              "label": "圆",
+              "phrase": "圆脸，面颊饱满",
+              "w": {
+                "male": 2,
+                "female": 4,
+                "neutral": 3
+              },
+              "desc": "面颊饱满，下颌线圆钝，脸长接近脸宽，显幼态。"
+            },
+            {
+              "value": "square",
+              "label": "方",
+              "phrase": "方脸，轮廓方正",
+              "w": {
+                "male": 5,
+                "female": 1,
+                "neutral": 3
+              },
+              "desc": "额头、颧骨、下颌宽度接近，下颌角清楚，显硬朗。"
+            },
+            {
+              "value": "long",
+              "label": "长",
+              "phrase": "长脸，轮廓偏窄长",
+              "w": {
+                "male": 3,
+                "female": 2,
+                "neutral": 3
+              },
+              "desc": "脸长明显大于脸宽，轮廓偏窄，显成熟。"
+            },
+            {
+              "value": "heart",
+              "label": "心形",
+              "phrase": "心形脸，额头宽下巴尖",
+              "w": {
+                "male": 2,
+                "female": 4,
+                "neutral": 3
+              },
+              "desc": "额头宽、下巴尖，颧骨到下颌收得很快。"
+            },
+            {
+              "value": "diamond",
+              "label": "菱形",
+              "phrase": "菱形脸，面颊收窄，下巴尖",
+              "w": {
+                "male": 3,
+                "female": 2,
+                "neutral": 3
+              },
+              "desc": "颧骨最宽，额头与下颌都收窄，面颊有轻微凹陷。"
+            },
+            {
+              "value": "melon",
+              "label": "瓜子",
+              "phrase": "瓜子脸，下巴尖",
+              "w": {
+                "male": 2,
+                "female": 4,
+                "neutral": 3
+              },
+              "desc": "下颌收成尖下巴，面颊线条顺，显清秀。"
+            },
+            {
+              "value": "squircle",
+              "label": "方圆脸",
+              "phrase": "方圆脸，轮廓介于方与圆之间",
+              "desc": "下颌有转角但不锋利，面颊仍饱满。",
+              "w": {
+                "male": 4,
+                "female": 2,
+                "neutral": 3
+              }
+            },
+            {
+              "value": "pear",
+              "label": "梨形脸",
+              "phrase": "梨形脸，下颌比额头宽",
+              "desc": "下颌宽、额头窄，下半张脸体量更大。",
+              "w": {
+                "male": 2,
+                "female": 2,
+                "neutral": 2
+              }
+            }
+          ],
+          "tier": "core",
+          "note": "脸型是第一眼辨识度的基础。",
+          "impact": "写进「面目」；和颧骨、下颌、面中一起决定轮廓。"
+        },
+        {
+          "id": "midface",
+          "label": "面中",
+          "type": "choice",
+          "default": "mid",
+          "note": "面中长度影响五官的紧凑/舒展。",
+          "options": [
+            {
+              "value": "short",
+              "label": "偏短",
+              "phrase": "面中偏短，五官紧凑",
+              "w": {
+                "male": 2,
+                "female": 4,
+                "neutral": 3
+              },
+              "desc": "眉骨到鼻底距离短，五官紧凑，显幼态。"
+            },
+            {
+              "value": "mid",
+              "label": "标准",
+              "phrase": "面中长度标准",
+              "w": {
+                "male": 5,
+                "female": 5,
+                "neutral": 5
+              },
+              "desc": "面中长度标准，五官舒展。"
+            },
+            {
+              "value": "long",
+              "label": "偏长",
+              "phrase": "面中偏长，纵向舒展",
+              "w": {
+                "male": 3,
+                "female": 2,
+                "neutral": 3
+              },
+              "desc": "眉骨到鼻底距离长，纵向舒展，显成熟。"
+            }
+          ],
+          "tier": "advanced",
+          "impact": "写进「面部细节」；和鼻长、三庭比例联动。"
+        },
+        {
+          "id": "cheekbone",
+          "label": "颧骨",
+          "type": "choice",
+          "default": "flat",
+          "options": [
+            {
+              "value": "flat",
+              "label": "平缓",
+              "phrase": "颧骨平缓，面颊线条柔和",
+              "w": {
+                "male": 4,
+                "female": 5,
+                "neutral": 4
+              },
+              "desc": "颧骨不突出，面颊线条顺。"
+            },
+            {
+              "value": "visible",
+              "label": "微凸",
+              "phrase": "颧骨微凸，面颊有轻微凹陷",
+              "w": {
+                "male": 4,
+                "female": 3,
+                "neutral": 3
+              },
+              "desc": "颧骨微凸，面颊有轻度阴影。"
+            },
+            {
+              "value": "high",
+              "label": "高耸",
+              "phrase": "颧骨高耸，轮廓立体",
+              "w": {
+                "male": 2,
+                "female": 1,
+                "neutral": 2
+              },
+              "desc": "颧骨高且外扩，轮廓立体，显冷。"
+            }
+          ],
+          "tier": "advanced",
+          "note": "颧骨高低决定面颊的立体与凹陷。",
+          "impact": "写进「面部细节」；高颧骨显冷，平颧骨显柔。"
+        },
+        {
+          "id": "brow",
+          "label": "眉",
+          "type": "choice",
+          "default": "straight",
+          "options": [
+            {
+              "value": "straight",
+              "label": "平直",
+              "phrase": "平直眉，眉尾略淡",
+              "w": {
+                "male": 4,
+                "female": 3,
+                "neutral": 4
+              },
+              "desc": "眉形平直，眉尾略淡，显干净利落。"
+            },
+            {
+              "value": "arch",
+              "label": "弯",
+              "phrase": "弯眉，眉峰圆润",
+              "w": {
+                "male": 2,
+                "female": 5,
+                "neutral": 3
+              },
+              "desc": "眉峰圆润，眉形有弧度，显温柔。"
+            },
+            {
+              "value": "sword",
+              "label": "剑",
+              "phrase": "剑眉，眉峰锐利上扬",
+              "w": {
+                "male": 4,
+                "female": 1,
+                "neutral": 2
+              },
+              "desc": "眉峰锐利上扬，眉尾收尖，显英气。"
+            },
+            {
+              "value": "willow",
+              "label": "柳叶",
+              "phrase": "柳叶眉，细长微弯",
+              "w": {
+                "male": 1,
+                "female": 4,
+                "neutral": 2
+              },
+              "desc": "细长微弯，眉尾柔软，显古典。"
+            },
+            {
+              "value": "wild",
+              "label": "野生眉",
+              "phrase": "野生眉，毛流自然，边界不清",
+              "desc": "毛流自然、边界不清，像没有修过。",
+              "w": {
+                "male": 4,
+                "female": 3,
+                "neutral": 4
+              }
+            },
+            {
+              "value": "eight",
+              "label": "八字眉",
+              "phrase": "八字眉，眉尾向下",
+              "desc": "眉尾向下垂，显愁绪或无辜。",
+              "w": {
+                "male": 1,
+                "female": 2,
+                "neutral": 2
+              }
+            },
+            {
+              "value": "distant",
+              "label": "远山眉",
+              "phrase": "远山眉，眉形细长疏淡",
+              "desc": "细长疏淡，像远山，显清冷。",
+              "w": {
+                "male": 1,
+                "female": 3,
+                "neutral": 2
+              }
+            }
+          ],
+          "tier": "advanced",
+          "note": "眉形决定眉眼的气质走向。",
+          "impact": "写进「面目」；和眉密度、眉距一起看。"
+        },
+        {
+          "id": "eyes",
+          "label": "眼型",
+          "type": "choice",
+          "default": "almond",
+          "options": [
+            {
+              "value": "almond",
+              "label": "杏眼",
+              "phrase": "杏眼，眼型偏圆润",
+              "w": {
+                "male": 4,
+                "female": 4,
+                "neutral": 4
+              },
+              "desc": "眼裂略圆，内眼角尖，眼尾平缓，最百搭的眼型。"
+            },
+            {
+              "value": "round",
+              "label": "圆眼",
+              "phrase": "圆眼，眼黑占比大",
+              "w": {
+                "male": 2,
+                "female": 4,
+                "neutral": 3
+              },
+              "desc": "眼裂上下开得大，眼黑露出多，显幼态。"
+            },
+            {
+              "value": "narrow",
+              "label": "细长",
+              "phrase": "细长眼，眼尾拉长",
+              "w": {
+                "male": 4,
+                "female": 3,
+                "neutral": 3
+              },
+              "desc": "眼裂细长，眼尾拉长，显冷静。"
+            },
+            {
+              "value": "droop",
+              "label": "下垂",
+              "phrase": "下垂眼，外眼角略低",
+              "w": {
+                "male": 2,
+                "female": 4,
+                "neutral": 3
+              },
+              "desc": "外眼角略低于内眼角，眼神显无辜或疲惫。"
+            },
+            {
+              "value": "upturn",
+              "label": "上扬",
+              "phrase": "上扬眼，外眼角上挑",
+              "w": {
+                "male": 4,
+                "female": 2,
+                "neutral": 3
+              },
+              "desc": "外眼角上挑，眼神锐利，显攻击性。"
+            },
+            {
+              "value": "phoenix",
+              "label": "丹凤",
+              "phrase": "丹凤眼，眼尾细长上挑",
+              "w": {
+                "male": 2,
+                "female": 4,
+                "neutral": 3
+              },
+              "desc": "内眼角向下、外眼角细长上挑，东方古典眼型。"
+            },
+            {
+              "value": "peach",
+              "label": "桃花",
+              "phrase": "桃花眼，眼型含水，眼尾微弯",
+              "w": {
+                "male": 2,
+                "female": 4,
+                "neutral": 3
+              },
+              "desc": "眼型含水，眼尾微弯，笑起来像月牙。"
+            },
+            {
+              "value": "ruifeng",
+              "label": "瑞凤眼",
+              "phrase": "瑞凤眼，眼型细长，眼尾微挑",
+              "desc": "细长眼型，眼尾微挑但不过分，气质温润。",
+              "w": {
+                "male": 2,
+                "female": 3,
+                "neutral": 3
+              }
+            },
+            {
+              "value": "fox",
+              "label": "狐狸眼",
+              "phrase": "狐狸眼，内眼角尖，眼尾上挑",
+              "desc": "内眼角尖锐，眼尾明显上挑，显妩媚与精明。",
+              "w": {
+                "male": 1,
+                "female": 3,
+                "neutral": 2
+              }
+            }
+          ],
+          "tier": "core",
+          "note": "眼型决定眼裂形状与眼尾走向。",
+          "impact": "写进「面目」；和眼皮、眼距、睫毛叠加。"
+        },
+        {
+          "id": "eyelid",
+          "label": "眼皮",
+          "type": "choice",
+          "default": "double",
+          "options": [
+            {
+              "value": "mono",
+              "label": "单",
+              "phrase": "单眼皮，上睑平整",
+              "w": {
+                "male": 4,
+                "female": 3,
+                "neutral": 4
+              },
+              "desc": "上睑没有明显褶皱，眼型干净。"
+            },
+            {
+              "value": "inner",
+              "label": "内双",
+              "phrase": "内双，褶皱只在内眼角露出",
+              "w": {
+                "male": 3,
+                "female": 4,
+                "neutral": 4
+              },
+              "desc": "褶皱只在内眼角露出，睁眼时接近单眼皮。"
+            },
+            {
+              "value": "double",
+              "label": "双",
+              "phrase": "双眼皮，褶皱清晰",
+              "w": {
+                "male": 3,
+                "female": 4,
+                "neutral": 3
+              },
+              "desc": "上睑有清晰褶皱，眼睛更圆。"
+            }
+          ],
+          "tier": "advanced",
+          "note": "眼皮决定褶皱的宽度与可见度。",
+          "impact": "写进「面目」；单/内双/双在特写下最明显。"
+        },
+        {
+          "id": "eyeGap",
+          "label": "眼距",
+          "type": "choice",
+          "default": "mid",
+          "options": [
+            {
+              "value": "wide",
+              "label": "宽",
+              "phrase": "眼距偏宽",
+              "w": {
+                "male": 2,
+                "female": 4,
+                "neutral": 3
+              },
+              "desc": "两眼间距大于一只眼宽，显幼态。"
+            },
+            {
+              "value": "mid",
+              "label": "中",
+              "phrase": "眼距适中",
+              "w": {
+                "male": 5,
+                "female": 4,
+                "neutral": 5
+              },
+              "desc": "两眼间距约等于一只眼宽，最标准。"
+            },
+            {
+              "value": "narrow",
+              "label": "窄",
+              "phrase": "眼距偏窄",
+              "w": {
+                "male": 4,
+                "female": 2,
+                "neutral": 3
+              },
+              "desc": "两眼间距小于一只眼宽，五官集中。"
+            }
+          ],
+          "tier": "advanced",
+          "note": "眼距影响五官的疏密。",
+          "impact": "写进「面目」；宽眼距显幼态，窄眼距显集中。"
+        },
+        {
+          "id": "eyeColor",
+          "label": "瞳色",
+          "type": "choice",
+          "default": "darkbrown",
+          "note": "瞳色是面部的小面积高对比点。",
+          "options": [
+            {
+              "value": "black",
+              "label": "纯黑",
+              "phrase": "瞳孔接近纯黑",
+              "w": {
+                "male": 4,
+                "female": 4,
+                "neutral": 4
+              }
+            },
+            {
+              "value": "darkbrown",
+              "label": "深褐",
+              "phrase": "瞳孔深褐，虹膜纹理清晰",
+              "w": {
+                "male": 6,
+                "female": 6,
+                "neutral": 6
+              }
+            },
+            {
+              "value": "brown",
+              "label": "浅褐",
+              "phrase": "瞳孔浅褐，虹膜透光",
+              "w": {
+                "male": 2,
+                "female": 2,
+                "neutral": 2
+              }
+            },
+            {
+              "value": "amber",
+              "label": "琥珀",
+              "phrase": "瞳孔琥珀色，虹膜有金褐色纹路",
+              "w": {
+                "male": 0.6,
+                "female": 0.8,
+                "neutral": 0.8
+              }
+            },
+            {
+              "value": "grey",
+              "label": "灰",
+              "phrase": "瞳孔灰调，虹膜颜色很浅",
+              "w": {
+                "male": 0.4,
+                "female": 0.5,
+                "neutral": 0.5
+              }
+            },
+            {
+              "value": "blue",
+              "label": "灰蓝",
+              "phrase": "瞳孔灰蓝色，虹膜纹理清楚",
+              "w": {
+                "male": 0.2,
+                "female": 0.3,
+                "neutral": 0.3
+              }
+            }
+          ],
+          "tier": "advanced",
+          "impact": "写进「面部细节」；深色最稳，浅色更抓眼。"
+        },
+        {
+          "id": "lashes",
+          "label": "睫毛",
+          "type": "choice",
+          "default": "natural",
+          "options": [
+            {
+              "value": "short",
+              "label": "短",
+              "phrase": "睫毛短而直",
+              "w": {
+                "male": 4,
+                "female": 1,
+                "neutral": 2
+              }
+            },
+            {
+              "value": "natural",
+              "label": "自然",
+              "phrase": "睫毛自然，不长不密",
+              "w": {
+                "male": 5,
+                "female": 4,
+                "neutral": 5
+              }
+            },
+            {
+              "value": "long",
+              "label": "浓密",
+              "phrase": "睫毛浓密纤长，末端微翘",
+              "w": {
+                "male": 1,
+                "female": 5,
+                "neutral": 3
+              }
+            }
+          ],
+          "tier": "advanced",
+          "note": "睫毛长度与密度影响眼部的精致度。",
+          "impact": "写进「面部细节」；浓密睫毛在特写里更明显。"
+        },
+        {
+          "id": "underEye",
+          "label": "眼下",
+          "type": "choice",
+          "default": "clean",
+          "options": [
+            {
+              "value": "clean",
+              "label": "干净",
+              "phrase": "眼下干净，没有明显纹路",
+              "w": {
+                "male": 5,
+                "female": 5,
+                "neutral": 5
+              },
+              "desc": "眼下平整，没有卧蚕、眼袋或泪沟。"
+            },
+            {
+              "value": "aegyo",
+              "label": "卧蚕",
+              "phrase": "眼下有一条浅浅的卧蚕",
+              "w": {
+                "male": 1,
+                "female": 3,
+                "neutral": 2
+              },
+              "desc": "紧贴下睫毛的一条小隆起，笑时更明显。"
+            },
+            {
+              "value": "bags",
+              "label": "眼袋",
+              "phrase": "眼下有轻微眼袋与浮肿",
+              "w": {
+                "male": 2,
+                "female": 1,
+                "neutral": 1
+              },
+              "desc": "眼下有脂肪膨出与轻微浮肿，显疲态。"
+            },
+            {
+              "value": "tear",
+              "label": "泪沟",
+              "phrase": "眼下有淡淡的泪沟",
+              "w": {
+                "male": 2,
+                "female": 2,
+                "neutral": 2
+              },
+              "desc": "从内眼角向下延伸的浅沟，显疲态。"
+            }
+          ],
+          "tier": "advanced",
+          "note": "眼下状态决定疲态/幼态。",
+          "impact": "写进「面部细节」；卧蚕显甜，眼袋/泪沟显疲。"
+        },
+        {
+          "id": "nose",
+          "label": "鼻",
+          "type": "choice",
+          "default": "mid",
+          "options": [
+            {
+              "value": "low",
+              "label": "低",
+              "phrase": "鼻梁低平，鼻头圆钝，鼻翼偏宽",
+              "w": {
+                "male": 3,
+                "female": 3,
+                "neutral": 3
+              },
+              "desc": "山根低、鼻背平，鼻头圆钝，显亲和。"
+            },
+            {
+              "value": "mid",
+              "label": "中",
+              "phrase": "鼻梁中等高度，鼻头小巧",
+              "w": {
+                "male": 5,
+                "female": 5,
+                "neutral": 5
+              },
+              "desc": "鼻梁中等高度，鼻头小巧，最通用。"
+            },
+            {
+              "value": "high",
+              "label": "高",
+              "phrase": "鼻梁高挺，鼻背直，鼻头精致",
+              "w": {
+                "male": 3,
+                "female": 3,
+                "neutral": 3
+              },
+              "desc": "山根高、鼻背直，鼻头精致，显立体。"
+            }
+          ],
+          "tier": "core",
+          "note": "鼻高是面部纵向立体度的主轴。",
+          "impact": "写进「面目」；和鼻型、鼻头、面中一起看。"
+        },
+        {
+          "id": "lips",
+          "label": "唇",
+          "type": "choice",
+          "default": "mid",
+          "options": [
+            {
+              "value": "thin",
+              "label": "薄",
+              "phrase": "薄唇，唇线利落",
+              "w": {
+                "male": 4,
+                "female": 2,
+                "neutral": 3
+              },
+              "desc": "唇肉薄，唇线利落，显克制。"
+            },
+            {
+              "value": "mid",
+              "label": "中",
+              "phrase": "唇厚适中，唇峰清楚",
+              "w": {
+                "male": 5,
+                "female": 4,
+                "neutral": 5
+              },
+              "desc": "厚薄适中，唇峰清楚，最通用。"
+            },
+            {
+              "value": "full",
+              "label": "厚",
+              "phrase": "厚唇，下唇饱满",
+              "w": {
+                "male": 2,
+                "female": 5,
+                "neutral": 3
+              },
+              "desc": "双唇饱满，下唇更厚，显性感。"
+            },
+            {
+              "value": "uneven",
+              "label": "上薄下厚",
+              "phrase": "上唇偏薄，下唇饱满",
+              "w": {
+                "male": 3,
+                "female": 3,
+                "neutral": 3
+              },
+              "desc": "上唇偏薄、下唇饱满，唇形有层次。"
+            }
+          ],
+          "tier": "core",
+          "note": "唇厚决定下半张脸的体量。",
+          "impact": "写进「面目」；和唇形、唇色、唇纹叠加。"
+        },
+        {
+          "id": "lipsColor",
+          "label": "唇色",
+          "type": "choice",
+          "default": "natural",
+          "options": [
+            {
+              "value": "pale",
+              "label": "偏淡",
+              "phrase": "唇色偏淡，几乎与肤色接近",
+              "w": {
+                "male": 3,
+                "female": 2,
+                "neutral": 2
+              }
+            },
+            {
+              "value": "natural",
+              "label": "自然",
+              "phrase": "唇色自然，略带血色",
+              "w": {
+                "male": 5,
+                "female": 4,
+                "neutral": 5
+              }
+            },
+            {
+              "value": "rosy",
+              "label": "红润",
+              "phrase": "唇色红润，显得气血好",
+              "w": {
+                "male": 2,
+                "female": 4,
+                "neutral": 2
+              }
+            },
+            {
+              "value": "deep",
+              "label": "偏深",
+              "phrase": "唇色偏深，带一点褐调",
+              "w": {
+                "male": 2,
+                "female": 2,
+                "neutral": 2
+              }
+            }
+          ],
+          "tier": "advanced",
+          "note": "唇色决定气色与妆感。",
+          "impact": "写进「面部细节」；和血色、妆容一起看。"
+        },
+        {
+          "id": "jaw",
+          "label": "下颌",
+          "type": "choice",
+          "default": "soft",
+          "options": [
+            {
+              "value": "soft",
+              "label": "柔和",
+              "phrase": "下颌线条柔和",
+              "w": {
+                "male": 2,
+                "female": 6,
+                "neutral": 3
+              },
+              "desc": "下颌角圆钝，脸与颈过渡柔和。"
+            },
+            {
+              "value": "clear",
+              "label": "清晰",
+              "phrase": "下颌线清晰",
+              "w": {
+                "male": 5,
+                "female": 4,
+                "neutral": 5
+              },
+              "desc": "下颌线清楚，显利落。"
+            },
+            {
+              "value": "square",
+              "label": "方正",
+              "phrase": "下颌方正，咬肌明显",
+              "w": {
+                "male": 6,
+                "female": 1,
+                "neutral": 3
+              },
+              "desc": "下颌角明显、咬肌饱满，显力量。"
+            }
+          ],
+          "tier": "core",
+          "note": "下颌决定脸的下半部轮廓。",
+          "impact": "写进「面目」；和脸型、咬肌、面中联动。"
+        },
+        {
+          "id": "dimple",
+          "label": "酒窝",
+          "type": "choice",
+          "default": "none",
+          "options": [
+            {
+              "value": "none",
+              "label": "无",
+              "phrase": "没有酒窝",
+              "w": {
+                "male": 7,
+                "female": 6,
+                "neutral": 6
+              }
+            },
+            {
+              "value": "left",
+              "label": "左侧",
+              "phrase": "左颊有一个浅浅的酒窝",
+              "w": {
+                "male": 2,
+                "female": 2,
+                "neutral": 2
+              }
+            },
+            {
+              "value": "both",
+              "label": "双侧",
+              "phrase": "两颊各有一个浅酒窝",
+              "w": {
+                "male": 1,
+                "female": 2,
+                "neutral": 2
+              }
+            }
+          ],
+          "tier": "advanced",
+          "note": "酒窝是笑时的局部凹陷。",
+          "impact": "写进「面部细节」；只在有表情时明显。"
+        },
+        {
+          "id": "asymmetry",
+          "label": "不对称",
+          "type": "number",
+          "min": 0,
+          "max": 100,
+          "step": 1,
+          "default": 0,
+          "unit": "",
+          "bands": [
+            {
+              "max": 20,
+              "phrase": "面部左右基本对称"
+            },
+            {
+              "max": 60,
+              "phrase": "面部有轻微不对称，一侧眉眼略高"
+            },
+            {
+              "max": 100,
+              "phrase": "面部明显不对称，一侧嘴角与眉眼偏低"
+            }
+          ],
+          "tier": "advanced",
+          "note": "轻微不对称让脸更像真人。",
+          "impact": "写进「记号」；数值越大越明显，建议 0–25。"
+        },
+        {
+          "id": "faceProportion",
+          "label": "三庭比例",
+          "type": "choice",
+          "tier": "core",
+          "note": "上庭、中庭、下庭的长度关系，决定脸是幼态还是成熟。",
+          "impact": "写进「面部进阶」；和「面中」「下颌」叠加看。",
+          "default": "balanced",
+          "options": [
+            {
+              "value": "balanced",
+              "label": "均衡",
+              "phrase": "三庭比例均衡，额头、面中与下庭长度接近",
+              "desc": "上庭、中庭、下庭大致等长，最稳的通用比例。",
+              "w": {
+                "male": 4,
+                "female": 4,
+                "neutral": 4
+              }
+            },
+            {
+              "value": "upper_long",
+              "label": "上庭偏长",
+              "phrase": "上庭偏长，额头开阔",
+              "desc": "发际线到眉骨更长，显幼态或书卷气。",
+              "w": {
+                "male": 3,
+                "female": 3,
+                "neutral": 3
+              }
+            },
+            {
+              "value": "mid_long",
+              "label": "中庭偏长",
+              "phrase": "中庭偏长，鼻梁显长",
+              "desc": "眉骨到鼻底更长，显成熟、冷感。",
+              "w": {
+                "male": 3,
+                "female": 3,
+                "neutral": 3
+              }
+            },
+            {
+              "value": "lower_long",
+              "label": "下庭偏长",
+              "phrase": "下庭偏长，下巴与下颌更显",
+              "desc": "鼻底到下巴更长，显成熟或硬朗。",
+              "w": {
+                "male": 3,
+                "female": 3,
+                "neutral": 3
+              }
+            },
+            {
+              "value": "lower_short",
+              "label": "下庭偏短",
+              "phrase": "下庭偏短，下巴略短",
+              "desc": "鼻底到下巴更短，显幼态、娃娃脸。",
+              "w": {
+                "male": 3,
+                "female": 4,
+                "neutral": 3
+              }
+            }
+          ]
+        },
+        {
+          "id": "noseShape",
+          "label": "鼻型",
+          "type": "choice",
+          "tier": "core",
+          "note": "鼻梁与鼻头的整体形状，决定面部立体度和辨识度。",
+          "impact": "写进「面部进阶」；和「鼻」（高度）叠加使用。",
+          "default": "straight",
+          "options": [
+            {
+              "value": "straight",
+              "label": "直鼻",
+              "phrase": "鼻梁笔直，鼻背线条干净",
+              "desc": "鼻背从山根到鼻尖接近一条直线，正面显端正。",
+              "w": {
+                "male": 5,
+                "female": 4,
+                "neutral": 4
+              }
+            },
+            {
+              "value": "high_bridge",
+              "label": "高挺",
+              "phrase": "鼻梁高挺，山根到鼻尖起伏明显",
+              "desc": "山根高、鼻背挺，侧面立体。",
+              "w": {
+                "male": 4,
+                "female": 4,
+                "neutral": 4
+              }
+            },
+            {
+              "value": "hump",
+              "label": "驼峰",
+              "phrase": "鼻背中段有轻微驼峰",
+              "desc": "鼻背中段微微隆起，带一点粗粝感。",
+              "w": {
+                "male": 3,
+                "female": 2,
+                "neutral": 3
+              }
+            },
+            {
+              "value": "hook",
+              "label": "鹰钩",
+              "phrase": "鼻尖向下勾，鼻梁高而窄",
+              "desc": "鼻尖向下、鼻梁窄长，显锋利。",
+              "w": {
+                "male": 2,
+                "female": 2,
+                "neutral": 2
+              }
+            },
+            {
+              "value": "bulbous",
+              "label": "蒜头",
+              "phrase": "鼻头圆大，鼻翼偏宽",
+              "desc": "鼻头圆、鼻翼宽，显憨厚。",
+              "w": {
+                "male": 3,
+                "female": 2,
+                "neutral": 3
+              }
+            },
+            {
+              "value": "droplet",
+              "label": "水滴",
+              "phrase": "鼻头圆润微垂，像水滴",
+              "desc": "鼻头圆而微垂，侧面像水滴。",
+              "w": {
+                "male": 2,
+                "female": 3,
+                "neutral": 3
+              }
+            }
+          ]
+        },
+        {
+          "id": "lipShape",
+          "label": "唇形",
+          "type": "choice",
+          "tier": "core",
+          "note": "唇峰、嘴角与上下唇的比例，决定下半张脸的表情倾向。",
+          "impact": "写进「面部进阶」；和「唇」（厚薄）、「唇色」「唇部质感」叠加。",
+          "default": "standard",
+          "options": [
+            {
+              "value": "standard",
+              "label": "标准",
+              "phrase": "唇形标准，唇峰平缓",
+              "desc": "唇峰不尖锐，上下唇比例均衡。",
+              "w": {
+                "male": 5,
+                "female": 4,
+                "neutral": 4
+              }
+            },
+            {
+              "value": "cupid",
+              "label": "唇峰明显",
+              "phrase": "唇峰清晰，上唇呈明显 M 形",
+              "desc": "唇峰高而尖，上唇轮廓像弓。",
+              "w": {
+                "male": 2,
+                "female": 4,
+                "neutral": 3
+              }
+            },
+            {
+              "value": "upturned",
+              "label": "嘴角上扬",
+              "phrase": "嘴角天然微微上扬",
+              "desc": "不笑时嘴角也向上，显亲和。",
+              "w": {
+                "male": 3,
+                "female": 3,
+                "neutral": 3
+              }
+            },
+            {
+              "value": "downturned",
+              "label": "嘴角下垂",
+              "phrase": "嘴角略微向下",
+              "desc": "不笑时嘴角向下，显苦相或冷感。",
+              "w": {
+                "male": 2,
+                "female": 2,
+                "neutral": 2
+              }
+            },
+            {
+              "value": "upper_thin",
+              "label": "上薄下厚",
+              "phrase": "上唇偏薄，下唇饱满",
+              "desc": "上唇薄、下唇厚，唇形有层次。",
+              "w": {
+                "male": 3,
+                "female": 3,
+                "neutral": 3
+              }
+            },
+            {
+              "value": "full",
+              "label": "厚唇",
+              "phrase": "双唇饱满，唇线圆润",
+              "desc": "上下唇都厚，唇线圆，显性感。",
+              "w": {
+                "male": 2,
+                "female": 3,
+                "neutral": 2
+              }
+            }
+          ]
+        },
+        {
+          "id": "lipTexture",
+          "label": "唇部质感",
+          "type": "choice",
+          "tier": "advanced",
+          "note": "唇面的纹路与反光，是\"真人感\"的关键细节。",
+          "impact": "写进「面部进阶」；和「唇色」「唇形」一起看。",
+          "default": "natural",
+          "options": [
+            {
+              "value": "natural",
+              "label": "自然唇纹",
+              "phrase": "唇部有自然唇纹，表面不反光",
+              "desc": "细密唇纹，像没有涂唇膏。",
+              "w": {
+                "male": 4,
+                "female": 3,
+                "neutral": 3
+              }
+            },
+            {
+              "value": "dry",
+              "label": "轻微干纹",
+              "phrase": "唇部有轻微干纹，边缘略干",
+              "desc": "唇面有干纹，边缘起一点皮。",
+              "w": {
+                "male": 3,
+                "female": 2,
+                "neutral": 2
+              }
+            },
+            {
+              "value": "glossy",
+              "label": "湿润光泽",
+              "phrase": "唇部有湿润光泽，像刚抿过水",
+              "desc": "唇面有高光，像涂了薄薄一层唇蜜。",
+              "w": {
+                "male": 1,
+                "female": 3,
+                "neutral": 2
+              }
+            },
+            {
+              "value": "matte",
+              "label": "哑光",
+              "phrase": "唇部哑光，没有明显反光",
+              "desc": "唇面完全哑光，像丝绒。",
+              "w": {
+                "male": 2,
+                "female": 3,
+                "neutral": 2
+              }
+            }
+          ]
+        },
+        {
+          "id": "browGap",
+          "label": "眉距",
+          "type": "choice",
+          "tier": "advanced",
+          "note": "两眉头之间的距离，影响眉眼的疏密。",
+          "impact": "写进「面部进阶」；和「眉」「眼距」一起看。",
+          "default": "mid",
+          "options": [
+            {
+              "value": "near",
+              "label": "近",
+              "phrase": "眉距偏近，眉眼显得集中",
+              "desc": "两眉头靠近，眉眼有压迫感。",
+              "w": {
+                "male": 3,
+                "female": 3,
+                "neutral": 3
+              }
+            },
+            {
+              "value": "mid",
+              "label": "标准",
+              "phrase": "眉距标准，眉眼舒展",
+              "desc": "两眉头约一指宽，最通用。",
+              "w": {
+                "male": 5,
+                "female": 5,
+                "neutral": 5
+              }
+            },
+            {
+              "value": "far",
+              "label": "远",
+              "phrase": "眉距偏宽，眉眼显得疏朗",
+              "desc": "两眉头分开，气质更松弛。",
+              "w": {
+                "male": 3,
+                "female": 3,
+                "neutral": 3
+              }
+            }
+          ]
+        },
+        {
+          "id": "noseTip",
+          "label": "鼻头",
+          "type": "choice",
+          "tier": "advanced",
+          "note": "鼻尖的形状与肉感，决定鼻子的精致/憨厚。",
+          "impact": "写进「面部进阶」；和「鼻型」「鼻」（高度）叠加。",
+          "default": "refined",
+          "options": [
+            {
+              "value": "refined",
+              "label": "精致",
+              "phrase": "鼻头精致，鼻尖点明确",
+              "desc": "鼻尖有小而明确的点，显秀气。",
+              "w": {
+                "male": 4,
+                "female": 4,
+                "neutral": 4
+              }
+            },
+            {
+              "value": "round",
+              "label": "圆润",
+              "phrase": "鼻头圆润，线条柔和",
+              "desc": "鼻尖圆，没有明显棱角。",
+              "w": {
+                "male": 4,
+                "female": 4,
+                "neutral": 4
+              }
+            },
+            {
+              "value": "fleshy",
+              "label": "肉感",
+              "phrase": "鼻头有肉感，鼻翼略厚",
+              "desc": "鼻头肉、鼻翼厚，显憨厚。",
+              "w": {
+                "male": 2,
+                "female": 2,
+                "neutral": 2
+              }
+            },
+            {
+              "value": "sharp",
+              "label": "尖锐",
+              "phrase": "鼻头尖锐，鼻尖偏长",
+              "desc": "鼻尖向前突出，显锋利。",
+              "w": {
+                "male": 2,
+                "female": 1,
+                "neutral": 2
+              }
+            }
+          ]
+        },
+        {
+          "id": "earShape",
+          "label": "耳型",
+          "type": "choice",
+          "tier": "advanced",
+          "note": "耳朵与头侧的贴合度和耳垂形状。",
+          "impact": "写进「面部进阶」；正面/侧面都能看到。",
+          "default": "flat",
+          "options": [
+            {
+              "value": "flat",
+              "label": "贴发",
+              "phrase": "耳朵贴着头侧，轮廓不外扩",
+              "desc": "耳廓贴近头骨，正面几乎看不到。",
+              "w": {
+                "male": 4,
+                "female": 4,
+                "neutral": 4
+              }
+            },
+            {
+              "value": "prominent",
+              "label": "招风",
+              "phrase": "耳朵向外张开，正面能看到耳廓",
+              "desc": "耳廓外扩，正面明显。",
+              "w": {
+                "male": 2,
+                "female": 2,
+                "neutral": 2
+              }
+            },
+            {
+              "value": "lobe",
+              "label": "耳垂厚",
+              "phrase": "耳垂厚实，耳廓偏圆",
+              "desc": "耳垂有肉，耳廓圆。",
+              "w": {
+                "male": 3,
+                "female": 3,
+                "neutral": 3
+              }
+            },
+            {
+              "value": "pointed",
+              "label": "耳尖",
+              "phrase": "耳尖略尖，耳廓上缘有折角",
+              "desc": "耳尖微微上尖，像精灵耳。",
+              "w": {
+                "male": 1,
+                "female": 2,
+                "neutral": 3
+              }
+            }
+          ]
+        },
+        {
+          "id": "faceLines",
+          "label": "面部纹路",
+          "type": "choice",
+          "tier": "advanced",
+          "note": "法令纹、木偶纹、抬头纹、眼周细纹，决定年龄感。",
+          "impact": "写进「面部进阶」；和「年龄」「眼下」联动。",
+          "default": "none",
+          "options": [
+            {
+              "value": "none",
+              "label": "无",
+              "phrase": "面部没有明显纹路",
+              "desc": "干净平整，适合年轻脸。",
+              "w": {
+                "male": 4,
+                "female": 4,
+                "neutral": 4
+              }
+            },
+            {
+              "value": "nasolabial",
+              "label": "法令纹",
+              "phrase": "鼻翼两侧有法令纹，向下延伸到嘴角",
+              "desc": "从鼻翼到嘴角的两道沟，最显年龄。",
+              "w": {
+                "male": 3,
+                "female": 3,
+                "neutral": 3
+              }
+            },
+            {
+              "value": "marionette",
+              "label": "木偶纹",
+              "phrase": "嘴角下方有木偶纹，下颌线条显重",
+              "desc": "嘴角向下的两道纹，显苦相。",
+              "w": {
+                "male": 2,
+                "female": 2,
+                "neutral": 2
+              }
+            },
+            {
+              "value": "forehead",
+              "label": "抬头纹",
+              "phrase": "额头有横向抬头纹",
+              "desc": "额头上几道横纹，显成熟。",
+              "w": {
+                "male": 2,
+                "female": 1,
+                "neutral": 2
+              }
+            },
+            {
+              "value": "eye",
+              "label": "眼周细纹",
+              "phrase": "眼尾与眼下有细纹",
+              "desc": "笑起来眼尾的细纹。",
+              "w": {
+                "male": 2,
+                "female": 3,
+                "neutral": 3
+              }
+            }
+          ]
+        },
+        {
+          "id": "teeth",
+          "label": "牙齿",
+          "type": "choice",
+          "tier": "advanced",
+          "note": "牙齿的排列与门牙形状，决定笑容的辨识度。",
+          "impact": "写进「面部进阶」；只在露齿笑时明显。",
+          "default": "straight",
+          "options": [
+            {
+              "value": "straight",
+              "label": "整齐",
+              "phrase": "牙齿整齐，笑起来只看到一条白线",
+              "desc": "排列整齐，最通用。",
+              "w": {
+                "male": 5,
+                "female": 5,
+                "neutral": 5
+              }
+            },
+            {
+              "value": "canine",
+              "label": "虎牙",
+              "phrase": "笑起来露出一颗小虎牙",
+              "desc": "一侧犬齿略尖，显俏皮。",
+              "w": {
+                "male": 2,
+                "female": 3,
+                "neutral": 2
+              }
+            },
+            {
+              "value": "bunny",
+              "label": "兔牙",
+              "phrase": "门牙略长，笑起来像兔牙",
+              "desc": "两颗门牙偏长，显幼态。",
+              "w": {
+                "male": 1,
+                "female": 3,
+                "neutral": 2
+              }
+            },
+            {
+              "value": "gap",
+              "label": "牙缝",
+              "phrase": "门牙之间有一条细缝",
+              "desc": "门牙之间有缝，显真实。",
+              "w": {
+                "male": 1,
+                "female": 1,
+                "neutral": 1
+              }
+            },
+            {
+              "value": "overbite",
+              "label": "微龅",
+              "phrase": "上排牙齿微微前突",
+              "desc": "上牙略前突，嘴唇微张。",
+              "w": {
+                "male": 1,
+                "female": 1,
+                "neutral": 1
+              }
+            }
+          ]
+        },
+        {
+          "id": "makeup",
+          "label": "妆容",
+          "type": "choice",
+          "tier": "core",
+          "note": "底妆、眉眼与唇妆的整体妆感。",
+          "impact": "写进「面部进阶」；和「唇色」「血色」「肤质」一起看。",
+          "default": "bare",
+          "options": [
+            {
+              "value": "bare",
+              "label": "素颜",
+              "phrase": "素颜，只有自然的皮肤光泽",
+              "desc": "没有底妆，保留皮肤纹理。",
+              "w": {
+                "male": 8,
+                "female": 3,
+                "neutral": 5
+              }
+            },
+            {
+              "value": "light",
+              "label": "淡妆",
+              "phrase": "淡妆，底妆干净，眉形清晰，唇色自然",
+              "desc": "薄底妆、自然眉、淡唇色。",
+              "w": {
+                "male": 1,
+                "female": 5,
+                "neutral": 3
+              }
+            },
+            {
+              "value": "office",
+              "label": "通勤",
+              "phrase": "通勤妆，底妆哑光，眼线干净",
+              "desc": "哑光底妆、细眼线、豆沙唇。",
+              "w": {
+                "male": 0,
+                "female": 3,
+                "neutral": 2
+              }
+            },
+            {
+              "value": "redlip",
+              "label": "复古红唇",
+              "phrase": "复古红唇，唇线清晰，其余妆面克制",
+              "desc": "红唇是视觉中心，眼妆干净。",
+              "w": {
+                "male": 0,
+                "female": 2,
+                "neutral": 1
+              }
+            },
+            {
+              "value": "smoky",
+              "label": "烟熏",
+              "phrase": "烟熏眼妆，眼周加深，唇色偏暗",
+              "desc": "眼周深色晕染，唇色压暗。",
+              "w": {
+                "male": 0,
+                "female": 1,
+                "neutral": 1
+              }
+            },
+            {
+              "value": "sick",
+              "label": "病态",
+              "phrase": "病态妆，肤色偏白，眼下与唇色发淡",
+              "desc": "底妆偏白，眼下泛青，唇色淡。",
+              "w": {
+                "male": 0,
+                "female": 1,
+                "neutral": 1
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "hair",
+      "layer": "L4",
+      "label": "毛发",
+      "hint": "发型、发质、胡须",
+      "params": [
+        {
+          "id": "hairStyle",
+          "label": "发型",
+          "type": "choice",
+          "default": "short_messy",
+          "options": [
+            {
+              "value": "buzz",
+              "label": "寸头",
+              "phrase": "寸头，发际线清楚",
+              "w": {
+                "male": 8,
+                "female": 1,
+                "neutral": 4
+              }
+            },
+            {
+              "value": "short_messy",
+              "label": "短碎发",
+              "phrase": "短碎发，额前有零散碎发",
+              "w": {
+                "male": 8,
+                "female": 3,
+                "neutral": 6
+              }
+            },
+            {
+              "value": "slick",
+              "label": "背头",
+              "phrase": "向后梳的背头，露出额头",
+              "w": {
+                "male": 5,
+                "female": 1,
+                "neutral": 3
+              }
+            },
+            {
+              "value": "middle_part",
+              "label": "中分",
+              "phrase": "中分，发丝自然垂落",
+              "w": {
+                "male": 3,
+                "female": 4,
+                "neutral": 4
+              }
+            },
+            {
+              "value": "fringe",
+              "label": "齐刘海",
+              "phrase": "齐刘海，发尾齐眉",
+              "w": {
+                "male": 1,
+                "female": 6,
+                "neutral": 4
+              }
+            },
+            {
+              "value": "ponytail",
+              "label": "高马尾",
+              "phrase": "高马尾，鬓角留出碎发",
+              "w": {
+                "male": 2,
+                "female": 6,
+                "neutral": 4
+              }
+            },
+            {
+              "value": "bun",
+              "label": "丸子头",
+              "phrase": "盘成丸子头，后颈干净",
+              "w": {
+                "male": 1,
+                "female": 5,
+                "neutral": 3
+              }
+            },
+            {
+              "value": "long",
+              "label": "长直发",
+              "phrase": "长发垂到肩背，发尾自然",
+              "w": {
+                "male": 2,
+                "female": 6,
+                "neutral": 3
+              }
+            },
+            {
+              "value": "bob",
+              "label": "短发波波",
+              "phrase": "齐耳短发，发尾内扣",
+              "w": {
+                "male": 1,
+                "female": 5,
+                "neutral": 3
+              }
+            },
+            {
+              "value": "wolf",
+              "label": "狼尾",
+              "phrase": "狼尾短发，后颈留长",
+              "w": {
+                "male": 3,
+                "female": 1,
+                "neutral": 3
+              }
+            },
+            {
+              "value": "lowpony",
+              "label": "低马尾",
+              "phrase": "低马尾，后颈留几缕碎发",
+              "w": {
+                "male": 2,
+                "female": 5,
+                "neutral": 4
+              }
+            },
+            {
+              "value": "braid",
+              "label": "编发",
+              "phrase": "头发编成一条松辫子，垂在肩前",
+              "w": {
+                "male": 1,
+                "female": 4,
+                "neutral": 3
+              }
+            },
+            {
+              "value": "halfup",
+              "label": "半束发",
+              "phrase": "半束发，上半束起，下半披散",
+              "desc": "上半束起、下半披散，显温婉。",
+              "w": {
+                "male": 1,
+                "female": 4,
+                "neutral": 3
+              }
+            },
+            {
+              "value": "clavicle",
+              "label": "锁骨发",
+              "phrase": "锁骨发，发尾到锁骨",
+              "desc": "发尾到锁骨，轻熟。",
+              "w": {
+                "male": 1,
+                "female": 5,
+                "neutral": 3
+              }
+            },
+            {
+              "value": "updo",
+              "label": "盘发",
+              "phrase": "盘发，头发收在脑后",
+              "desc": "头发全部收在脑后，露出颈线。",
+              "w": {
+                "male": 1,
+                "female": 4,
+                "neutral": 2
+              }
+            },
+            {
+              "value": "queue",
+              "label": "辫发",
+              "phrase": "剃发结辫，长辫垂于背后",
+              "w": {
+                "male": 5,
+                "female": 0,
+                "neutral": 0
+              },
+              "desc": "清代男性：前额剃光，脑后结辫。"
+            },
+            {
+              "value": "shaved",
+              "label": "剃发",
+              "phrase": "剃发",
+              "w": {
+                "male": 1,
+                "female": 0,
+                "neutral": 0
+              },
+              "desc": "僧人或剃发者。"
+            },
+            {
+              "value": "qipan",
+              "label": "旗女盘头",
+              "phrase": "辫发盘头",
+              "w": {
+                "male": 0,
+                "female": 3,
+                "neutral": 0
+              },
+              "desc": "盛清旗女：头发盘起，不戴大拉翅。"
+            },
+            {
+              "value": "hanji_hair",
+              "label": "汉女髻",
+              "phrase": "低髻",
+              "w": {
+                "male": 0,
+                "female": 3,
+                "neutral": 0
+              },
+              "desc": "汉女低髻，常配抹额。"
+            }
+          ],
+          "tier": "core",
+          "note": "发型是剪裁、长度与扎法的总称。",
+          "impact": "写进「毛发」；和发长、刘海、分缝、发质联动。"
+        },
+        {
+          "id": "hairTexture",
+          "label": "发质",
+          "type": "choice",
+          "default": "straight",
+          "options": [
+            {
+              "value": "straight",
+              "label": "直",
+              "phrase": "发丝顺直",
+              "w": {
+                "male": 5,
+                "female": 4,
+                "neutral": 4
+              }
+            },
+            {
+              "value": "wavy",
+              "label": "微卷",
+              "phrase": "发丝带自然的微卷",
+              "w": {
+                "male": 4,
+                "female": 5,
+                "neutral": 5
+              }
+            },
+            {
+              "value": "curly",
+              "label": "卷",
+              "phrase": "发丝卷曲，有明显弧度",
+              "w": {
+                "male": 1,
+                "female": 2,
+                "neutral": 2
+              }
+            }
+          ],
+          "tier": "advanced",
+          "note": "发质决定发丝的直/卷与光泽。",
+          "impact": "写进「皮肤与毛发」；和发量、发型一起看。"
+        },
+        {
+          "id": "hairVolume",
+          "label": "发量",
+          "type": "choice",
+          "default": "mid",
+          "options": [
+            {
+              "value": "thin",
+              "label": "偏少",
+              "phrase": "发量偏少，发丝细软",
+              "w": {
+                "male": 4,
+                "female": 2,
+                "neutral": 3
+              }
+            },
+            {
+              "value": "mid",
+              "label": "中等",
+              "phrase": "发量适中",
+              "w": {
+                "male": 5,
+                "female": 5,
+                "neutral": 5
+              }
+            },
+            {
+              "value": "thick",
+              "label": "浓密",
+              "phrase": "发量浓密，发丝厚实",
+              "w": {
+                "male": 2,
+                "female": 4,
+                "neutral": 3
+              }
+            }
+          ],
+          "tier": "advanced",
+          "note": "发量决定头型的厚度。",
+          "impact": "写进「皮肤与毛发」；发量少显贴，发量多显蓬。"
+        },
+        {
+          "id": "hairColor",
+          "label": "发色",
+          "type": "choice",
+          "default": "black",
+          "options": [
+            {
+              "value": "black",
+              "label": "纯黑",
+              "phrase": "纯黑",
+              "w": {
+                "male": 1,
+                "female": 1,
+                "neutral": 1
+              }
+            },
+            {
+              "value": "darkbrown",
+              "label": "深棕",
+              "phrase": "深棕",
+              "w": {
+                "male": 1,
+                "female": 1,
+                "neutral": 1
+              }
+            },
+            {
+              "value": "chestnut",
+              "label": "栗棕",
+              "phrase": "栗棕色",
+              "w": {
+                "male": 1,
+                "female": 1,
+                "neutral": 1
+              }
+            },
+            {
+              "value": "ash",
+              "label": "亚麻",
+              "phrase": "亚麻色",
+              "w": {
+                "male": 1,
+                "female": 1,
+                "neutral": 1
+              }
+            },
+            {
+              "value": "grey",
+              "label": "灰白",
+              "phrase": "灰白，夹杂少量黑发",
+              "w": {
+                "male": 1,
+                "female": 1,
+                "neutral": 1
+              }
+            }
+          ],
+          "tier": "core",
+          "note": "发色决定头部的明度与冷暖。",
+          "impact": "写进「毛发」；和肤色冷暖、年龄联动。"
+        },
+        {
+          "id": "hairline",
+          "label": "发际线",
+          "type": "choice",
+          "default": "mid",
+          "options": [
+            {
+              "value": "high",
+              "label": "偏高",
+              "phrase": "发际线偏高，额头显得开阔",
+              "w": {
+                "male": 2,
+                "female": 2,
+                "neutral": 2
+              }
+            },
+            {
+              "value": "mid",
+              "label": "标准",
+              "phrase": "发际线位置标准",
+              "w": {
+                "male": 5,
+                "female": 4,
+                "neutral": 4
+              }
+            },
+            {
+              "value": "low",
+              "label": "偏低",
+              "phrase": "发际线偏低，额头偏窄",
+              "w": {
+                "male": 2,
+                "female": 2,
+                "neutral": 2
+              }
+            },
+            {
+              "value": "widow",
+              "label": "美人尖",
+              "phrase": "额前发际线中间有一个美人尖",
+              "w": {
+                "male": 1,
+                "female": 2,
+                "neutral": 1
+              }
+            }
+          ],
+          "tier": "advanced",
+          "note": "发际线决定额头的形状与高度。",
+          "impact": "写进「皮肤与毛发」；美人尖/偏高/偏低都会改变脸型观感。"
+        },
+        {
+          "id": "beard",
+          "label": "胡须",
+          "type": "choice",
+          "default": "none",
+          "note": "胡须是男性第二性征的强信号。",
+          "options": [
+            {
+              "value": "none",
+              "label": "无",
+              "phrase": "没有胡须，下巴干净",
+              "w": {
+                "male": 4,
+                "female": 10,
+                "neutral": 8
+              }
+            },
+            {
+              "value": "peachfuzz",
+              "label": "小绒毛",
+              "phrase": "唇上与下巴有一层细软绒毛，几乎看不出",
+              "w": {
+                "male": 0,
+                "female": 2,
+                "neutral": 3
+              }
+            },
+            {
+              "value": "stubble",
+              "label": "短须",
+              "phrase": "唇上与下巴有青色胡茬",
+              "w": {
+                "male": 4,
+                "female": 0,
+                "neutral": 1
+              }
+            },
+            {
+              "value": "goatee",
+              "label": "山羊胡",
+              "phrase": "下巴留一撮山羊胡",
+              "w": {
+                "male": 3,
+                "female": 0,
+                "neutral": 0.3
+              }
+            },
+            {
+              "value": "full",
+              "label": "络腮胡",
+              "phrase": "络腮胡，修得很短",
+              "w": {
+                "male": 3,
+                "female": 0,
+                "neutral": 0
+              }
+            }
+          ],
+          "tier": "advanced",
+          "impact": "写进「毛发」；分性别权重，女性默认无。"
+        },
+        {
+          "id": "browDensity",
+          "label": "眉毛浓密",
+          "type": "choice",
+          "default": "mid",
+          "options": [
+            {
+              "value": "sparse",
+              "label": "稀疏",
+              "phrase": "眉毛稀疏，眉形清浅",
+              "w": {
+                "male": 1,
+                "female": 3,
+                "neutral": 2
+              }
+            },
+            {
+              "value": "mid",
+              "label": "中等",
+              "phrase": "眉毛浓淡适中",
+              "w": {
+                "male": 4,
+                "female": 5,
+                "neutral": 5
+              }
+            },
+            {
+              "value": "thick",
+              "label": "浓密",
+              "phrase": "眉毛浓密，毛流感强",
+              "w": {
+                "male": 5,
+                "female": 2,
+                "neutral": 3
+              }
+            }
+          ],
+          "tier": "advanced",
+          "note": "眉毛浓密决定眉部的毛流感。",
+          "impact": "写进「面目」；和眉形一起看。"
+        },
+        {
+          "id": "hairLength",
+          "label": "发长",
+          "type": "choice",
+          "tier": "core",
+          "note": "头发从发根到发尾的长度，决定头肩轮廓。",
+          "impact": "写进「体表与毛发进阶」；和「发型」「刘海」「分缝」联动。",
+          "default": "ear",
+          "options": [
+            {
+              "value": "buzz",
+              "label": "超短",
+              "phrase": "头发极短，贴着头皮",
+              "desc": "贴近头皮的寸头长度。",
+              "w": {
+                "male": 6,
+                "female": 1,
+                "neutral": 3
+              }
+            },
+            {
+              "value": "ear",
+              "label": "耳下",
+              "phrase": "头发到耳下，露出后颈",
+              "desc": "耳下短发，后颈干净。",
+              "w": {
+                "male": 4,
+                "female": 3,
+                "neutral": 4
+              }
+            },
+            {
+              "value": "shoulder",
+              "label": "齐肩",
+              "phrase": "头发到肩膀",
+              "desc": "齐肩长度，可披可扎。",
+              "w": {
+                "male": 2,
+                "female": 5,
+                "neutral": 4
+              }
+            },
+            {
+              "value": "chest",
+              "label": "胸上",
+              "phrase": "头发到胸口上方",
+              "desc": "过肩到胸上，长发。",
+              "w": {
+                "male": 1,
+                "female": 5,
+                "neutral": 3
+              }
+            },
+            {
+              "value": "waist",
+              "label": "及腰",
+              "phrase": "头发长到腰际",
+              "desc": "及腰长发，最显古典。",
+              "w": {
+                "male": 1,
+                "female": 3,
+                "neutral": 2
+              }
+            }
+          ]
+        },
+        {
+          "id": "bangs",
+          "label": "刘海",
+          "type": "choice",
+          "tier": "core",
+          "note": "额头前那一片头发的形态。",
+          "impact": "写进「体表与毛发进阶」；和「发型」「分缝」联动。",
+          "default": "none",
+          "options": [
+            {
+              "value": "none",
+              "label": "无",
+              "phrase": "没有刘海，额头完整露出",
+              "desc": "露额头，显利落。",
+              "w": {
+                "male": 5,
+                "female": 4,
+                "neutral": 5
+              }
+            },
+            {
+              "value": "full",
+              "label": "齐刘海",
+              "phrase": "齐刘海，发尾齐眉",
+              "desc": "一片齐刘海，盖住额头。",
+              "w": {
+                "male": 1,
+                "female": 4,
+                "neutral": 3
+              }
+            },
+            {
+              "value": "air",
+              "label": "空气刘海",
+              "phrase": "空气刘海，薄而碎，能看见额头",
+              "desc": "薄薄一层，透出额头。",
+              "w": {
+                "male": 1,
+                "female": 4,
+                "neutral": 2
+              }
+            },
+            {
+              "value": "middle",
+              "label": "中分",
+              "phrase": "中分，发丝从中间向两侧分开",
+              "desc": "没有刘海，中分线清楚。",
+              "w": {
+                "male": 3,
+                "female": 4,
+                "neutral": 4
+              }
+            },
+            {
+              "value": "side",
+              "label": "侧分",
+              "phrase": "侧分，刘海斜向一侧",
+              "desc": "斜向一侧的刘海。",
+              "w": {
+                "male": 3,
+                "female": 4,
+                "neutral": 3
+              }
+            },
+            {
+              "value": "wispy",
+              "label": "碎发",
+              "phrase": "额前留几缕碎发，不成片",
+              "desc": "几缕碎发，不盖额头。",
+              "w": {
+                "male": 3,
+                "female": 4,
+                "neutral": 3
+              }
+            }
+          ]
+        },
+        {
+          "id": "parting",
+          "label": "分缝",
+          "type": "choice",
+          "tier": "advanced",
+          "note": "头发分开的位置与方向。",
+          "impact": "写进「体表与毛发进阶」；和「发型」「刘海」联动。",
+          "default": "none",
+          "options": [
+            {
+              "value": "none",
+              "label": "无",
+              "phrase": "没有明显分缝",
+              "desc": "头发自然向后或向下。",
+              "w": {
+                "male": 4,
+                "female": 3,
+                "neutral": 4
+              }
+            },
+            {
+              "value": "middle",
+              "label": "中分",
+              "phrase": "中分，分缝笔直",
+              "desc": "从额头正中分开。",
+              "w": {
+                "male": 3,
+                "female": 4,
+                "neutral": 3
+              }
+            },
+            {
+              "value": "three_seven",
+              "label": "三七",
+              "phrase": "三七分，分缝偏向一侧",
+              "desc": "三比七，最常用。",
+              "w": {
+                "male": 4,
+                "female": 3,
+                "neutral": 3
+              }
+            },
+            {
+              "value": "four_six",
+              "label": "四六",
+              "phrase": "四六分，分缝略偏",
+              "desc": "四比六，更自然。",
+              "w": {
+                "male": 3,
+                "female": 3,
+                "neutral": 3
+              }
+            },
+            {
+              "value": "side",
+              "label": "偏分",
+              "phrase": "偏分，头发整体梳向一侧",
+              "desc": "明显偏向一侧。",
+              "w": {
+                "male": 3,
+                "female": 3,
+                "neutral": 3
+              }
+            }
+          ]
+        },
+        {
+          "id": "flyaways",
+          "label": "碎发",
+          "type": "choice",
+          "tier": "core",
+          "note": "发丝边缘的碎发与翘起，是真实感的关键。",
+          "impact": "写进「体表与毛发进阶」；和「发质」「发量」一起看。",
+          "default": "none",
+          "options": [
+            {
+              "value": "none",
+              "label": "无",
+              "phrase": "发丝边缘整齐，没有明显碎发",
+              "desc": "头发服帖，边缘干净。",
+              "w": {
+                "male": 4,
+                "female": 3,
+                "neutral": 3
+              }
+            },
+            {
+              "value": "front",
+              "label": "额前碎发",
+              "phrase": "额前有几缕碎发",
+              "desc": "额头前几根翘起的发丝。",
+              "w": {
+                "male": 3,
+                "female": 4,
+                "neutral": 4
+              }
+            },
+            {
+              "value": "side",
+              "label": "鬓角碎发",
+              "phrase": "鬓角与耳前有细碎发丝",
+              "desc": "耳前几缕细发。",
+              "w": {
+                "male": 3,
+                "female": 4,
+                "neutral": 4
+              }
+            },
+            {
+              "value": "messy",
+              "label": "整体微乱",
+              "phrase": "整体有几缕翘起的碎发，发丝边缘不规则",
+              "desc": "头发不刻意，边缘有毛躁感。",
+              "w": {
+                "male": 3,
+                "female": 3,
+                "neutral": 3
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "mark",
+      "layer": "L5",
+      "label": "记号",
+      "hint": "残缺与身体特征",
+      "params": [
+        {
+          "id": "scar",
+          "label": "疤痕",
+          "type": "choice",
+          "default": "none",
+          "options": [
+            {
+              "value": "none",
+              "label": "无",
+              "phrase": "皮肤上没有明显疤痕",
+              "w": {
+                "male": 8,
+                "female": 8,
+                "neutral": 8
+              }
+            },
+            {
+              "value": "forearm",
+              "label": "左前臂",
+              "phrase": "左前臂有一道约六厘米的旧疤，愈合平整，颜色比周围皮肤浅",
+              "w": {
+                "male": 1,
+                "female": 1,
+                "neutral": 1
+              }
+            },
+            {
+              "value": "shoulder",
+              "label": "右肩烧伤",
+              "phrase": "右肩有一片巴掌大的旧烧伤，皮肤发亮、收缩",
+              "w": {
+                "male": 1,
+                "female": 1,
+                "neutral": 1
+              }
+            },
+            {
+              "value": "cheek",
+              "label": "左颊",
+              "phrase": "左颊有一道细长刀疤，从颧骨斜向下",
+              "w": {
+                "male": 0.6,
+                "female": 0.8,
+                "neutral": 0.8
+              }
+            },
+            {
+              "value": "back",
+              "label": "后背",
+              "phrase": "后背有一道从上到下的长疤",
+              "w": {
+                "male": 1,
+                "female": 1,
+                "neutral": 1
+              }
+            },
+            {
+              "value": "hand",
+              "label": "右手背",
+              "phrase": "右手背有一道浅色旧疤",
+              "w": {
+                "male": 1,
+                "female": 1,
+                "neutral": 1
+              }
+            },
+            {
+              "value": "brow",
+              "label": "左眉骨",
+              "phrase": "左眉骨有一道细疤",
+              "w": {
+                "male": 1,
+                "female": 1,
+                "neutral": 1
+              }
+            }
+          ],
+          "tier": "advanced",
+          "note": "疤痕是身体叙事的一部分。",
+          "impact": "写进「记号」；位置比大小更重要。"
+        },
+        {
+          "id": "birthmark",
+          "label": "胎记",
+          "type": "choice",
+          "default": "none",
+          "options": [
+            {
+              "value": "none",
+              "label": "无",
+              "phrase": "没有明显胎记",
+              "w": {
+                "male": 8,
+                "female": 8,
+                "neutral": 8
+              }
+            },
+            {
+              "value": "mole",
+              "label": "眼下小痣",
+              "phrase": "左眼下方有一颗小痣",
+              "w": {
+                "male": 1.5,
+                "female": 1.5,
+                "neutral": 1.5
+              }
+            },
+            {
+              "value": "patch",
+              "label": "颈侧色斑",
+              "phrase": "颈侧有一块浅色胎记",
+              "w": {
+                "male": 0.7,
+                "female": 0.7,
+                "neutral": 0.7
+              }
+            },
+            {
+              "value": "cheek",
+              "label": "右颊",
+              "phrase": "右颊有一块浅褐色胎记",
+              "w": {
+                "male": 1,
+                "female": 1,
+                "neutral": 1
+              }
+            },
+            {
+              "value": "shoulder",
+              "label": "左肩",
+              "phrase": "左肩有一块浅色胎记",
+              "w": {
+                "male": 1,
+                "female": 1,
+                "neutral": 1
+              }
+            }
+          ],
+          "tier": "advanced",
+          "note": "胎记是低对比度的身体记号。",
+          "impact": "写进「记号」；和痣、疤痕区分，避免满脸记号。"
+        },
+        {
+          "id": "tattoo",
+          "label": "纹身",
+          "type": "choice",
+          "default": "none",
+          "options": [
+            {
+              "value": "none",
+              "label": "无",
+              "phrase": "没有纹身",
+              "w": {
+                "male": 9,
+                "female": 9,
+                "neutral": 9
+              }
+            },
+            {
+              "value": "line",
+              "label": "小臂细线",
+              "phrase": "左小臂有细线纹身，图案简单",
+              "w": {
+                "male": 1,
+                "female": 1,
+                "neutral": 1
+              }
+            },
+            {
+              "value": "ink",
+              "label": "后背水墨",
+              "phrase": "后背有大片水墨纹身",
+              "w": {
+                "male": 0.8,
+                "female": 0.8,
+                "neutral": 0.8
+              }
+            },
+            {
+              "value": "sleeve",
+              "label": "右臂花臂",
+              "phrase": "右臂整条花臂，黑灰细线",
+              "w": {
+                "male": 2,
+                "female": 1,
+                "neutral": 1
+              }
+            },
+            {
+              "value": "neck",
+              "label": "颈侧小字",
+              "phrase": "颈侧有一行小字纹身",
+              "w": {
+                "male": 1,
+                "female": 1,
+                "neutral": 1
+              }
+            }
+          ],
+          "tier": "advanced",
+          "note": "纹身是风格与身份的强信号。",
+          "impact": "写进「记号」；面积越大越抢眼。"
+        },
+        {
+          "id": "missing",
+          "label": "残缺",
+          "type": "choice",
+          "default": "none",
+          "options": [
+            {
+              "value": "none",
+              "label": "无",
+              "phrase": "四肢与五官完整",
+              "w": {
+                "male": 12,
+                "female": 12,
+                "neutral": 12
+              }
+            },
+            {
+              "value": "arm",
+              "label": "左前臂截肢",
+              "phrase": "左前臂缺失，断端愈合平整，结着淡色疤",
+              "w": {
+                "male": 1,
+                "female": 1,
+                "neutral": 1
+              }
+            },
+            {
+              "value": "fingers",
+              "label": "右手缺指",
+              "phrase": "右手缺两根手指，断口愈合",
+              "w": {
+                "male": 1,
+                "female": 1,
+                "neutral": 1
+              }
+            },
+            {
+              "value": "ear",
+              "label": "左耳缺失",
+              "phrase": "左耳缺失，只剩耳道口",
+              "w": {
+                "male": 0.6,
+                "female": 0.6,
+                "neutral": 0.6
+              }
+            },
+            {
+              "value": "eye",
+              "label": "右眼失明",
+              "phrase": "右眼失明，瞳孔呈灰白色浑浊",
+              "w": {
+                "male": 0.8,
+                "female": 0.8,
+                "neutral": 0.8
+              }
+            }
+          ],
+          "tier": "advanced",
+          "note": "残缺是最强的叙事记号，也最容易被模型画错。",
+          "impact": "写进「记号」；建议一次只开一项。"
+        }
+      ]
+    },
+    {
+      "id": "mood",
+      "layer": "L6",
+      "label": "神情",
+      "hint": "表情用肌肉写，不用情绪词",
+      "params": [
+        {
+          "id": "expression",
+          "label": "表情",
+          "type": "choice",
+          "default": "calm",
+          "options": [
+            {
+              "value": "calm",
+              "label": "平静",
+              "phrase": "面部肌肉放松，眉平，眼神平稳",
+              "w": {
+                "male": 1,
+                "female": 1,
+                "neutral": 1
+              }
+            },
+            {
+              "value": "smile",
+              "label": "微笑",
+              "phrase": "嘴角轻轻提起，眼轮匝肌微微参与，笑意刚到眼底",
+              "w": {
+                "male": 1,
+                "female": 1,
+                "neutral": 1
+              }
+            },
+            {
+              "value": "lightlaugh",
+              "label": "轻笑",
+              "phrase": "嘴角上扬，下眼睑微隆，笑意明显",
+              "w": {
+                "male": 1,
+                "female": 1,
+                "neutral": 1
+              }
+            },
+            {
+              "value": "laugh",
+              "label": "大笑",
+              "phrase": "嘴角大幅上扬，眼下挤出卧蚕与笑纹，眼周明显挤压",
+              "w": {
+                "male": 1,
+                "female": 1,
+                "neutral": 1
+              }
+            },
+            {
+              "value": "surprise",
+              "label": "惊讶",
+              "phrase": "眉毛抬高，眼睛睁大，嘴唇微微张开",
+              "w": {
+                "male": 1,
+                "female": 1,
+                "neutral": 1
+              }
+            },
+            {
+              "value": "shy",
+              "label": "害羞",
+              "phrase": "视线略微偏开，脸颊泛红，嘴角含着一点笑",
+              "w": {
+                "male": 1,
+                "female": 1,
+                "neutral": 1
+              }
+            },
+            {
+              "value": "angry",
+              "label": "生气",
+              "phrase": "眉头压低，眼神锐利，嘴唇抿紧",
+              "w": {
+                "male": 1,
+                "female": 1,
+                "neutral": 1
+              }
+            },
+            {
+              "value": "wronged",
+              "label": "委屈",
+              "phrase": "嘴角下垂，眼睑微微下垂，眼神发湿",
+              "w": {
+                "male": 1,
+                "female": 1,
+                "neutral": 1
+              }
+            },
+            {
+              "value": "serious",
+              "label": "认真",
+              "phrase": "眉头微收，眼神聚焦，嘴唇自然闭合",
+              "w": {
+                "male": 1,
+                "female": 1,
+                "neutral": 1
+              }
+            },
+            {
+              "value": "smirk",
+              "label": "挑眉",
+              "phrase": "一侧眉毛微挑，嘴角带着一点意味",
+              "w": {
+                "male": 2,
+                "female": 2,
+                "neutral": 2
+              }
+            },
+            {
+              "value": "pressed",
+              "label": "抿嘴",
+              "phrase": "嘴唇抿紧，嘴角微微下压",
+              "w": {
+                "male": 3,
+                "female": 2,
+                "neutral": 2
+              }
+            },
+            {
+              "value": "cold",
+              "label": "冷笑",
+              "phrase": "嘴角单侧微微上扬，眼神偏冷",
+              "w": {
+                "male": 2,
+                "female": 1,
+                "neutral": 2
+              }
+            },
+            {
+              "value": "sad",
+              "label": "悲伤",
+              "phrase": "眉头微蹙，嘴角下垂，眼神发湿",
+              "desc": "眉毛内侧上抬、嘴角下垂，眼神含水。",
+              "w": {
+                "male": 2,
+                "female": 3,
+                "neutral": 2
+              }
+            },
+            {
+              "value": "fear",
+              "label": "恐惧",
+              "phrase": "眼睛睁大，瞳孔收缩，嘴唇发抖",
+              "desc": "眼白露出多、嘴唇微张发抖。",
+              "w": {
+                "male": 2,
+                "female": 3,
+                "neutral": 2
+              }
+            },
+            {
+              "value": "disgust",
+              "label": "厌恶",
+              "phrase": "鼻翼皱起，上唇微提",
+              "desc": "鼻梁皱起、上唇上提，显排斥。",
+              "w": {
+                "male": 2,
+                "female": 2,
+                "neutral": 2
+              }
+            },
+            {
+              "value": "cry",
+              "label": "哭",
+              "phrase": "眼眶发红，泪水在眼里，嘴唇发抖",
+              "desc": "眼眶红、下眼睑湿，嘴唇抖。",
+              "w": {
+                "male": 1,
+                "female": 4,
+                "neutral": 2
+              }
+            }
+          ],
+          "tier": "core",
+          "note": "表情用肌肉动作写，不用情绪词。",
+          "impact": "写进「表情」；和幅度、视线一起决定神情。"
+        },
+        {
+          "id": "intensity",
+          "label": "幅度",
+          "type": "choice",
+          "default": "mid",
+          "options": [
+            {
+              "value": "micro",
+              "label": "微",
+              "phrase": "表情幅度很小，几乎只有眼神和嘴角的细微变化",
+              "w": {
+                "male": 1,
+                "female": 1,
+                "neutral": 1
+              }
+            },
+            {
+              "value": "mid",
+              "label": "中",
+              "phrase": "表情清晰可读，但不夸张",
+              "w": {
+                "male": 1,
+                "female": 1,
+                "neutral": 1
+              }
+            },
+            {
+              "value": "strong",
+              "label": "强",
+              "phrase": "表情强烈，肌肉动作非常明确",
+              "w": {
+                "male": 1,
+                "female": 1,
+                "neutral": 1
+              }
+            }
+          ],
+          "tier": "advanced",
+          "note": "幅度决定表情的强弱。",
+          "impact": "写进「表情」；微表情最适合设定稿。"
+        },
+        {
+          "id": "gaze",
+          "label": "视线",
+          "type": "choice",
+          "default": "camera",
+          "options": [
+            {
+              "value": "camera",
+              "label": "看镜头",
+              "phrase": "双眼看向镜头，视线与镜头持平",
+              "w": {
+                "male": 1,
+                "female": 1,
+                "neutral": 1
+              }
+            },
+            {
+              "value": "off",
+              "label": "略偏",
+              "phrase": "视线略微偏向一侧",
+              "w": {
+                "male": 1,
+                "female": 1,
+                "neutral": 1
+              }
+            },
+            {
+              "value": "down",
+              "label": "垂眼",
+              "phrase": "视线向下，眼睑半垂",
+              "w": {
+                "male": 1,
+                "female": 1,
+                "neutral": 1
+              }
+            }
+          ],
+          "tier": "core",
+          "note": "视线决定人物和镜头的距离感。",
+          "impact": "写进「表情」；看镜头更直面，偏开更疏离。"
+        }
+      ]
+    },
+    {
+      "id": "costume",
+      "layer": "L7",
+      "label": "服饰",
+      "hint": "首服 / 外衣 / 料与色",
+      "ctx": [
+        "qing_early",
+        "qing_late"
+      ],
+      "params": [
+        {
+          "id": "headwear",
+          "label": "首服",
+          "type": "choice",
+          "default": "none",
+          "tier": "core",
+          "note": "冠帽或发式，是阶级与场合最直接的信号。",
+          "impact": "写进「着装」段最前面；会接管发型的显示。",
+          "options": [
+            {
+              "value": "none",
+              "label": "无",
+              "phrase": "无",
+              "w": {
+                "male": 1,
+                "female": 1,
+                "neutral": 1
+              }
+            },
+            {
+              "value": "nuanmao",
+              "label": "暖帽",
+              "phrase": "暖帽",
+              "w": {
+                "male": 1,
+                "female": 1,
+                "neutral": 1
+              },
+              "g": {
+                "era": [
+                  "qing_early",
+                  "qing_late"
+                ]
+              }
+            },
+            {
+              "value": "liangmao",
+              "label": "凉帽",
+              "phrase": "凉帽",
+              "w": {
+                "male": 1,
+                "female": 1,
+                "neutral": 1
+              },
+              "g": {
+                "era": [
+                  "qing_early",
+                  "qing_late"
+                ]
+              }
+            },
+            {
+              "value": "guapimao",
+              "label": "瓜皮帽",
+              "phrase": "黑色瓜皮帽",
+              "w": {
+                "male": 1,
+                "female": 1,
+                "neutral": 1
+              }
+            },
+            {
+              "value": "dianzi",
+              "label": "钿子",
+              "phrase": "钿子，耳戴一耳三钳",
+              "w": {
+                "male": 0,
+                "female": 3,
+                "neutral": 0
+              },
+              "g": {
+                "era": [
+                  "qing_early",
+                  "qing_late"
+                ],
+                "community": [
+                  "manchu",
+                  "han_banner"
+                ]
+              }
+            },
+            {
+              "value": "hanji",
+              "label": "汉髻",
+              "phrase": "低髻，配抹额",
+              "w": {
+                "male": 0,
+                "female": 3,
+                "neutral": 0
+              },
+              "g": {
+                "era": [
+                  "qing_early",
+                  "qing_late"
+                ],
+                "community": [
+                  "han"
+                ]
+              }
+            },
+            {
+              "value": "zhanmao",
+              "label": "毡帽/包头",
+              "phrase": "毡帽或包头巾",
+              "w": {
+                "male": 1,
+                "female": 1,
+                "neutral": 1
+              }
+            },
+            {
+              "value": "sengmao",
+              "label": "僧道巾帽",
+              "phrase": "僧帽",
+              "w": {
+                "male": 1,
+                "female": 1,
+                "neutral": 1
+              },
+              "g": {
+                "role": [
+                  "cleric"
+                ]
+              }
+            },
+            {
+              "value": "chaoguan",
+              "label": "朝冠",
+              "phrase": "官员朝冠",
+              "w": {
+                "male": 1,
+                "female": 1,
+                "neutral": 1
+              },
+              "g": {
+                "era": [
+                  "qing_early",
+                  "qing_late"
+                ],
+                "role": [
+                  "official_civil",
+                  "official_military"
+                ]
+              }
+            },
+            {
+              "value": "zaomao",
+              "label": "皂帽/红黑帽",
+              "phrase": "红黑帽",
+              "w": {
+                "male": 1,
+                "female": 1,
+                "neutral": 1
+              },
+              "g": {
+                "era": [
+                  "qing_early",
+                  "qing_late"
+                ],
+                "role": [
+                  "servant",
+                  "soldier"
+                ]
+              }
+            },
+            {
+              "value": "dalachi",
+              "label": "大拉翅",
+              "phrase": "大拉翅，扇形硬质旗头，耳戴一耳三钳",
+              "w": {
+                "male": 0,
+                "female": 3,
+                "neutral": 0
+              },
+              "g": {
+                "era": [
+                  "qing_late"
+                ],
+                "community": [
+                  "manchu",
+                  "han_banner"
+                ]
+              }
+            },
+            {
+              "value": "late_qing_qitou",
+              "label": "晚清二把头",
+              "phrase": "横宽二把头，配绢花与发簪",
+              "w": {
+                "male": 0,
+                "female": 3,
+                "neutral": 0
+              },
+              "g": {
+                "era": [
+                  "qing_late"
+                ],
+                "community": [
+                  "manchu",
+                  "han_banner"
+                ]
+              }
+            },
+            {
+              "value": "huangdi_chaoguan",
+              "label": "皇帝朝冠",
+              "phrase": "皇帝朝冠，三层东珠金龙顶，大珍珠",
+              "w": {
+                "male": 3,
+                "female": 0,
+                "neutral": 0
+              },
+              "g": {
+                "era": [
+                  "qing_early",
+                  "qing_late"
+                ],
+                "role": [
+                  "ruler"
+                ]
+              },
+              "requiresLook": [
+                "qe_emperor_ceremony"
+              ]
+            },
+            {
+              "value": "huanghou_chaoguan",
+              "label": "皇后朝冠",
+              "phrase": "皇后朝冠，东珠与凤纹冠饰",
+              "w": {
+                "male": 0,
+                "female": 3,
+                "neutral": 0
+              },
+              "g": {
+                "era": [
+                  "qing_early",
+                  "qing_late"
+                ],
+                "role": [
+                  "ruler"
+                ]
+              },
+              "requiresLook": [
+                "qe_empress_ceremony"
+              ]
+            },
+            {
+              "value": "qinwang_chaoguan",
+              "label": "亲王朝冠",
+              "phrase": "亲王朝冠，金龙二层顶，饰东珠与红宝石",
+              "w": {
+                "male": 3,
+                "female": 0,
+                "neutral": 0
+              },
+              "g": {
+                "era": [
+                  "qing_early",
+                  "qing_late"
+                ],
+                "role": [
+                  "noble"
+                ]
+              },
+              "requiresLook": [
+                "qe_qinwang_daily"
+              ]
+            },
+            {
+              "value": "xinjun_cap",
+              "label": "新军大檐帽",
+              "phrase": "藏青色西式大檐军帽",
+              "w": {
+                "male": 3,
+                "female": 0,
+                "neutral": 0
+              },
+              "g": {
+                "era": [
+                  "qing_late"
+                ],
+                "role": [
+                  "soldier"
+                ]
+              }
+            },
+            {
+              "value": "student_cap",
+              "label": "学堂操帽",
+              "phrase": "深色学生操帽",
+              "w": {
+                "male": 1,
+                "female": 1,
+                "neutral": 1
+              },
+              "g": {
+                "era": [
+                  "qing_late"
+                ],
+                "role": [
+                  "literati"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "id": "outer",
+          "label": "外衣",
+          "type": "choice",
+          "default": "none",
+          "tier": "core",
+          "note": "最外层衣服，决定剪影与主色。",
+          "impact": "写进「着装」段；补褂是平袖，袍类才有马蹄袖。",
+          "options": [
+            {
+              "value": "none",
+              "label": "无",
+              "phrase": "无",
+              "w": {
+                "male": 1,
+                "female": 1,
+                "neutral": 1
+              }
+            },
+            {
+              "value": "bufu",
+              "label": "补褂",
+              "phrase": "石青色补褂，平袖，左右开衩",
+              "w": {
+                "male": 1,
+                "female": 1,
+                "neutral": 1
+              },
+              "g": {
+                "role": [
+                  "official_civil",
+                  "official_military",
+                  "merchant"
+                ]
+              }
+            },
+            {
+              "value": "changpao",
+              "label": "长袍",
+              "phrase": "长袍",
+              "w": {
+                "male": 1,
+                "female": 1,
+                "neutral": 1
+              }
+            },
+            {
+              "value": "pao_gua",
+              "label": "袍褂",
+              "phrase": "长袍，外罩石青色坎肩",
+              "w": {
+                "male": 1,
+                "female": 1,
+                "neutral": 1
+              },
+              "g": {
+                "era": [
+                  "qing_early",
+                  "qing_late"
+                ]
+              }
+            },
+            {
+              "value": "ao",
+              "label": "袄",
+              "phrase": "袄",
+              "w": {
+                "male": 1,
+                "female": 1,
+                "neutral": 1
+              }
+            },
+            {
+              "value": "duanao",
+              "label": "短袄",
+              "phrase": "短袄",
+              "w": {
+                "male": 1,
+                "female": 1,
+                "neutral": 1
+              }
+            },
+            {
+              "value": "magua",
+              "label": "马褂",
+              "phrase": "马褂",
+              "w": {
+                "male": 1,
+                "female": 1,
+                "neutral": 1
+              }
+            },
+            {
+              "value": "kanjian",
+              "label": "坎肩",
+              "phrase": "坎肩",
+              "w": {
+                "male": 1,
+                "female": 1,
+                "neutral": 1
+              }
+            },
+            {
+              "value": "jiasha",
+              "label": "袈裟/道袍",
+              "phrase": "袈裟",
+              "w": {
+                "male": 1,
+                "female": 1,
+                "neutral": 1
+              },
+              "g": {
+                "role": [
+                  "cleric"
+                ]
+              }
+            },
+            {
+              "value": "haoyi",
+              "label": "号衣",
+              "phrase": "号衣",
+              "w": {
+                "male": 1,
+                "female": 1,
+                "neutral": 1
+              },
+              "g": {
+                "role": [
+                  "servant",
+                  "soldier"
+                ]
+              }
+            },
+            {
+              "value": "jifupao",
+              "label": "吉服袍",
+              "phrase": "蓝色吉服袍，马蹄袖，前后开衩",
+              "w": {
+                "male": 1,
+                "female": 1,
+                "neutral": 1
+              },
+              "g": {
+                "era": [
+                  "qing_early",
+                  "qing_late"
+                ],
+                "role": [
+                  "official_civil",
+                  "official_military",
+                  "noble"
+                ]
+              }
+            },
+            {
+              "value": "chaofu",
+              "label": "朝服",
+              "phrase": "石青色朝服，披领，马蹄袖",
+              "w": {
+                "male": 1,
+                "female": 1,
+                "neutral": 1
+              },
+              "g": {
+                "era": [
+                  "qing_early",
+                  "qing_late"
+                ],
+                "role": [
+                  "official_civil",
+                  "official_military"
+                ]
+              }
+            },
+            {
+              "value": "huangdi_chaofu",
+              "label": "皇帝朝服",
+              "phrase": "明黄色朝服，石青披领，箭袖与朝裳",
+              "w": {
+                "male": 3,
+                "female": 0,
+                "neutral": 0
+              },
+              "g": {
+                "era": [
+                  "qing_early",
+                  "qing_late"
+                ],
+                "role": [
+                  "ruler"
+                ]
+              },
+              "requiresLook": [
+                "qe_emperor_ceremony"
+              ]
+            },
+            {
+              "value": "huanghou_chaogua",
+              "label": "皇后朝褂",
+              "phrase": "石青色朝褂，片金缘，五爪金龙与立水纹",
+              "w": {
+                "male": 0,
+                "female": 3,
+                "neutral": 0
+              },
+              "g": {
+                "era": [
+                  "qing_early",
+                  "qing_late"
+                ],
+                "role": [
+                  "ruler"
+                ]
+              },
+              "requiresLook": [
+                "qe_empress_ceremony"
+              ]
+            },
+            {
+              "value": "qinwang_bufu",
+              "label": "亲王补服",
+              "phrase": "石青色亲王补服，前后与两肩四团五爪金龙",
+              "w": {
+                "male": 3,
+                "female": 0,
+                "neutral": 0
+              },
+              "g": {
+                "era": [
+                  "qing_early",
+                  "qing_late"
+                ],
+                "role": [
+                  "noble"
+                ]
+              },
+              "requiresLook": [
+                "qe_qinwang_daily"
+              ]
+            },
+            {
+              "value": "late_qing_changyi",
+              "label": "晚清氅衣",
+              "phrase": "藕荷色缎地氅衣，圆领大襟，两侧开衩至腋",
+              "w": {
+                "male": 0,
+                "female": 3,
+                "neutral": 0
+              },
+              "g": {
+                "era": [
+                  "qing_late"
+                ],
+                "community": [
+                  "manchu",
+                  "han_banner"
+                ]
+              }
+            },
+            {
+              "value": "xinjun_uniform",
+              "label": "新军军服",
+              "phrase": "深蓝色呢料西式立领军服，金属纽扣与肩章",
+              "w": {
+                "male": 3,
+                "female": 0,
+                "neutral": 0
+              },
+              "g": {
+                "era": [
+                  "qing_late"
+                ],
+                "role": [
+                  "soldier"
+                ]
+              }
+            },
+            {
+              "value": "cao_yi",
+              "label": "学堂操衣",
+              "phrase": "深色操衣，短上衣配长裤，简洁立领",
+              "w": {
+                "male": 1,
+                "female": 1,
+                "neutral": 1
+              },
+              "g": {
+                "era": [
+                  "qing_late"
+                ],
+                "role": [
+                  "literati"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "id": "inner",
+          "label": "内搭",
+          "type": "choice",
+          "default": "none",
+          "tier": "advanced",
+          "note": "中衣、领巾或抹胸，决定领口露什么。",
+          "impact": "写进「着装」段；半身像只保留领口部分。",
+          "options": [
+            {
+              "value": "none",
+              "label": "无",
+              "phrase": "无",
+              "w": {
+                "male": 1,
+                "female": 1,
+                "neutral": 1
+              }
+            },
+            {
+              "value": "zhongyi",
+              "label": "白布中衣",
+              "phrase": "白布中衣",
+              "w": {
+                "male": 1,
+                "female": 1,
+                "neutral": 1
+              }
+            },
+            {
+              "value": "lingjin",
+              "label": "领巾",
+              "phrase": "领巾",
+              "w": {
+                "male": 1,
+                "female": 1,
+                "neutral": 1
+              }
+            },
+            {
+              "value": "moxiong",
+              "label": "抹胸",
+              "phrase": "抹胸",
+              "w": {
+                "male": 1,
+                "female": 1,
+                "neutral": 1
+              },
+              "g": {
+                "community": [
+                  "han"
+                ]
+              }
+            },
+            {
+              "value": "late_qing_shenyi",
+              "label": "衬衣",
+              "phrase": "月白色衬衣，无开衩，领口系浅色领巾",
+              "w": {
+                "male": 0,
+                "female": 3,
+                "neutral": 0
+              },
+              "g": {
+                "era": [
+                  "qing_late"
+                ],
+                "community": [
+                  "manchu",
+                  "han_banner"
+                ]
+              }
+            },
+            {
+              "value": "empress_chaopao",
+              "label": "皇后朝袍",
+              "phrase": "明黄色朝袍，石青披领与马蹄袖",
+              "w": {
+                "male": 0,
+                "female": 3,
+                "neutral": 0
+              },
+              "g": {
+                "era": [
+                  "qing_early",
+                  "qing_late"
+                ],
+                "role": [
+                  "ruler"
+                ]
+              },
+              "requiresLook": [
+                "qe_empress_ceremony"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "lower",
+          "label": "下装",
+          "type": "choice",
+          "default": "none",
+          "tier": "advanced",
+          "note": "袍裾、裙或裤；旗女穿袍不穿裙。",
+          "impact": "写进「着装」段；半身像与九宫格不写。",
+          "options": [
+            {
+              "value": "none",
+              "label": "无",
+              "phrase": "无",
+              "w": {
+                "male": 1,
+                "female": 1,
+                "neutral": 1
+              }
+            },
+            {
+              "value": "paoju",
+              "label": "袍裾",
+              "phrase": "袍裾",
+              "w": {
+                "male": 1,
+                "female": 1,
+                "neutral": 1
+              },
+              "g": {
+                "era": [
+                  "qing_early",
+                  "qing_late"
+                ]
+              }
+            },
+            {
+              "value": "mamianqun",
+              "label": "马面裙",
+              "phrase": "马面裙",
+              "w": {
+                "male": 1,
+                "female": 1,
+                "neutral": 1
+              },
+              "g": {
+                "community": [
+                  "han"
+                ]
+              }
+            },
+            {
+              "value": "dagangku",
+              "label": "大裆裤",
+              "phrase": "大裆裤，挽着裤脚",
+              "w": {
+                "male": 1,
+                "female": 1,
+                "neutral": 1
+              }
+            },
+            {
+              "value": "xingshang",
+              "label": "行裳",
+              "phrase": "行裳",
+              "w": {
+                "male": 1,
+                "female": 1,
+                "neutral": 1
+              }
+            },
+            {
+              "value": "chaoshang",
+              "label": "朝裳",
+              "phrase": "朝裳",
+              "w": {
+                "male": 1,
+                "female": 1,
+                "neutral": 1
+              },
+              "g": {
+                "era": [
+                  "qing_early",
+                  "qing_late"
+                ],
+                "role": [
+                  "official_civil",
+                  "official_military",
+                  "ruler"
+                ]
+              }
+            },
+            {
+              "value": "empress_chaoqun",
+              "label": "皇后朝裙",
+              "phrase": "朝裙，红绿缎与石青下幅褶裥",
+              "w": {
+                "male": 0,
+                "female": 3,
+                "neutral": 0
+              },
+              "g": {
+                "era": [
+                  "qing_early",
+                  "qing_late"
+                ],
+                "role": [
+                  "ruler"
+                ]
+              },
+              "requiresLook": [
+                "qe_empress_ceremony"
+              ]
+            },
+            {
+              "value": "uniform_trousers",
+              "label": "新式长裤",
+              "phrase": "深色直筒长裤，裤腿收进靴筒",
+              "w": {
+                "male": 3,
+                "female": 0,
+                "neutral": 0
+              },
+              "g": {
+                "era": [
+                  "qing_late"
+                ],
+                "role": [
+                  "soldier",
+                  "literati"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "id": "shoes",
+          "label": "鞋",
+          "type": "choice",
+          "default": "none",
+          "tier": "core",
+          "note": "靴/鞋，最容易画出时代错位的一件。",
+          "impact": "写进「着装」段；半身像与九宫格不写。",
+          "options": [
+            {
+              "value": "none",
+              "label": "无",
+              "phrase": "无",
+              "w": {
+                "male": 1,
+                "female": 1,
+                "neutral": 1
+              }
+            },
+            {
+              "value": "zaoxue",
+              "label": "皂靴",
+              "phrase": "黑缎皂靴",
+              "w": {
+                "male": 1,
+                "female": 1,
+                "neutral": 1
+              }
+            },
+            {
+              "value": "xiuxie",
+              "label": "平底绣鞋",
+              "phrase": "平底绣鞋",
+              "w": {
+                "male": 1,
+                "female": 1,
+                "neutral": 1
+              }
+            },
+            {
+              "value": "buxie",
+              "label": "布鞋",
+              "phrase": "布鞋",
+              "w": {
+                "male": 1,
+                "female": 1,
+                "neutral": 1
+              }
+            },
+            {
+              "value": "caoxie",
+              "label": "草鞋",
+              "phrase": "草鞋",
+              "w": {
+                "male": 1,
+                "female": 1,
+                "neutral": 1
+              }
+            },
+            {
+              "value": "yunlv",
+              "label": "云履",
+              "phrase": "云履",
+              "w": {
+                "male": 1,
+                "female": 1,
+                "neutral": 1
+              },
+              "g": {
+                "role": [
+                  "cleric"
+                ]
+              }
+            },
+            {
+              "value": "kuaixue",
+              "label": "薄底快靴",
+              "phrase": "薄底快靴",
+              "w": {
+                "male": 1,
+                "female": 1,
+                "neutral": 1
+              },
+              "g": {
+                "era": [
+                  "qing_early",
+                  "qing_late"
+                ],
+                "role": [
+                  "servant",
+                  "soldier"
+                ]
+              }
+            },
+            {
+              "value": "huapendi",
+              "label": "花盆底鞋",
+              "phrase": "花盆底旗鞋，木质高底包白布，鞋面绣折枝花",
+              "w": {
+                "male": 0,
+                "female": 3,
+                "neutral": 0
+              },
+              "g": {
+                "era": [
+                  "qing_late"
+                ],
+                "community": [
+                  "manchu",
+                  "han_banner"
+                ]
+              }
+            },
+            {
+              "value": "leather_boot",
+              "label": "长筒军靴",
+              "phrase": "黑色长筒皮靴",
+              "w": {
+                "male": 3,
+                "female": 0,
+                "neutral": 0
+              },
+              "g": {
+                "era": [
+                  "qing_late"
+                ],
+                "role": [
+                  "soldier"
+                ]
+              }
+            },
+            {
+              "value": "court_shoes",
+              "label": "宫廷绣鞋",
+              "phrase": "深色宫廷绣鞋，鞋面织绣",
+              "w": {
+                "male": 0,
+                "female": 3,
+                "neutral": 0
+              },
+              "g": {
+                "era": [
+                  "qing_early",
+                  "qing_late"
+                ],
+                "role": [
+                  "ruler"
+                ]
+              },
+              "requiresLook": [
+                "qe_empress_ceremony"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "accessory",
+          "label": "配饰",
+          "type": "choice",
+          "default": "none",
+          "tier": "advanced",
+          "note": "朝珠、荷包、云肩、腰带等；朝珠有资格限制。",
+          "impact": "写进「着装」段；朝珠只在文五品/武四品以上出现。",
+          "options": [
+            {
+              "value": "none",
+              "label": "无",
+              "phrase": "无",
+              "w": {
+                "male": 1,
+                "female": 1,
+                "neutral": 1
+              }
+            },
+            {
+              "value": "chaozhu",
+              "label": "朝珠",
+              "phrase": "颈挂朝珠",
+              "w": {
+                "male": 1,
+                "female": 1,
+                "neutral": 1
+              },
+              "g": {
+                "role": [
+                  "official_civil",
+                  "official_military",
+                  "noble",
+                  "merchant"
+                ]
+              },
+              "headPhrase": "颈前露出朝珠上段"
+            },
+            {
+              "value": "hebao",
+              "label": "荷包/手串",
+              "phrase": "腰间挂荷包与手串",
+              "w": {
+                "male": 1,
+                "female": 1,
+                "neutral": 1
+              },
+              "headPhrase": ""
+            },
+            {
+              "value": "yunjian",
+              "label": "云肩",
+              "phrase": "肩上云肩",
+              "w": {
+                "male": 1,
+                "female": 1,
+                "neutral": 1
+              },
+              "g": {
+                "community": [
+                  "han"
+                ]
+              }
+            },
+            {
+              "value": "budai",
+              "label": "布腰带",
+              "phrase": "身系布腰带",
+              "w": {
+                "male": 1,
+                "female": 1,
+                "neutral": 1
+              },
+              "headPhrase": ""
+            },
+            {
+              "value": "nianzhu",
+              "label": "念珠",
+              "phrase": "手挂念珠",
+              "w": {
+                "male": 1,
+                "female": 1,
+                "neutral": 1
+              },
+              "g": {
+                "role": [
+                  "cleric"
+                ]
+              },
+              "headPhrase": ""
+            },
+            {
+              "value": "dongzhu_chaozhu",
+              "label": "东珠朝珠",
+              "phrase": "东珠朝珠，佛头、背云与记念齐全",
+              "w": {
+                "male": 1,
+                "female": 1,
+                "neutral": 1
+              },
+              "g": {
+                "era": [
+                  "qing_early",
+                  "qing_late"
+                ],
+                "role": [
+                  "ruler"
+                ]
+              },
+              "headPhrase": "颈前露出东珠朝珠上段",
+              "requiresLook": [
+                "qe_emperor_ceremony"
+              ]
+            },
+            {
+              "value": "huangjin_chaodai",
+              "label": "亲王朝带",
+              "phrase": "金黄色朝带，金衔玉方版，饰东珠",
+              "w": {
+                "male": 3,
+                "female": 0,
+                "neutral": 0
+              },
+              "g": {
+                "era": [
+                  "qing_early",
+                  "qing_late"
+                ],
+                "role": [
+                  "noble"
+                ]
+              },
+              "headPhrase": "",
+              "requiresLook": [
+                "qe_qinwang_daily"
+              ]
+            },
+            {
+              "value": "empress_pearls",
+              "label": "皇后三盘朝珠",
+              "phrase": "三盘朝珠，一盘东珠与两盘珊瑚，领约与彩帨",
+              "w": {
+                "male": 0,
+                "female": 3,
+                "neutral": 0
+              },
+              "g": {
+                "era": [
+                  "qing_early",
+                  "qing_late"
+                ],
+                "role": [
+                  "ruler"
+                ]
+              },
+              "headPhrase": "颈前领约与三盘朝珠上段",
+              "requiresLook": [
+                "qe_empress_ceremony"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "pattern",
+          "label": "纹样",
+          "type": "choice",
+          "default": "none",
+          "tier": "advanced",
+          "note": "补子、团花或素面；补子的禽兽由品级决定。",
+          "impact": "写进「着装」段；文官补子会自动补上禽名。",
+          "options": [
+            {
+              "value": "none",
+              "label": "无",
+              "phrase": "无",
+              "w": {
+                "male": 1,
+                "female": 1,
+                "neutral": 1
+              }
+            },
+            {
+              "value": "buzi_civil",
+              "label": "文官补子",
+              "phrase": "前胸对襟两侧各半方补、后背整方",
+              "w": {
+                "male": 1,
+                "female": 1,
+                "neutral": 1
+              },
+              "g": {
+                "role": [
+                  "official_civil",
+                  "merchant"
+                ]
+              }
+            },
+            {
+              "value": "buzi_military",
+              "label": "武官补子",
+              "phrase": "前胸对襟两侧各半方补、后背整方",
+              "w": {
+                "male": 1,
+                "female": 1,
+                "neutral": 1
+              },
+              "g": {
+                "role": [
+                  "official_military"
+                ]
+              }
+            },
+            {
+              "value": "tuanhua",
+              "label": "团花",
+              "phrase": "团花",
+              "w": {
+                "male": 1,
+                "female": 1,
+                "neutral": 1
+              }
+            },
+            {
+              "value": "zhezhihua",
+              "label": "折枝花",
+              "phrase": "折枝花",
+              "w": {
+                "male": 1,
+                "female": 1,
+                "neutral": 1
+              }
+            },
+            {
+              "value": "sumian",
+              "label": "素面",
+              "phrase": "素面无纹",
+              "w": {
+                "male": 1,
+                "female": 1,
+                "neutral": 1
+              }
+            },
+            {
+              "value": "anbaxian",
+              "label": "暗八仙",
+              "phrase": "暗八仙",
+              "w": {
+                "male": 1,
+                "female": 1,
+                "neutral": 1
+              }
+            },
+            {
+              "value": "mangwen",
+              "label": "蟒纹",
+              "phrase": "通身四爪蟒纹",
+              "w": {
+                "male": 1,
+                "female": 1,
+                "neutral": 1
+              },
+              "g": {
+                "era": [
+                  "qing_early",
+                  "qing_late"
+                ],
+                "role": [
+                  "official_civil",
+                  "official_military",
+                  "noble"
+                ]
+              }
+            },
+            {
+              "value": "wuzhua_jinlong",
+              "label": "五爪金龙",
+              "phrase": "五爪金龙纹，配八宝立水",
+              "w": {
+                "male": 1,
+                "female": 1,
+                "neutral": 1
+              },
+              "g": {
+                "era": [
+                  "qing_early",
+                  "qing_late"
+                ],
+                "role": [
+                  "ruler"
+                ]
+              },
+              "requiresLook": [
+                "qe_emperor_ceremony",
+                "qe_empress_ceremony"
+              ]
+            },
+            {
+              "value": "tuanlong",
+              "label": "团龙",
+              "phrase": "圆形团龙纹，不用官员方补",
+              "w": {
+                "male": 3,
+                "female": 0,
+                "neutral": 0
+              },
+              "g": {
+                "era": [
+                  "qing_early",
+                  "qing_late"
+                ],
+                "role": [
+                  "noble"
+                ]
+              },
+              "requiresLook": [
+                "qe_qinwang_daily"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "material",
+          "label": "质料",
+          "type": "choice",
+          "default": "none",
+          "tier": "advanced",
+          "note": "面料决定「贵气」还是「土气」，平民要主动降级。",
+          "impact": "写进「着装」段；和主色一起组成最后一句。",
+          "options": [
+            {
+              "value": "none",
+              "label": "无",
+              "phrase": "无",
+              "w": {
+                "male": 1,
+                "female": 1,
+                "neutral": 1
+              }
+            },
+            {
+              "value": "zhuanghuaduan",
+              "label": "妆花缎",
+              "phrase": "妆花缎",
+              "w": {
+                "male": 1,
+                "female": 1,
+                "neutral": 1
+              },
+              "g": {
+                "role": [
+                  "ruler",
+                  "noble",
+                  "official_civil",
+                  "official_military"
+                ]
+              }
+            },
+            {
+              "value": "anhuachou",
+              "label": "暗花绸",
+              "phrase": "暗花绸",
+              "w": {
+                "male": 1,
+                "female": 1,
+                "neutral": 1
+              }
+            },
+            {
+              "value": "sha",
+              "label": "纱",
+              "phrase": "纱",
+              "w": {
+                "male": 1,
+                "female": 1,
+                "neutral": 1
+              }
+            },
+            {
+              "value": "pimao",
+              "label": "皮毛",
+              "phrase": "皮毛",
+              "w": {
+                "male": 1,
+                "female": 1,
+                "neutral": 1
+              },
+              "g": {
+                "role": [
+                  "ruler",
+                  "noble",
+                  "official_civil",
+                  "official_military"
+                ]
+              }
+            },
+            {
+              "value": "cubumian",
+              "label": "粗棉布",
+              "phrase": "粗棉布",
+              "w": {
+                "male": 1,
+                "female": 1,
+                "neutral": 1
+              },
+              "g": {
+                "role": [
+                  "farmer",
+                  "artisan",
+                  "servant",
+                  "marginal",
+                  "child",
+                  "cleric"
+                ]
+              }
+            },
+            {
+              "value": "gebu",
+              "label": "葛布/毛褐",
+              "phrase": "葛布",
+              "w": {
+                "male": 1,
+                "female": 1,
+                "neutral": 1
+              },
+              "g": {
+                "role": [
+                  "farmer",
+                  "artisan",
+                  "servant",
+                  "marginal",
+                  "cleric",
+                  "literati"
+                ]
+              }
+            },
+            {
+              "value": "kesi",
+              "label": "缂丝",
+              "phrase": "缂丝与哑光捻金线，不要亮片或塑料反光",
+              "w": {
+                "male": 1,
+                "female": 1,
+                "neutral": 1
+              },
+              "g": {
+                "era": [
+                  "qing_early",
+                  "qing_late"
+                ],
+                "role": [
+                  "ruler",
+                  "noble"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "id": "color",
+          "label": "主色",
+          "type": "choice",
+          "default": "none",
+          "tier": "advanced",
+          "note": "石青、藕荷、本白……清代色名有严格的使用禁令。",
+          "impact": "写进「着装」段最后一句。",
+          "options": [
+            {
+              "value": "none",
+              "label": "无",
+              "phrase": "无",
+              "w": {
+                "male": 1,
+                "female": 1,
+                "neutral": 1
+              }
+            },
+            {
+              "value": "shiqing",
+              "label": "石青",
+              "phrase": "石青",
+              "w": {
+                "male": 1,
+                "female": 1,
+                "neutral": 1
+              }
+            },
+            {
+              "value": "jianghong",
+              "label": "绛红",
+              "phrase": "绛红",
+              "w": {
+                "male": 1,
+                "female": 1,
+                "neutral": 1
+              }
+            },
+            {
+              "value": "yuebai",
+              "label": "月白",
+              "phrase": "月白",
+              "w": {
+                "male": 1,
+                "female": 1,
+                "neutral": 1
+              }
+            },
+            {
+              "value": "ouhe",
+              "label": "藕荷",
+              "phrase": "藕荷",
+              "w": {
+                "male": 1,
+                "female": 1,
+                "neutral": 1
+              }
+            },
+            {
+              "value": "xiangse",
+              "label": "香色",
+              "phrase": "香色",
+              "w": {
+                "male": 1,
+                "female": 1,
+                "neutral": 1
+              },
+              "g": {
+                "role": [
+                  "ruler",
+                  "noble",
+                  "official_civil",
+                  "official_military"
+                ]
+              }
+            },
+            {
+              "value": "benbai",
+              "label": "本白",
+              "phrase": "本白",
+              "w": {
+                "male": 1,
+                "female": 1,
+                "neutral": 1
+              }
+            },
+            {
+              "value": "diandlan",
+              "label": "靛蓝",
+              "phrase": "靛蓝",
+              "w": {
+                "male": 1,
+                "female": 1,
+                "neutral": 1
+              }
+            },
+            {
+              "value": "minghuang",
+              "label": "明黄",
+              "phrase": "明黄",
+              "w": {
+                "male": 1,
+                "female": 1,
+                "neutral": 1
+              },
+              "g": {
+                "role": [
+                  "ruler"
+                ]
+              }
+            },
+            {
+              "value": "jinhuang",
+              "label": "金黄",
+              "phrase": "金黄",
+              "w": {
+                "male": 1,
+                "female": 1,
+                "neutral": 1
+              },
+              "g": {
+                "role": [
+                  "ruler",
+                  "noble"
+                ]
+              }
+            },
+            {
+              "value": "jiangse",
+              "label": "酱色",
+              "phrase": "酱色",
+              "w": {
+                "male": 1,
+                "female": 1,
+                "neutral": 1
+              }
+            },
+            {
+              "value": "zihei",
+              "label": "缁黑",
+              "phrase": "缁黑",
+              "w": {
+                "male": 1,
+                "female": 1,
+                "neutral": 1
+              }
+            },
+            {
+              "value": "lanse",
+              "label": "蓝色",
+              "phrase": "蓝色",
+              "w": {
+                "male": 1,
+                "female": 1,
+                "neutral": 1
+              }
+            },
+            {
+              "value": "zangqing",
+              "label": "藏青",
+              "phrase": "藏青色",
+              "w": {
+                "male": 1,
+                "female": 1,
+                "neutral": 1
+              },
+              "g": {
+                "era": [
+                  "qing_late"
+                ],
+                "role": [
+                  "soldier",
+                  "literati"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "conflictRules": [
+    {
+      "id": "round-face-square-jaw",
+      "when": {
+        "faceShape": [
+          "round"
+        ],
+        "jaw": [
+          "square"
+        ]
+      },
+      "reason": "圆脸配方下颌，脸型会互相抵消；模型容易画成方脸。",
+      "fix": {
+        "jaw": "soft"
+      }
+    },
+    {
+      "id": "long-face-long-midface-lower",
+      "when": {
+        "faceShape": [
+          "long"
+        ],
+        "midface": [
+          "long"
+        ],
+        "faceProportion": [
+          "lower_long"
+        ]
+      },
+      "reason": "长脸 + 面中偏长 + 下庭偏长，脸会被拉得过长。",
+      "fix": {
+        "midface": "mid"
+      }
+    },
+    {
+      "id": "buzz-long-hair",
+      "when": {
+        "hairStyle": [
+          "buzz",
+          "slick"
+        ],
+        "hairLength": [
+          "ear",
+          "shoulder",
+          "chest",
+          "waist"
+        ]
+      },
+      "reason": "寸头/背头配长发，发型和发长会打架。",
+      "fix": {
+        "hairLength": "buzz"
+      }
+    },
+    {
+      "id": "buzz-bangs",
+      "when": {
+        "hairStyle": [
+          "buzz",
+          "slick"
+        ],
+        "bangs": [
+          "full",
+          "air",
+          "middle",
+          "side",
+          "wispy"
+        ]
+      },
+      "reason": "寸头/背头还留着刘海，额头会糊成一片。",
+      "fix": {
+        "bangs": "none"
+      }
+    },
+    {
+      "id": "long-style-short-hair",
+      "when": {
+        "hairStyle": [
+          "long",
+          "lowpony",
+          "braid"
+        ],
+        "hairLength": [
+          "buzz",
+          "ear"
+        ]
+      },
+      "reason": "长发扎发配超短/耳下发长，长度对不上。",
+      "fix": {
+        "hairLength": "chest"
+      }
+    },
+    {
+      "id": "fringe-parting",
+      "when": {
+        "bangs": [
+          "full",
+          "air"
+        ],
+        "parting": [
+          "middle",
+          "three_seven",
+          "four_six",
+          "side"
+        ]
+      },
+      "reason": "齐刘海/空气刘海还分缝，刘海会断开。",
+      "fix": {
+        "parting": "none"
+      }
+    }
+  ]
+}

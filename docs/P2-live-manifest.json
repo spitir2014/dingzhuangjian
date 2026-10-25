@@ -1,0 +1,2808 @@
+[
+  {
+    "no": 1,
+    "json": "输出\\人物\\男\\004_P2探针_文官正一品_178cm_正背设定卡.json",
+    "image": "输出\\人物\\男\\004_P2探针_文官正一品_178cm_正背设定卡.png",
+    "dimensions": [
+      1672,
+      940
+    ],
+    "schema": 3,
+    "evidence": {
+      "refs": [
+        "S1",
+        "S2",
+        "S3",
+        "S5"
+      ],
+      "note": "官修典制与故宫馆藏补服",
+      "lookId": "qe_civil_1",
+      "level": "A/B"
+    },
+    "meta": {
+      "model": "gpt-image-2.5-sunburst",
+      "size": "2048x1152",
+      "quality": "high",
+      "usage": null,
+      "attempts": 1,
+      "ms": 44720
+    },
+    "promptMeta": {
+      "size": "2048x1152",
+      "length": 0,
+      "evidence": {
+        "refs": [
+          "S1",
+          "S2",
+          "S3",
+          "S5"
+        ],
+        "note": "官修典制与故宫馆藏补服",
+        "lookId": "qe_civil_1",
+        "level": "A/B"
+      },
+      "era": "qing_early",
+      "ratio": "16:9",
+      "costumeChars": 91,
+      "role": "official_civil",
+      "layoutLabel": "正背设定卡",
+      "blocksEnabled": [
+        "subject",
+        "outfit"
+      ],
+      "detailPreset": "detailed",
+      "res": "2K",
+      "rank": "1",
+      "layout": "sheet_2view"
+    },
+    "createdAt": "2026-10-25T07:47:45.982Z",
+    "scores": [
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      0,
+      1,
+      1,
+      1
+    ],
+    "visualScore": 9,
+    "visualPass": true,
+    "layoutPass": true,
+    "sizePass": false,
+    "overallPass": false,
+    "visualNotes": "方补可辨为长颈白鹤；帽顶红色、珠链可见。前额剃发被帽遮住无法确认。",
+    "reviewMethod": "assistant-visual-review; 5 contact sheets; full originals 05,19,29; not a specialist certification",
+    "requestedSize": "2048x1152"
+  },
+  {
+    "no": 2,
+    "json": "输出\\人物\\男\\008_P2_02_qe_civil_1_2_正背设定卡.json",
+    "image": "输出\\人物\\男\\008_P2_02_qe_civil_1_2_正背设定卡.png",
+    "dimensions": [
+      1672,
+      941
+    ],
+    "schema": 3,
+    "evidence": {
+      "lookId": "qe_civil_1",
+      "level": "A/B",
+      "refs": [
+        "S1",
+        "S2",
+        "S3",
+        "S5"
+      ],
+      "note": "补子、顶戴与朝珠资格按官修典制推导。"
+    },
+    "meta": {
+      "model": "gpt-image-2.5-sunburst",
+      "size": "2048x1152",
+      "quality": "high",
+      "usage": null,
+      "attempts": 1,
+      "ms": 101524
+    },
+    "promptMeta": {
+      "layout": "sheet_2view",
+      "layoutLabel": "正背设定卡",
+      "ratio": "16:9",
+      "res": "2K",
+      "size": "2048x1152",
+      "detailPreset": "detailed",
+      "blocksEnabled": [
+        "format",
+        "layout",
+        "subject",
+        "profile",
+        "body",
+        "proportion",
+        "face",
+        "faceDetail",
+        "detailFace",
+        "hair",
+        "skinHair",
+        "detailBody",
+        "marks",
+        "realism",
+        "expression",
+        "outfit",
+        "signature",
+        "style",
+        "info",
+        "negative"
+      ],
+      "length": 2205,
+      "era": "qing_early",
+      "role": "official_civil",
+      "rank": "1",
+      "costumeChars": 96,
+      "evidence": {
+        "lookId": "qe_civil_1",
+        "level": "A/B",
+        "refs": [
+          "S1",
+          "S2",
+          "S3",
+          "S5"
+        ],
+        "note": "补子、顶戴与朝珠资格按官修典制推导。"
+      }
+    },
+    "createdAt": "2026-10-25T07:51:59.410Z",
+    "scores": [
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      0,
+      1,
+      1,
+      1
+    ],
+    "visualScore": 9,
+    "visualPass": true,
+    "layoutPass": true,
+    "sizePass": false,
+    "overallPass": false,
+    "visualNotes": "正背均有白鹤方补；红顶与珠链可见。前额剃发不清。",
+    "reviewMethod": "assistant-visual-review; 5 contact sheets; full originals 05,19,29; not a specialist certification",
+    "requestedSize": "2048x1152"
+  },
+  {
+    "no": 3,
+    "json": "输出\\人物\\男\\010_P2_03_qe_civil_3_1_正背设定卡.json",
+    "image": "输出\\人物\\男\\010_P2_03_qe_civil_3_1_正背设定卡.png",
+    "dimensions": [
+      1672,
+      941
+    ],
+    "schema": 3,
+    "evidence": {
+      "lookId": "qe_civil_3",
+      "level": "A/B",
+      "refs": [
+        "S1",
+        "S2",
+        "S3",
+        "S5"
+      ],
+      "note": "补子、顶戴与朝珠资格按官修典制推导。"
+    },
+    "meta": {
+      "model": "gpt-image-2.5-sunburst",
+      "size": "2048x1152",
+      "quality": "high",
+      "usage": null,
+      "attempts": 1,
+      "ms": 106684
+    },
+    "promptMeta": {
+      "layout": "sheet_2view",
+      "layoutLabel": "正背设定卡",
+      "ratio": "16:9",
+      "res": "2K",
+      "size": "2048x1152",
+      "detailPreset": "detailed",
+      "blocksEnabled": [
+        "format",
+        "layout",
+        "subject",
+        "profile",
+        "body",
+        "proportion",
+        "face",
+        "faceDetail",
+        "detailFace",
+        "hair",
+        "skinHair",
+        "detailBody",
+        "marks",
+        "realism",
+        "expression",
+        "outfit",
+        "signature",
+        "style",
+        "info",
+        "negative"
+      ],
+      "length": 2205,
+      "era": "qing_early",
+      "role": "official_civil",
+      "rank": "3",
+      "costumeChars": 96,
+      "evidence": {
+        "lookId": "qe_civil_3",
+        "level": "A/B",
+        "refs": [
+          "S1",
+          "S2",
+          "S3",
+          "S5"
+        ],
+        "note": "补子、顶戴与朝珠资格按官修典制推导。"
+      }
+    },
+    "createdAt": "2026-10-25T07:52:08.039Z",
+    "scores": [
+      1,
+      1,
+      0,
+      0,
+      1,
+      1,
+      0,
+      1,
+      1,
+      1
+    ],
+    "visualScore": 7,
+    "visualPass": true,
+    "layoutPass": true,
+    "sizePass": false,
+    "overallPass": false,
+    "visualNotes": "方补禽纹难判孔雀；大头像帽顶偏红，未稳定体现蓝顶。",
+    "reviewMethod": "assistant-visual-review; 5 contact sheets; full originals 05,19,29; not a specialist certification",
+    "requestedSize": "2048x1152"
+  },
+  {
+    "no": 4,
+    "json": "输出\\人物\\男\\005_P2_04_qe_civil_3_2_正背设定卡.json",
+    "image": "输出\\人物\\男\\005_P2_04_qe_civil_3_2_正背设定卡.png",
+    "dimensions": [
+      1672,
+      941
+    ],
+    "schema": 3,
+    "evidence": {
+      "lookId": "qe_civil_3",
+      "level": "A/B",
+      "refs": [
+        "S1",
+        "S2",
+        "S3",
+        "S5"
+      ],
+      "note": "补子、顶戴与朝珠资格按官修典制推导。"
+    },
+    "meta": {
+      "model": "gpt-image-2.5-sunburst",
+      "size": "2048x1152",
+      "quality": "high",
+      "usage": null,
+      "attempts": 1,
+      "ms": 40037
+    },
+    "promptMeta": {
+      "layout": "sheet_2view",
+      "layoutLabel": "正背设定卡",
+      "ratio": "16:9",
+      "res": "2K",
+      "size": "2048x1152",
+      "detailPreset": "detailed",
+      "blocksEnabled": [
+        "format",
+        "layout",
+        "subject",
+        "profile",
+        "body",
+        "proportion",
+        "face",
+        "faceDetail",
+        "detailFace",
+        "hair",
+        "skinHair",
+        "detailBody",
+        "marks",
+        "realism",
+        "expression",
+        "outfit",
+        "signature",
+        "style",
+        "info",
+        "negative"
+      ],
+      "length": 2205,
+      "era": "qing_early",
+      "role": "official_civil",
+      "rank": "3",
+      "costumeChars": 96,
+      "evidence": {
+        "lookId": "qe_civil_3",
+        "level": "A/B",
+        "refs": [
+          "S1",
+          "S2",
+          "S3",
+          "S5"
+        ],
+        "note": "补子、顶戴与朝珠资格按官修典制推导。"
+      }
+    },
+    "createdAt": "2026-10-25T07:50:48.642Z",
+    "scores": [
+      1,
+      1,
+      0,
+      1,
+      1,
+      1,
+      0,
+      1,
+      1,
+      1
+    ],
+    "visualScore": 8,
+    "visualPass": true,
+    "layoutPass": true,
+    "sizePass": false,
+    "overallPass": false,
+    "visualNotes": "帽顶蓝色；方补禽纹不能确认孔雀，前额剃发不可判。",
+    "reviewMethod": "assistant-visual-review; 5 contact sheets; full originals 05,19,29; not a specialist certification",
+    "requestedSize": "2048x1152"
+  },
+  {
+    "no": 5,
+    "json": "输出\\人物\\男\\006_P2_05_qe_civil_5_1_正背设定卡.json",
+    "image": "输出\\人物\\男\\006_P2_05_qe_civil_5_1_正背设定卡.png",
+    "dimensions": [
+      1672,
+      940
+    ],
+    "schema": 3,
+    "evidence": {
+      "lookId": "qe_civil_5",
+      "level": "A/B",
+      "refs": [
+        "S1",
+        "S2",
+        "S3",
+        "S5"
+      ],
+      "note": "补子、顶戴与朝珠资格按官修典制推导。"
+    },
+    "meta": {
+      "model": "gpt-image-2.5-sunburst",
+      "size": "2048x1152",
+      "quality": "high",
+      "usage": null,
+      "attempts": 1,
+      "ms": 35655
+    },
+    "promptMeta": {
+      "layout": "sheet_2view",
+      "layoutLabel": "正背设定卡",
+      "ratio": "16:9",
+      "res": "2K",
+      "size": "2048x1152",
+      "detailPreset": "detailed",
+      "blocksEnabled": [
+        "format",
+        "layout",
+        "subject",
+        "profile",
+        "body",
+        "proportion",
+        "face",
+        "faceDetail",
+        "detailFace",
+        "hair",
+        "skinHair",
+        "detailBody",
+        "marks",
+        "realism",
+        "expression",
+        "outfit",
+        "signature",
+        "style",
+        "info",
+        "negative"
+      ],
+      "length": 2206,
+      "era": "qing_early",
+      "role": "official_civil",
+      "rank": "5",
+      "costumeChars": 95,
+      "evidence": {
+        "lookId": "qe_civil_5",
+        "level": "A/B",
+        "refs": [
+          "S1",
+          "S2",
+          "S3",
+          "S5"
+        ],
+        "note": "补子、顶戴与朝珠资格按官修典制推导。"
+      }
+    },
+    "createdAt": "2026-10-25T07:50:52.902Z",
+    "scores": [
+      1,
+      1,
+      0,
+      0,
+      1,
+      1,
+      0,
+      1,
+      1,
+      1
+    ],
+    "visualScore": 7,
+    "visualPass": true,
+    "layoutPass": true,
+    "sizePass": false,
+    "overallPass": false,
+    "visualNotes": "五品应白鹇，实画长颈白鹤；水晶顶被画红色。已看原图。",
+    "reviewMethod": "assistant-visual-review; 5 contact sheets; full originals 05,19,29; not a specialist certification",
+    "requestedSize": "2048x1152"
+  },
+  {
+    "no": 6,
+    "json": "输出\\人物\\男\\007_P2_06_qe_civil_5_2_正背设定卡.json",
+    "image": "输出\\人物\\男\\007_P2_06_qe_civil_5_2_正背设定卡.png",
+    "dimensions": [
+      1672,
+      941
+    ],
+    "schema": 3,
+    "evidence": {
+      "lookId": "qe_civil_5",
+      "level": "A/B",
+      "refs": [
+        "S1",
+        "S2",
+        "S3",
+        "S5"
+      ],
+      "note": "补子、顶戴与朝珠资格按官修典制推导。"
+    },
+    "meta": {
+      "model": "gpt-image-2.5-sunburst",
+      "size": "2048x1152",
+      "quality": "high",
+      "usage": null,
+      "attempts": 1,
+      "ms": 36495
+    },
+    "promptMeta": {
+      "layout": "sheet_2view",
+      "layoutLabel": "正背设定卡",
+      "ratio": "16:9",
+      "res": "2K",
+      "size": "2048x1152",
+      "detailPreset": "detailed",
+      "blocksEnabled": [
+        "format",
+        "layout",
+        "subject",
+        "profile",
+        "body",
+        "proportion",
+        "face",
+        "faceDetail",
+        "detailFace",
+        "hair",
+        "skinHair",
+        "detailBody",
+        "marks",
+        "realism",
+        "expression",
+        "outfit",
+        "signature",
+        "style",
+        "info",
+        "negative"
+      ],
+      "length": 2206,
+      "era": "qing_early",
+      "role": "official_civil",
+      "rank": "5",
+      "costumeChars": 95,
+      "evidence": {
+        "lookId": "qe_civil_5",
+        "level": "A/B",
+        "refs": [
+          "S1",
+          "S2",
+          "S3",
+          "S5"
+        ],
+        "note": "补子、顶戴与朝珠资格按官修典制推导。"
+      }
+    },
+    "createdAt": "2026-10-25T07:51:29.876Z",
+    "scores": [
+      1,
+      1,
+      0,
+      0,
+      1,
+      1,
+      0,
+      1,
+      1,
+      1
+    ],
+    "visualScore": 7,
+    "visualPass": true,
+    "layoutPass": true,
+    "sizePass": false,
+    "overallPass": false,
+    "visualNotes": "五品同样偏鹤纹与红顶；不能以人物标题上的品级判合格。",
+    "reviewMethod": "assistant-visual-review; 5 contact sheets; full originals 05,19,29; not a specialist certification",
+    "requestedSize": "2048x1152"
+  },
+  {
+    "no": 7,
+    "json": "输出\\人物\\男\\009_P2_07_qe_civil_9_1_正背设定卡.json",
+    "image": "输出\\人物\\男\\009_P2_07_qe_civil_9_1_正背设定卡.png",
+    "dimensions": [
+      1672,
+      941
+    ],
+    "schema": 3,
+    "evidence": {
+      "lookId": "qe_civil_9",
+      "level": "A/B",
+      "refs": [
+        "S1",
+        "S2",
+        "S3",
+        "S5"
+      ],
+      "note": "补子、顶戴与朝珠资格按官修典制推导。"
+    },
+    "meta": {
+      "model": "gpt-image-2.5-sunburst",
+      "size": "2048x1152",
+      "quality": "high",
+      "usage": null,
+      "attempts": 1,
+      "ms": 50938
+    },
+    "promptMeta": {
+      "layout": "sheet_2view",
+      "layoutLabel": "正背设定卡",
+      "ratio": "16:9",
+      "res": "2K",
+      "size": "2048x1152",
+      "detailPreset": "detailed",
+      "blocksEnabled": [
+        "format",
+        "layout",
+        "subject",
+        "profile",
+        "body",
+        "proportion",
+        "face",
+        "faceDetail",
+        "detailFace",
+        "hair",
+        "skinHair",
+        "detailBody",
+        "marks",
+        "realism",
+        "expression",
+        "outfit",
+        "signature",
+        "style",
+        "info",
+        "negative"
+      ],
+      "length": 2204,
+      "era": "qing_early",
+      "role": "official_civil",
+      "rank": "9",
+      "costumeChars": 93,
+      "evidence": {
+        "lookId": "qe_civil_9",
+        "level": "A/B",
+        "refs": [
+          "S1",
+          "S2",
+          "S3",
+          "S5"
+        ],
+        "note": "补子、顶戴与朝珠资格按官修典制推导。"
+      }
+    },
+    "createdAt": "2026-10-25T07:52:00.497Z",
+    "scores": [
+      1,
+      1,
+      0,
+      1,
+      1,
+      1,
+      0,
+      1,
+      1,
+      1
+    ],
+    "visualScore": 8,
+    "visualPass": true,
+    "layoutPass": true,
+    "sizePass": false,
+    "overallPass": false,
+    "visualNotes": "九品未佩朝珠正确；方补偏白鹤，练雀未落实。",
+    "reviewMethod": "assistant-visual-review; 5 contact sheets; full originals 05,19,29; not a specialist certification",
+    "requestedSize": "2048x1152"
+  },
+  {
+    "no": 8,
+    "json": "输出\\人物\\男\\011_P2_08_qe_civil_9_2_正背设定卡.json",
+    "image": "输出\\人物\\男\\011_P2_08_qe_civil_9_2_正背设定卡.png",
+    "dimensions": [
+      1672,
+      941
+    ],
+    "schema": 3,
+    "evidence": {
+      "lookId": "qe_civil_9",
+      "level": "A/B",
+      "refs": [
+        "S1",
+        "S2",
+        "S3",
+        "S5"
+      ],
+      "note": "补子、顶戴与朝珠资格按官修典制推导。"
+    },
+    "meta": {
+      "model": "gpt-image-2.5-sunburst",
+      "size": "2048x1152",
+      "quality": "high",
+      "usage": null,
+      "attempts": 1,
+      "ms": 57698
+    },
+    "promptMeta": {
+      "layout": "sheet_2view",
+      "layoutLabel": "正背设定卡",
+      "ratio": "16:9",
+      "res": "2K",
+      "size": "2048x1152",
+      "detailPreset": "detailed",
+      "blocksEnabled": [
+        "format",
+        "layout",
+        "subject",
+        "profile",
+        "body",
+        "proportion",
+        "face",
+        "faceDetail",
+        "detailFace",
+        "hair",
+        "skinHair",
+        "detailBody",
+        "marks",
+        "realism",
+        "expression",
+        "outfit",
+        "signature",
+        "style",
+        "info",
+        "negative"
+      ],
+      "length": 2204,
+      "era": "qing_early",
+      "role": "official_civil",
+      "rank": "9",
+      "costumeChars": 93,
+      "evidence": {
+        "lookId": "qe_civil_9",
+        "level": "A/B",
+        "refs": [
+          "S1",
+          "S2",
+          "S3",
+          "S5"
+        ],
+        "note": "补子、顶戴与朝珠资格按官修典制推导。"
+      }
+    },
+    "createdAt": "2026-10-25T07:52:32.547Z",
+    "scores": [
+      1,
+      1,
+      0,
+      1,
+      1,
+      1,
+      0,
+      1,
+      1,
+      1
+    ],
+    "visualScore": 8,
+    "visualPass": true,
+    "layoutPass": true,
+    "sizePass": false,
+    "overallPass": false,
+    "visualNotes": "金色顶、无朝珠；禽纹偏鹤，难判练雀。",
+    "reviewMethod": "assistant-visual-review; 5 contact sheets; full originals 05,19,29; not a specialist certification",
+    "requestedSize": "2048x1152"
+  },
+  {
+    "no": 9,
+    "json": "输出\\人物\\男\\014_P2_09_qe_military_1_1_正背设定卡.json",
+    "image": "输出\\人物\\男\\014_P2_09_qe_military_1_1_正背设定卡.png",
+    "dimensions": [
+      1672,
+      941
+    ],
+    "schema": 3,
+    "evidence": {
+      "lookId": "qe_military_1",
+      "level": "A/B",
+      "refs": [
+        "S1",
+        "S2",
+        "S3",
+        "S5"
+      ],
+      "note": "补子、顶戴与朝珠资格按官修典制推导。"
+    },
+    "meta": {
+      "model": "gpt-image-2.5-sunburst",
+      "size": "2048x1152",
+      "quality": "high",
+      "usage": null,
+      "attempts": 1,
+      "ms": 64261
+    },
+    "promptMeta": {
+      "layout": "sheet_2view",
+      "layoutLabel": "正背设定卡",
+      "ratio": "16:9",
+      "res": "2K",
+      "size": "2048x1152",
+      "detailPreset": "detailed",
+      "blocksEnabled": [
+        "format",
+        "layout",
+        "subject",
+        "profile",
+        "body",
+        "proportion",
+        "face",
+        "faceDetail",
+        "detailFace",
+        "hair",
+        "skinHair",
+        "detailBody",
+        "marks",
+        "realism",
+        "expression",
+        "outfit",
+        "signature",
+        "style",
+        "info",
+        "negative"
+      ],
+      "length": 2208,
+      "era": "qing_early",
+      "role": "official_military",
+      "rank": "1",
+      "costumeChars": 96,
+      "evidence": {
+        "lookId": "qe_military_1",
+        "level": "A/B",
+        "refs": [
+          "S1",
+          "S2",
+          "S3",
+          "S5"
+        ],
+        "note": "补子、顶戴与朝珠资格按官修典制推导。"
+      }
+    },
+    "createdAt": "2026-10-25T07:53:15.319Z",
+    "scores": [
+      1,
+      1,
+      0,
+      1,
+      1,
+      1,
+      0,
+      1,
+      1,
+      1
+    ],
+    "visualScore": 8,
+    "visualPass": true,
+    "layoutPass": true,
+    "sizePass": false,
+    "overallPass": false,
+    "visualNotes": "有兽纹方补、红顶与珠链；麒麟角蹄细节不足，不能确认兽种。",
+    "reviewMethod": "assistant-visual-review; 5 contact sheets; full originals 05,19,29; not a specialist certification",
+    "requestedSize": "2048x1152"
+  },
+  {
+    "no": 10,
+    "json": "输出\\人物\\男\\012_P2_10_qe_military_1_2_正背设定卡.json",
+    "image": "输出\\人物\\男\\012_P2_10_qe_military_1_2_正背设定卡.png",
+    "dimensions": [
+      1672,
+      941
+    ],
+    "schema": 3,
+    "evidence": {
+      "lookId": "qe_military_1",
+      "level": "A/B",
+      "refs": [
+        "S1",
+        "S2",
+        "S3",
+        "S5"
+      ],
+      "note": "补子、顶戴与朝珠资格按官修典制推导。"
+    },
+    "meta": {
+      "model": "gpt-image-2.5-sunburst",
+      "size": "2048x1152",
+      "quality": "high",
+      "usage": null,
+      "attempts": 1,
+      "ms": 41332
+    },
+    "promptMeta": {
+      "layout": "sheet_2view",
+      "layoutLabel": "正背设定卡",
+      "ratio": "16:9",
+      "res": "2K",
+      "size": "2048x1152",
+      "detailPreset": "detailed",
+      "blocksEnabled": [
+        "format",
+        "layout",
+        "subject",
+        "profile",
+        "body",
+        "proportion",
+        "face",
+        "faceDetail",
+        "detailFace",
+        "hair",
+        "skinHair",
+        "detailBody",
+        "marks",
+        "realism",
+        "expression",
+        "outfit",
+        "signature",
+        "style",
+        "info",
+        "negative"
+      ],
+      "length": 2208,
+      "era": "qing_early",
+      "role": "official_military",
+      "rank": "1",
+      "costumeChars": 96,
+      "evidence": {
+        "lookId": "qe_military_1",
+        "level": "A/B",
+        "refs": [
+          "S1",
+          "S2",
+          "S3",
+          "S5"
+        ],
+        "note": "补子、顶戴与朝珠资格按官修典制推导。"
+      }
+    },
+    "createdAt": "2026-10-25T07:52:48.109Z",
+    "scores": [
+      1,
+      1,
+      0,
+      1,
+      1,
+      1,
+      0,
+      1,
+      1,
+      1
+    ],
+    "visualScore": 8,
+    "visualPass": true,
+    "layoutPass": true,
+    "sizePass": false,
+    "overallPass": false,
+    "visualNotes": "兽纹可见，麒麟种类不确认；珠链资格可见。",
+    "reviewMethod": "assistant-visual-review; 5 contact sheets; full originals 05,19,29; not a specialist certification",
+    "requestedSize": "2048x1152"
+  },
+  {
+    "no": 11,
+    "json": "输出\\人物\\男\\013_P2_11_qe_military_3_1_正背设定卡.json",
+    "image": "输出\\人物\\男\\013_P2_11_qe_military_3_1_正背设定卡.png",
+    "dimensions": [
+      1672,
+      941
+    ],
+    "schema": 3,
+    "evidence": {
+      "lookId": "qe_military_3",
+      "level": "A/B",
+      "refs": [
+        "S1",
+        "S2",
+        "S3",
+        "S5"
+      ],
+      "note": "补子、顶戴与朝珠资格按官修典制推导。"
+    },
+    "meta": {
+      "model": "gpt-image-2.5-sunburst",
+      "size": "2048x1152",
+      "quality": "high",
+      "usage": null,
+      "attempts": 1,
+      "ms": 41424
+    },
+    "promptMeta": {
+      "layout": "sheet_2view",
+      "layoutLabel": "正背设定卡",
+      "ratio": "16:9",
+      "res": "2K",
+      "size": "2048x1152",
+      "detailPreset": "detailed",
+      "blocksEnabled": [
+        "format",
+        "layout",
+        "subject",
+        "profile",
+        "body",
+        "proportion",
+        "face",
+        "faceDetail",
+        "detailFace",
+        "hair",
+        "skinHair",
+        "detailBody",
+        "marks",
+        "realism",
+        "expression",
+        "outfit",
+        "signature",
+        "style",
+        "info",
+        "negative"
+      ],
+      "length": 2207,
+      "era": "qing_early",
+      "role": "official_military",
+      "rank": "3",
+      "costumeChars": 95,
+      "evidence": {
+        "lookId": "qe_military_3",
+        "level": "A/B",
+        "refs": [
+          "S1",
+          "S2",
+          "S3",
+          "S5"
+        ],
+        "note": "补子、顶戴与朝珠资格按官修典制推导。"
+      }
+    },
+    "createdAt": "2026-10-25T07:53:01.716Z",
+    "scores": [
+      1,
+      1,
+      0,
+      1,
+      1,
+      1,
+      0,
+      1,
+      1,
+      1
+    ],
+    "visualScore": 8,
+    "visualPass": true,
+    "layoutPass": true,
+    "sizePass": false,
+    "overallPass": false,
+    "visualNotes": "蓝顶与珠链可见；兽纹斑点不足，不能确认三品豹。",
+    "reviewMethod": "assistant-visual-review; 5 contact sheets; full originals 05,19,29; not a specialist certification",
+    "requestedSize": "2048x1152"
+  },
+  {
+    "no": 12,
+    "json": "输出\\人物\\男\\015_P2_12_qe_military_3_2_正背设定卡.json",
+    "image": "输出\\人物\\男\\015_P2_12_qe_military_3_2_正背设定卡.png",
+    "dimensions": [
+      1672,
+      941
+    ],
+    "schema": 3,
+    "evidence": {
+      "lookId": "qe_military_3",
+      "level": "A/B",
+      "refs": [
+        "S1",
+        "S2",
+        "S3",
+        "S5"
+      ],
+      "note": "补子、顶戴与朝珠资格按官修典制推导。"
+    },
+    "meta": {
+      "model": "gpt-image-2.5-sunburst",
+      "size": "2048x1152",
+      "quality": "high",
+      "usage": null,
+      "attempts": 1,
+      "ms": 36895
+    },
+    "promptMeta": {
+      "layout": "sheet_2view",
+      "layoutLabel": "正背设定卡",
+      "ratio": "16:9",
+      "res": "2K",
+      "size": "2048x1152",
+      "detailPreset": "detailed",
+      "blocksEnabled": [
+        "format",
+        "layout",
+        "subject",
+        "profile",
+        "body",
+        "proportion",
+        "face",
+        "faceDetail",
+        "detailFace",
+        "hair",
+        "skinHair",
+        "detailBody",
+        "marks",
+        "realism",
+        "expression",
+        "outfit",
+        "signature",
+        "style",
+        "info",
+        "negative"
+      ],
+      "length": 2207,
+      "era": "qing_early",
+      "role": "official_military",
+      "rank": "3",
+      "costumeChars": 95,
+      "evidence": {
+        "lookId": "qe_military_3",
+        "level": "A/B",
+        "refs": [
+          "S1",
+          "S2",
+          "S3",
+          "S5"
+        ],
+        "note": "补子、顶戴与朝珠资格按官修典制推导。"
+      }
+    },
+    "createdAt": "2026-10-25T07:55:10.675Z",
+    "scores": [
+      1,
+      1,
+      0,
+      1,
+      1,
+      1,
+      0,
+      1,
+      1,
+      1
+    ],
+    "visualScore": 8,
+    "visualPass": true,
+    "layoutPass": true,
+    "sizePass": false,
+    "overallPass": false,
+    "visualNotes": "兽纹更像通用大猫，不能确认豹；蓝顶珠链可见。",
+    "reviewMethod": "assistant-visual-review; 5 contact sheets; full originals 05,19,29; not a specialist certification",
+    "requestedSize": "2048x1152"
+  },
+  {
+    "no": 13,
+    "json": "输出\\人物\\男\\016_P2_13_qe_military_5_1_正背设定卡.json",
+    "image": "输出\\人物\\男\\016_P2_13_qe_military_5_1_正背设定卡.png",
+    "dimensions": [
+      1672,
+      941
+    ],
+    "schema": 3,
+    "evidence": {
+      "lookId": "qe_military_5",
+      "level": "A/B",
+      "refs": [
+        "S1",
+        "S2",
+        "S3",
+        "S5"
+      ],
+      "note": "补子、顶戴与朝珠资格按官修典制推导。"
+    },
+    "meta": {
+      "model": "gpt-image-2.5-sunburst",
+      "size": "2048x1152",
+      "quality": "high",
+      "usage": null,
+      "attempts": 1,
+      "ms": 43430
+    },
+    "promptMeta": {
+      "layout": "sheet_2view",
+      "layoutLabel": "正背设定卡",
+      "ratio": "16:9",
+      "res": "2K",
+      "size": "2048x1152",
+      "detailPreset": "detailed",
+      "blocksEnabled": [
+        "format",
+        "layout",
+        "subject",
+        "profile",
+        "body",
+        "proportion",
+        "face",
+        "faceDetail",
+        "detailFace",
+        "hair",
+        "skinHair",
+        "detailBody",
+        "marks",
+        "realism",
+        "expression",
+        "outfit",
+        "signature",
+        "style",
+        "info",
+        "negative"
+      ],
+      "length": 2203,
+      "era": "qing_early",
+      "role": "official_military",
+      "rank": "5",
+      "costumeChars": 89,
+      "evidence": {
+        "lookId": "qe_military_5",
+        "level": "A/B",
+        "refs": [
+          "S1",
+          "S2",
+          "S3",
+          "S5"
+        ],
+        "note": "补子、顶戴与朝珠资格按官修典制推导。"
+      }
+    },
+    "createdAt": "2026-10-25T07:55:15.940Z",
+    "scores": [
+      1,
+      1,
+      1,
+      0,
+      1,
+      1,
+      0,
+      1,
+      1,
+      1
+    ],
+    "visualScore": 8,
+    "visualPass": true,
+    "layoutPass": true,
+    "sizePass": false,
+    "overallPass": false,
+    "visualNotes": "五品无朝珠符合默认通则；熊形可辨，顶珠偏红不符水晶。",
+    "reviewMethod": "assistant-visual-review; 5 contact sheets; full originals 05,19,29; not a specialist certification",
+    "requestedSize": "2048x1152"
+  },
+  {
+    "no": 14,
+    "json": "输出\\人物\\男\\017_P2_14_qe_military_5_2_正背设定卡.json",
+    "image": "输出\\人物\\男\\017_P2_14_qe_military_5_2_正背设定卡.png",
+    "dimensions": [
+      1672,
+      941
+    ],
+    "schema": 3,
+    "evidence": {
+      "lookId": "qe_military_5",
+      "level": "A/B",
+      "refs": [
+        "S1",
+        "S2",
+        "S3",
+        "S5"
+      ],
+      "note": "补子、顶戴与朝珠资格按官修典制推导。"
+    },
+    "meta": {
+      "model": "gpt-image-2.5-sunburst",
+      "size": "2048x1152",
+      "quality": "high",
+      "usage": null,
+      "attempts": 1,
+      "ms": 57723
+    },
+    "promptMeta": {
+      "layout": "sheet_2view",
+      "layoutLabel": "正背设定卡",
+      "ratio": "16:9",
+      "res": "2K",
+      "size": "2048x1152",
+      "detailPreset": "detailed",
+      "blocksEnabled": [
+        "format",
+        "layout",
+        "subject",
+        "profile",
+        "body",
+        "proportion",
+        "face",
+        "faceDetail",
+        "detailFace",
+        "hair",
+        "skinHair",
+        "detailBody",
+        "marks",
+        "realism",
+        "expression",
+        "outfit",
+        "signature",
+        "style",
+        "info",
+        "negative"
+      ],
+      "length": 2203,
+      "era": "qing_early",
+      "role": "official_military",
+      "rank": "5",
+      "costumeChars": 89,
+      "evidence": {
+        "lookId": "qe_military_5",
+        "level": "A/B",
+        "refs": [
+          "S1",
+          "S2",
+          "S3",
+          "S5"
+        ],
+        "note": "补子、顶戴与朝珠资格按官修典制推导。"
+      }
+    },
+    "createdAt": "2026-10-25T07:55:33.488Z",
+    "scores": [
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      0,
+      1,
+      1,
+      1
+    ],
+    "visualScore": 9,
+    "visualPass": true,
+    "layoutPass": true,
+    "sizePass": false,
+    "overallPass": false,
+    "visualNotes": "熊形方补、透明浅色顶、无朝珠；前额发制仍无法确认。",
+    "reviewMethod": "assistant-visual-review; 5 contact sheets; full originals 05,19,29; not a specialist certification",
+    "requestedSize": "2048x1152"
+  },
+  {
+    "no": 15,
+    "json": "输出\\人物\\男\\018_P2_15_qe_military_7_1_正背设定卡.json",
+    "image": "输出\\人物\\男\\018_P2_15_qe_military_7_1_正背设定卡.png",
+    "dimensions": [
+      1672,
+      941
+    ],
+    "schema": 3,
+    "evidence": {
+      "lookId": "qe_military_7",
+      "level": "A（异说）",
+      "refs": [
+        "S1",
+        "S2",
+        "S3",
+        "S5"
+      ],
+      "note": "《清史稿》作犀牛，《大清律例》有与六品同（彪）异说；本项目默认犀牛。"
+    },
+    "meta": {
+      "model": "gpt-image-2.5-sunburst",
+      "size": "2048x1152",
+      "quality": "high",
+      "usage": null,
+      "attempts": 1,
+      "ms": 60019
+    },
+    "promptMeta": {
+      "layout": "sheet_2view",
+      "layoutLabel": "正背设定卡",
+      "ratio": "16:9",
+      "res": "2K",
+      "size": "2048x1152",
+      "detailPreset": "detailed",
+      "blocksEnabled": [
+        "format",
+        "layout",
+        "subject",
+        "profile",
+        "body",
+        "proportion",
+        "face",
+        "faceDetail",
+        "detailFace",
+        "hair",
+        "skinHair",
+        "detailBody",
+        "marks",
+        "realism",
+        "expression",
+        "outfit",
+        "signature",
+        "style",
+        "info",
+        "negative"
+      ],
+      "length": 2203,
+      "era": "qing_early",
+      "role": "official_military",
+      "rank": "7",
+      "costumeChars": 89,
+      "evidence": {
+        "lookId": "qe_military_7",
+        "level": "A（异说）",
+        "refs": [
+          "S1",
+          "S2",
+          "S3",
+          "S5"
+        ],
+        "note": "《清史稿》作犀牛，《大清律例》有与六品同（彪）异说；本项目默认犀牛。"
+      }
+    },
+    "createdAt": "2026-10-25T07:55:33.601Z",
+    "scores": [
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      0,
+      1,
+      1,
+      1
+    ],
+    "visualScore": 9,
+    "visualPass": true,
+    "layoutPass": true,
+    "sizePass": false,
+    "overallPass": false,
+    "visualNotes": "犀形方补与金色顶可见、无朝珠；仅验证项目所选犀牛版本，未裁断异说。",
+    "reviewMethod": "assistant-visual-review; 5 contact sheets; full originals 05,19,29; not a specialist certification",
+    "requestedSize": "2048x1152"
+  },
+  {
+    "no": 16,
+    "json": "输出\\人物\\男\\020_P2_16_qe_military_7_2_正背设定卡.json",
+    "image": "输出\\人物\\男\\020_P2_16_qe_military_7_2_正背设定卡.png",
+    "dimensions": [
+      1672,
+      940
+    ],
+    "schema": 3,
+    "evidence": {
+      "lookId": "qe_military_7",
+      "level": "A（异说）",
+      "refs": [
+        "S1",
+        "S2",
+        "S3",
+        "S5"
+      ],
+      "note": "《清史稿》作犀牛，《大清律例》有与六品同（彪）异说；本项目默认犀牛。"
+    },
+    "meta": {
+      "model": "gpt-image-2.5-sunburst",
+      "size": "2048x1152",
+      "quality": "high",
+      "usage": null,
+      "attempts": 1,
+      "ms": 81411
+    },
+    "promptMeta": {
+      "layout": "sheet_2view",
+      "layoutLabel": "正背设定卡",
+      "ratio": "16:9",
+      "res": "2K",
+      "size": "2048x1152",
+      "detailPreset": "detailed",
+      "blocksEnabled": [
+        "format",
+        "layout",
+        "subject",
+        "profile",
+        "body",
+        "proportion",
+        "face",
+        "faceDetail",
+        "detailFace",
+        "hair",
+        "skinHair",
+        "detailBody",
+        "marks",
+        "realism",
+        "expression",
+        "outfit",
+        "signature",
+        "style",
+        "info",
+        "negative"
+      ],
+      "length": 2203,
+      "era": "qing_early",
+      "role": "official_military",
+      "rank": "7",
+      "costumeChars": 89,
+      "evidence": {
+        "lookId": "qe_military_7",
+        "level": "A（异说）",
+        "refs": [
+          "S1",
+          "S2",
+          "S3",
+          "S5"
+        ],
+        "note": "《清史稿》作犀牛，《大清律例》有与六品同（彪）异说；本项目默认犀牛。"
+      }
+    },
+    "createdAt": "2026-10-25T07:56:37.354Z",
+    "scores": [
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      0,
+      1,
+      1,
+      1
+    ],
+    "visualScore": 9,
+    "visualPass": true,
+    "layoutPass": true,
+    "sizePass": false,
+    "overallPass": false,
+    "visualNotes": "同见犀形、金顶与无朝珠；前额发制不明。",
+    "reviewMethod": "assistant-visual-review; 5 contact sheets; full originals 05,19,29; not a specialist certification",
+    "requestedSize": "2048x1152"
+  },
+  {
+    "no": 17,
+    "json": "输出\\人物\\男\\019_P2_17_qe_emperor_ceremony_1_正背设定卡.json",
+    "image": "输出\\人物\\男\\019_P2_17_qe_emperor_ceremony_1_正背设定卡.png",
+    "dimensions": [
+      1672,
+      941
+    ],
+    "schema": 3,
+    "evidence": {
+      "lookId": "qe_emperor_ceremony",
+      "level": "A/B",
+      "refs": [
+        "S1",
+        "S2"
+      ],
+      "note": "皇帝朝服采用典制基线；细部珠数不强制给生图模型。"
+    },
+    "meta": {
+      "model": "gpt-image-2.5-sunburst",
+      "size": "2048x1152",
+      "quality": "high",
+      "usage": null,
+      "attempts": 1,
+      "ms": 36858
+    },
+    "promptMeta": {
+      "layout": "sheet_2view",
+      "layoutLabel": "正背设定卡",
+      "ratio": "16:9",
+      "res": "2K",
+      "size": "2048x1152",
+      "detailPreset": "detailed",
+      "blocksEnabled": [
+        "format",
+        "layout",
+        "subject",
+        "profile",
+        "body",
+        "proportion",
+        "face",
+        "faceDetail",
+        "detailFace",
+        "hair",
+        "skinHair",
+        "detailBody",
+        "marks",
+        "realism",
+        "expression",
+        "outfit",
+        "signature",
+        "style",
+        "info",
+        "negative"
+      ],
+      "length": 2230,
+      "era": "qing_early",
+      "role": "ruler",
+      "rank": "none",
+      "costumeChars": 117,
+      "evidence": {
+        "lookId": "qe_emperor_ceremony",
+        "level": "A/B",
+        "refs": [
+          "S1",
+          "S2"
+        ],
+        "note": "皇帝朝服采用典制基线；细部珠数不强制给生图模型。"
+      }
+    },
+    "createdAt": "2026-10-25T07:55:57.483Z",
+    "scores": [
+      1,
+      0,
+      0,
+      0,
+      1,
+      0,
+      0,
+      1,
+      1,
+      1
+    ],
+    "visualScore": 5,
+    "visualPass": false,
+    "layoutPass": true,
+    "sizePass": false,
+    "overallPass": false,
+    "visualNotes": "朝冠层级/东珠无法确认；袍纹爪数不清，朝裳分层不明确。",
+    "reviewMethod": "assistant-visual-review; 5 contact sheets; full originals 05,19,29; not a specialist certification",
+    "requestedSize": "2048x1152"
+  },
+  {
+    "no": 18,
+    "json": "输出\\人物\\男\\021_P2_18_qe_emperor_ceremony_2_正背设定卡.json",
+    "image": "输出\\人物\\男\\021_P2_18_qe_emperor_ceremony_2_正背设定卡.png",
+    "dimensions": [
+      1672,
+      941
+    ],
+    "schema": 3,
+    "evidence": {
+      "lookId": "qe_emperor_ceremony",
+      "level": "A/B",
+      "refs": [
+        "S1",
+        "S2"
+      ],
+      "note": "皇帝朝服采用典制基线；细部珠数不强制给生图模型。"
+    },
+    "meta": {
+      "model": "gpt-image-2.5-sunburst",
+      "size": "2048x1152",
+      "quality": "high",
+      "usage": null,
+      "attempts": 1,
+      "ms": 59290
+    },
+    "promptMeta": {
+      "layout": "sheet_2view",
+      "layoutLabel": "正背设定卡",
+      "ratio": "16:9",
+      "res": "2K",
+      "size": "2048x1152",
+      "detailPreset": "detailed",
+      "blocksEnabled": [
+        "format",
+        "layout",
+        "subject",
+        "profile",
+        "body",
+        "proportion",
+        "face",
+        "faceDetail",
+        "detailFace",
+        "hair",
+        "skinHair",
+        "detailBody",
+        "marks",
+        "realism",
+        "expression",
+        "outfit",
+        "signature",
+        "style",
+        "info",
+        "negative"
+      ],
+      "length": 2230,
+      "era": "qing_early",
+      "role": "ruler",
+      "rank": "none",
+      "costumeChars": 117,
+      "evidence": {
+        "lookId": "qe_emperor_ceremony",
+        "level": "A/B",
+        "refs": [
+          "S1",
+          "S2"
+        ],
+        "note": "皇帝朝服采用典制基线；细部珠数不强制给生图模型。"
+      }
+    },
+    "createdAt": "2026-10-25T07:56:39.521Z",
+    "scores": [
+      1,
+      0,
+      0,
+      0,
+      1,
+      0,
+      0,
+      1,
+      1,
+      1
+    ],
+    "visualScore": 5,
+    "visualPass": false,
+    "layoutPass": true,
+    "sizePass": false,
+    "overallPass": false,
+    "visualNotes": "冠偏演绎式金冠，朝冠层级与朝裳不明；不能据明黄龙袍判典制通过。",
+    "reviewMethod": "assistant-visual-review; 5 contact sheets; full originals 05,19,29; not a specialist certification",
+    "requestedSize": "2048x1152"
+  },
+  {
+    "no": 19,
+    "json": "输出\\人物\\女\\003_P2_19_qe_empress_ceremony_1_正背设定卡.json",
+    "image": "输出\\人物\\女\\003_P2_19_qe_empress_ceremony_1_正背设定卡.png",
+    "dimensions": [
+      1672,
+      940
+    ],
+    "schema": 3,
+    "evidence": {
+      "lookId": "qe_empress_ceremony",
+      "level": "A/B",
+      "refs": [
+        "S1",
+        "S8"
+      ],
+      "note": "朝褂、龙纹和立水依据典制与馆藏；不生成可读服饰文字。"
+    },
+    "meta": {
+      "model": "gpt-image-2.5-sunburst",
+      "size": "2048x1152",
+      "quality": "high",
+      "usage": null,
+      "attempts": 1,
+      "ms": 53962
+    },
+    "promptMeta": {
+      "layout": "sheet_2view",
+      "layoutLabel": "正背设定卡",
+      "ratio": "16:9",
+      "res": "2K",
+      "size": "2048x1152",
+      "detailPreset": "detailed",
+      "blocksEnabled": [
+        "format",
+        "layout",
+        "subject",
+        "profile",
+        "body",
+        "proportion",
+        "face",
+        "faceDetail",
+        "detailFace",
+        "hair",
+        "skinHair",
+        "detailBody",
+        "marks",
+        "realism",
+        "expression",
+        "outfit",
+        "signature",
+        "style",
+        "info",
+        "negative"
+      ],
+      "length": 2221,
+      "era": "qing_early",
+      "role": "ruler",
+      "rank": "none",
+      "costumeChars": 115,
+      "evidence": {
+        "lookId": "qe_empress_ceremony",
+        "level": "A/B",
+        "refs": [
+          "S1",
+          "S8"
+        ],
+        "note": "朝褂、龙纹和立水依据典制与馆藏；不生成可读服饰文字。"
+      }
+    },
+    "createdAt": "2026-10-25T07:56:36.164Z",
+    "scores": [
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      0,
+      1
+    ],
+    "visualScore": 2,
+    "visualPass": false,
+    "layoutPass": true,
+    "sizePass": false,
+    "overallPass": false,
+    "visualNotes": "黄外衣代替石青朝褂；冠式、朝裙/朝袍分层、三盘朝珠均不足。已看原图。",
+    "reviewMethod": "assistant-visual-review; 5 contact sheets; full originals 05,19,29; not a specialist certification",
+    "requestedSize": "2048x1152"
+  },
+  {
+    "no": 20,
+    "json": "输出\\人物\\女\\004_P2_20_qe_empress_ceremony_2_正背设定卡.json",
+    "image": "输出\\人物\\女\\004_P2_20_qe_empress_ceremony_2_正背设定卡.png",
+    "dimensions": [
+      1672,
+      941
+    ],
+    "schema": 3,
+    "evidence": {
+      "lookId": "qe_empress_ceremony",
+      "level": "A/B",
+      "refs": [
+        "S1",
+        "S8"
+      ],
+      "note": "朝褂、龙纹和立水依据典制与馆藏；不生成可读服饰文字。"
+    },
+    "meta": {
+      "model": "gpt-image-2.5-sunburst",
+      "size": "2048x1152",
+      "quality": "high",
+      "usage": null,
+      "attempts": 1,
+      "ms": 66186
+    },
+    "promptMeta": {
+      "layout": "sheet_2view",
+      "layoutLabel": "正背设定卡",
+      "ratio": "16:9",
+      "res": "2K",
+      "size": "2048x1152",
+      "detailPreset": "detailed",
+      "blocksEnabled": [
+        "format",
+        "layout",
+        "subject",
+        "profile",
+        "body",
+        "proportion",
+        "face",
+        "faceDetail",
+        "detailFace",
+        "hair",
+        "skinHair",
+        "detailBody",
+        "marks",
+        "realism",
+        "expression",
+        "outfit",
+        "signature",
+        "style",
+        "info",
+        "negative"
+      ],
+      "length": 2221,
+      "era": "qing_early",
+      "role": "ruler",
+      "rank": "none",
+      "costumeChars": 115,
+      "evidence": {
+        "lookId": "qe_empress_ceremony",
+        "level": "A/B",
+        "refs": [
+          "S1",
+          "S8"
+        ],
+        "note": "朝褂、龙纹和立水依据典制与馆藏；不生成可读服饰文字。"
+      }
+    },
+    "createdAt": "2026-10-25T07:57:18.558Z",
+    "scores": [
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      0,
+      1
+    ],
+    "visualScore": 2,
+    "visualPass": false,
+    "layoutPass": true,
+    "sizePass": false,
+    "overallPass": false,
+    "visualNotes": "同样黄外层、泛化凤冠；三盘朝珠和分层不足。",
+    "reviewMethod": "assistant-visual-review; 5 contact sheets; full originals 05,19,29; not a specialist certification",
+    "requestedSize": "2048x1152"
+  },
+  {
+    "no": 21,
+    "json": "输出\\人物\\男\\022_P2_21_qe_qinwang_daily_1_正背设定卡.json",
+    "image": "输出\\人物\\男\\022_P2_21_qe_qinwang_daily_1_正背设定卡.png",
+    "dimensions": [
+      1672,
+      941
+    ],
+    "schema": 3,
+    "evidence": {
+      "lookId": "qe_qinwang_daily",
+      "level": "A",
+      "refs": [
+        "S1",
+        "S2"
+      ],
+      "note": "亲王使用团龙，不使用文武官方补。"
+    },
+    "meta": {
+      "model": "gpt-image-2.5-sunburst",
+      "size": "2048x1152",
+      "quality": "high",
+      "usage": null,
+      "attempts": 1,
+      "ms": 37911
+    },
+    "promptMeta": {
+      "layout": "sheet_2view",
+      "layoutLabel": "正背设定卡",
+      "ratio": "16:9",
+      "res": "2K",
+      "size": "2048x1152",
+      "detailPreset": "detailed",
+      "blocksEnabled": [
+        "format",
+        "layout",
+        "subject",
+        "profile",
+        "body",
+        "proportion",
+        "face",
+        "faceDetail",
+        "detailFace",
+        "hair",
+        "skinHair",
+        "detailBody",
+        "marks",
+        "realism",
+        "expression",
+        "outfit",
+        "signature",
+        "style",
+        "info",
+        "negative"
+      ],
+      "length": 2224,
+      "era": "qing_early",
+      "role": "noble",
+      "rank": "none",
+      "costumeChars": 110,
+      "evidence": {
+        "lookId": "qe_qinwang_daily",
+        "level": "A",
+        "refs": [
+          "S1",
+          "S2"
+        ],
+        "note": "亲王使用团龙，不使用文武官方补。"
+      }
+    },
+    "createdAt": "2026-10-25T07:57:24.227Z",
+    "scores": [
+      1,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      1,
+      1,
+      1
+    ],
+    "visualScore": 4,
+    "visualPass": false,
+    "layoutPass": true,
+    "sizePass": false,
+    "overallPass": false,
+    "visualNotes": "团龙重复到下摆，四团位置不稳；冠顶/朝带细节不确认，场合混合。",
+    "reviewMethod": "assistant-visual-review; 5 contact sheets; full originals 05,19,29; not a specialist certification",
+    "requestedSize": "2048x1152"
+  },
+  {
+    "no": 22,
+    "json": "输出\\人物\\男\\023_P2_22_qe_qinwang_daily_2_正背设定卡.json",
+    "image": "输出\\人物\\男\\023_P2_22_qe_qinwang_daily_2_正背设定卡.png",
+    "dimensions": [
+      1672,
+      941
+    ],
+    "schema": 3,
+    "evidence": {
+      "lookId": "qe_qinwang_daily",
+      "level": "A",
+      "refs": [
+        "S1",
+        "S2"
+      ],
+      "note": "亲王使用团龙，不使用文武官方补。"
+    },
+    "meta": {
+      "model": "gpt-image-2.5-sunburst",
+      "size": "2048x1152",
+      "quality": "high",
+      "usage": null,
+      "attempts": 1,
+      "ms": 43665
+    },
+    "promptMeta": {
+      "layout": "sheet_2view",
+      "layoutLabel": "正背设定卡",
+      "ratio": "16:9",
+      "res": "2K",
+      "size": "2048x1152",
+      "detailPreset": "detailed",
+      "blocksEnabled": [
+        "format",
+        "layout",
+        "subject",
+        "profile",
+        "body",
+        "proportion",
+        "face",
+        "faceDetail",
+        "detailFace",
+        "hair",
+        "skinHair",
+        "detailBody",
+        "marks",
+        "realism",
+        "expression",
+        "outfit",
+        "signature",
+        "style",
+        "info",
+        "negative"
+      ],
+      "length": 2224,
+      "era": "qing_early",
+      "role": "noble",
+      "rank": "none",
+      "costumeChars": 110,
+      "evidence": {
+        "lookId": "qe_qinwang_daily",
+        "level": "A",
+        "refs": [
+          "S1",
+          "S2"
+        ],
+        "note": "亲王使用团龙，不使用文武官方补。"
+      }
+    },
+    "createdAt": "2026-10-25T07:58:39.467Z",
+    "scores": [
+      1,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      1,
+      1,
+      1
+    ],
+    "visualScore": 4,
+    "visualPass": false,
+    "layoutPass": true,
+    "sizePass": false,
+    "overallPass": false,
+    "visualNotes": "重复团纹、珠链与腰带混搭；未满足限定四团与场合组合。",
+    "reviewMethod": "assistant-visual-review; 5 contact sheets; full originals 05,19,29; not a specialist certification",
+    "requestedSize": "2048x1152"
+  },
+  {
+    "no": 23,
+    "json": "输出\\人物\\女\\006_P2_23_ql_noble_lady_1_正背设定卡.json",
+    "image": "输出\\人物\\女\\006_P2_23_ql_noble_lady_1_正背设定卡.png",
+    "dimensions": [
+      1672,
+      941
+    ],
+    "schema": 3,
+    "evidence": {
+      "lookId": "ql_noble_lady",
+      "level": "D",
+      "refs": [
+        "S11"
+      ],
+      "note": "大拉翅、花盆底与氅衣只作为晚清可选写实形制。"
+    },
+    "meta": {
+      "model": "gpt-image-2.5-sunburst",
+      "size": "2048x1152",
+      "quality": "high",
+      "usage": null,
+      "attempts": 1,
+      "ms": 85966
+    },
+    "promptMeta": {
+      "layout": "sheet_2view",
+      "layoutLabel": "正背设定卡",
+      "ratio": "16:9",
+      "res": "2K",
+      "size": "2048x1152",
+      "detailPreset": "detailed",
+      "blocksEnabled": [
+        "format",
+        "layout",
+        "subject",
+        "profile",
+        "body",
+        "proportion",
+        "face",
+        "faceDetail",
+        "detailFace",
+        "hair",
+        "skinHair",
+        "detailBody",
+        "marks",
+        "realism",
+        "expression",
+        "outfit",
+        "signature",
+        "style",
+        "info",
+        "negative"
+      ],
+      "length": 2258,
+      "era": "qing_late",
+      "role": "noble",
+      "rank": "none",
+      "costumeChars": 116,
+      "evidence": {
+        "lookId": "ql_noble_lady",
+        "level": "D",
+        "refs": [
+          "S11"
+        ],
+        "note": "大拉翅、花盆底与氅衣只作为晚清可选写实形制。"
+      }
+    },
+    "createdAt": "2026-10-25T07:59:24.982Z",
+    "scores": [
+      1,
+      1,
+      1,
+      1,
+      1,
+      0,
+      1,
+      0,
+      1,
+      1
+    ],
+    "visualScore": 8,
+    "visualPass": true,
+    "layoutPass": true,
+    "sizePass": false,
+    "overallPass": false,
+    "visualNotes": "旗头/藕荷衣与盘发可见；开衩未到腋，高底更像双跟，鞋底形制失败。",
+    "reviewMethod": "assistant-visual-review; 5 contact sheets; full originals 05,19,29; not a specialist certification",
+    "requestedSize": "2048x1152"
+  },
+  {
+    "no": 24,
+    "json": "输出\\人物\\女\\005_P2_24_ql_noble_lady_2_正背设定卡.json",
+    "image": "输出\\人物\\女\\005_P2_24_ql_noble_lady_2_正背设定卡.png",
+    "dimensions": [
+      1672,
+      941
+    ],
+    "schema": 3,
+    "evidence": {
+      "lookId": "ql_noble_lady",
+      "level": "D",
+      "refs": [
+        "S11"
+      ],
+      "note": "大拉翅、花盆底与氅衣只作为晚清可选写实形制。"
+    },
+    "meta": {
+      "model": "gpt-image-2.5-sunburst",
+      "size": "2048x1152",
+      "quality": "high",
+      "usage": null,
+      "attempts": 1,
+      "ms": 38685
+    },
+    "promptMeta": {
+      "layout": "sheet_2view",
+      "layoutLabel": "正背设定卡",
+      "ratio": "16:9",
+      "res": "2K",
+      "size": "2048x1152",
+      "detailPreset": "detailed",
+      "blocksEnabled": [
+        "format",
+        "layout",
+        "subject",
+        "profile",
+        "body",
+        "proportion",
+        "face",
+        "faceDetail",
+        "detailFace",
+        "hair",
+        "skinHair",
+        "detailBody",
+        "marks",
+        "realism",
+        "expression",
+        "outfit",
+        "signature",
+        "style",
+        "info",
+        "negative"
+      ],
+      "length": 2258,
+      "era": "qing_late",
+      "role": "noble",
+      "rank": "none",
+      "costumeChars": 116,
+      "evidence": {
+        "lookId": "ql_noble_lady",
+        "level": "D",
+        "refs": [
+          "S11"
+        ],
+        "note": "大拉翅、花盆底与氅衣只作为晚清可选写实形制。"
+      }
+    },
+    "createdAt": "2026-10-25T07:58:37.475Z",
+    "scores": [
+      1,
+      1,
+      1,
+      1,
+      1,
+      0,
+      1,
+      0,
+      1,
+      1
+    ],
+    "visualScore": 8,
+    "visualPass": true,
+    "layoutPass": true,
+    "sizePass": false,
+    "overallPass": false,
+    "visualNotes": "同样开衩和花盆底位置不准确；不把高跟概念等同花盆底。",
+    "reviewMethod": "assistant-visual-review; 5 contact sheets; full originals 05,19,29; not a specialist certification",
+    "requestedSize": "2048x1152"
+  },
+  {
+    "no": 25,
+    "json": "输出\\人物\\男\\024_P2_25_ql_xinjun_1_正背设定卡.json",
+    "image": "输出\\人物\\男\\024_P2_25_ql_xinjun_1_正背设定卡.png",
+    "dimensions": [
+      1672,
+      941
+    ],
+    "schema": 3,
+    "evidence": {
+      "lookId": "ql_xinjun",
+      "level": "D",
+      "refs": [
+        "S16"
+      ],
+      "note": "新军具体番号与军衔未固化，仅采用概括性的晚清西式军服。"
+    },
+    "meta": {
+      "model": "gpt-image-2.5-sunburst",
+      "size": "2048x1152",
+      "quality": "high",
+      "usage": null,
+      "attempts": 1,
+      "ms": 40104
+    },
+    "promptMeta": {
+      "layout": "sheet_2view",
+      "layoutLabel": "正背设定卡",
+      "ratio": "16:9",
+      "res": "2K",
+      "size": "2048x1152",
+      "detailPreset": "detailed",
+      "blocksEnabled": [
+        "format",
+        "layout",
+        "subject",
+        "profile",
+        "body",
+        "proportion",
+        "face",
+        "faceDetail",
+        "detailFace",
+        "hair",
+        "skinHair",
+        "detailBody",
+        "marks",
+        "realism",
+        "expression",
+        "outfit",
+        "signature",
+        "style",
+        "info",
+        "negative"
+      ],
+      "length": 2219,
+      "era": "qing_late",
+      "role": "soldier",
+      "rank": "none",
+      "costumeChars": 78,
+      "evidence": {
+        "lookId": "ql_xinjun",
+        "level": "D",
+        "refs": [
+          "S16"
+        ],
+        "note": "新军具体番号与军衔未固化，仅采用概括性的晚清西式军服。"
+      }
+    },
+    "createdAt": "2026-10-25T07:58:41.101Z",
+    "scores": [
+      1,
+      1,
+      1,
+      1,
+      1,
+      0,
+      0,
+      1,
+      1,
+      0
+    ],
+    "visualScore": 7,
+    "visualPass": true,
+    "layoutPass": true,
+    "sizePass": false,
+    "overallPass": false,
+    "visualNotes": "大檐帽、深蓝制服、长靴可见；帽章/发制/领袖章未核，属D/E演绎。",
+    "reviewMethod": "assistant-visual-review; 5 contact sheets; full originals 05,19,29; not a specialist certification",
+    "requestedSize": "2048x1152"
+  },
+  {
+    "no": 26,
+    "json": "输出\\人物\\男\\026_P2_26_ql_xinjun_2_正背设定卡.json",
+    "image": "输出\\人物\\男\\026_P2_26_ql_xinjun_2_正背设定卡.png",
+    "dimensions": [
+      1672,
+      941
+    ],
+    "schema": 3,
+    "evidence": {
+      "lookId": "ql_xinjun",
+      "level": "D",
+      "refs": [
+        "S16"
+      ],
+      "note": "新军具体番号与军衔未固化，仅采用概括性的晚清西式军服。"
+    },
+    "meta": {
+      "model": "gpt-image-2.5-sunburst",
+      "size": "2048x1152",
+      "quality": "high",
+      "usage": null,
+      "attempts": 1,
+      "ms": 39723
+    },
+    "promptMeta": {
+      "layout": "sheet_2view",
+      "layoutLabel": "正背设定卡",
+      "ratio": "16:9",
+      "res": "2K",
+      "size": "2048x1152",
+      "detailPreset": "detailed",
+      "blocksEnabled": [
+        "format",
+        "layout",
+        "subject",
+        "profile",
+        "body",
+        "proportion",
+        "face",
+        "faceDetail",
+        "detailFace",
+        "hair",
+        "skinHair",
+        "detailBody",
+        "marks",
+        "realism",
+        "expression",
+        "outfit",
+        "signature",
+        "style",
+        "info",
+        "negative"
+      ],
+      "length": 2219,
+      "era": "qing_late",
+      "role": "soldier",
+      "rank": "none",
+      "costumeChars": 78,
+      "evidence": {
+        "lookId": "ql_xinjun",
+        "level": "D",
+        "refs": [
+          "S16"
+        ],
+        "note": "新军具体番号与军衔未固化，仅采用概括性的晚清西式军服。"
+      }
+    },
+    "createdAt": "2026-10-25T07:59:24.457Z",
+    "scores": [
+      1,
+      1,
+      1,
+      1,
+      1,
+      0,
+      0,
+      1,
+      1,
+      0
+    ],
+    "visualScore": 7,
+    "visualPass": true,
+    "layoutPass": true,
+    "sizePass": false,
+    "overallPass": false,
+    "visualNotes": "通用制服外观稳定；不能确认特定晚清军镇年份，时代细部不给分。",
+    "reviewMethod": "assistant-visual-review; 5 contact sheets; full originals 05,19,29; not a specialist certification",
+    "requestedSize": "2048x1152"
+  },
+  {
+    "no": 27,
+    "json": "输出\\人物\\男\\025_P2_27_ql_donated_merchant_1_正背设定卡.json",
+    "image": "输出\\人物\\男\\025_P2_27_ql_donated_merchant_1_正背设定卡.png",
+    "dimensions": [
+      1672,
+      940
+    ],
+    "schema": 3,
+    "evidence": {
+      "lookId": "ql_donated_merchant",
+      "level": "A/D",
+      "refs": [
+        "S4",
+        "S1"
+      ],
+      "note": "商贾具捐纳职衔时冠服从其品；卡片明确为捐纳身份。"
+    },
+    "meta": {
+      "model": "gpt-image-2.5-sunburst",
+      "size": "2048x1152",
+      "quality": "high",
+      "usage": null,
+      "attempts": 1,
+      "ms": 34625
+    },
+    "promptMeta": {
+      "layout": "sheet_2view",
+      "layoutLabel": "正背设定卡",
+      "ratio": "16:9",
+      "res": "2K",
+      "size": "2048x1152",
+      "detailPreset": "detailed",
+      "blocksEnabled": [
+        "format",
+        "layout",
+        "subject",
+        "profile",
+        "body",
+        "proportion",
+        "face",
+        "faceDetail",
+        "detailFace",
+        "hair",
+        "skinHair",
+        "detailBody",
+        "marks",
+        "realism",
+        "expression",
+        "outfit",
+        "signature",
+        "style",
+        "info",
+        "negative"
+      ],
+      "length": 2265,
+      "era": "qing_late",
+      "role": "merchant",
+      "rank": "3",
+      "costumeChars": 100,
+      "evidence": {
+        "lookId": "ql_donated_merchant",
+        "level": "A/D",
+        "refs": [
+          "S4",
+          "S1"
+        ],
+        "note": "商贾具捐纳职衔时冠服从其品；卡片明确为捐纳身份。"
+      }
+    },
+    "createdAt": "2026-10-25T07:59:22.157Z",
+    "scores": [
+      1,
+      1,
+      0,
+      1,
+      1,
+      1,
+      0,
+      1,
+      1,
+      1
+    ],
+    "visualScore": 8,
+    "visualPass": true,
+    "layoutPass": true,
+    "sizePass": false,
+    "overallPass": false,
+    "visualNotes": "捐纳标题不是身份实据；蓝顶、珠链可见，但孔雀纹不够明确。",
+    "reviewMethod": "assistant-visual-review; 5 contact sheets; full originals 05,19,29; not a specialist certification",
+    "requestedSize": "2048x1152"
+  },
+  {
+    "no": 28,
+    "json": "输出\\人物\\男\\027_P2_28_ql_donated_merchant_2_正背设定卡.json",
+    "image": "输出\\人物\\男\\027_P2_28_ql_donated_merchant_2_正背设定卡.png",
+    "dimensions": [
+      1672,
+      941
+    ],
+    "schema": 3,
+    "evidence": {
+      "lookId": "ql_donated_merchant",
+      "level": "A/D",
+      "refs": [
+        "S4",
+        "S1"
+      ],
+      "note": "商贾具捐纳职衔时冠服从其品；卡片明确为捐纳身份。"
+    },
+    "meta": {
+      "model": "gpt-image-2.5-sunburst",
+      "size": "2048x1152",
+      "quality": "high",
+      "usage": null,
+      "attempts": 1,
+      "ms": 44120
+    },
+    "promptMeta": {
+      "layout": "sheet_2view",
+      "layoutLabel": "正背设定卡",
+      "ratio": "16:9",
+      "res": "2K",
+      "size": "2048x1152",
+      "detailPreset": "detailed",
+      "blocksEnabled": [
+        "format",
+        "layout",
+        "subject",
+        "profile",
+        "body",
+        "proportion",
+        "face",
+        "faceDetail",
+        "detailFace",
+        "hair",
+        "skinHair",
+        "detailBody",
+        "marks",
+        "realism",
+        "expression",
+        "outfit",
+        "signature",
+        "style",
+        "info",
+        "negative"
+      ],
+      "length": 2265,
+      "era": "qing_late",
+      "role": "merchant",
+      "rank": "3",
+      "costumeChars": 100,
+      "evidence": {
+        "lookId": "ql_donated_merchant",
+        "level": "A/D",
+        "refs": [
+          "S4",
+          "S1"
+        ],
+        "note": "商贾具捐纳职衔时冠服从其品；卡片明确为捐纳身份。"
+      }
+    },
+    "createdAt": "2026-10-25T07:59:34.035Z",
+    "scores": [
+      1,
+      1,
+      0,
+      1,
+      1,
+      1,
+      0,
+      1,
+      1,
+      1
+    ],
+    "visualScore": 8,
+    "visualPass": true,
+    "layoutPass": true,
+    "sizePass": false,
+    "overallPass": false,
+    "visualNotes": "蓝顶、珠链与补褂组合可见；孔雀禽纹不能确认。",
+    "reviewMethod": "assistant-visual-review; 5 contact sheets; full originals 05,19,29; not a specialist certification",
+    "requestedSize": "2048x1152"
+  },
+  {
+    "no": 29,
+    "json": "输出\\人物\\男\\029_P2_29_qe_civil_1_1_服饰拆解与色卡.json",
+    "image": "输出\\人物\\男\\029_P2_29_qe_civil_1_1_服饰拆解与色卡.png",
+    "dimensions": [
+      1672,
+      941
+    ],
+    "schema": 3,
+    "evidence": {
+      "lookId": "qe_civil_1",
+      "level": "A/B",
+      "refs": [
+        "S1",
+        "S2",
+        "S3",
+        "S5"
+      ],
+      "note": "补子、顶戴与朝珠资格按官修典制推导。"
+    },
+    "meta": {
+      "model": "gpt-image-2.5-sunburst",
+      "size": "2048x1152",
+      "quality": "high",
+      "usage": null,
+      "attempts": 1,
+      "ms": 45906
+    },
+    "promptMeta": {
+      "layout": "costume_breakdown",
+      "layoutLabel": "服饰拆解与色卡",
+      "ratio": "16:9",
+      "res": "2K",
+      "size": "2048x1152",
+      "detailPreset": "detailed",
+      "blocksEnabled": [
+        "format",
+        "layout",
+        "subject",
+        "profile",
+        "body",
+        "proportion",
+        "face",
+        "faceDetail",
+        "detailFace",
+        "hair",
+        "skinHair",
+        "detailBody",
+        "marks",
+        "realism",
+        "expression",
+        "outfit",
+        "signature",
+        "style",
+        "info",
+        "negative"
+      ],
+      "length": 1649,
+      "era": "qing_early",
+      "role": "official_civil",
+      "rank": "1",
+      "costumeChars": 96,
+      "evidence": {
+        "lookId": "qe_civil_1",
+        "level": "A/B",
+        "refs": [
+          "S1",
+          "S2",
+          "S3",
+          "S5"
+        ],
+        "note": "补子、顶戴与朝珠资格按官修典制推导。"
+      }
+    },
+    "createdAt": "2026-10-25T08:00:15.238Z",
+    "scores": [
+      1,
+      1,
+      1,
+      1,
+      1,
+      0,
+      0,
+      1,
+      1,
+      0
+    ],
+    "visualScore": 7,
+    "visualPass": true,
+    "layoutPass": false,
+    "sizePass": false,
+    "overallPass": false,
+    "visualNotes": "拆解与色块存在，但有多余人物标题、袖口复制鹤纹、细节数多于五窗。",
+    "reviewMethod": "assistant-visual-review; 5 contact sheets; full originals 05,19,29; not a specialist certification",
+    "requestedSize": "2048x1152"
+  },
+  {
+    "no": 30,
+    "json": "输出\\人物\\男\\028_P2_30_qe_civil_1_2_服饰拆解与色卡.json",
+    "image": "输出\\人物\\男\\028_P2_30_qe_civil_1_2_服饰拆解与色卡.png",
+    "dimensions": [
+      1672,
+      941
+    ],
+    "schema": 3,
+    "evidence": {
+      "lookId": "qe_civil_1",
+      "level": "A/B",
+      "refs": [
+        "S1",
+        "S2",
+        "S3",
+        "S5"
+      ],
+      "note": "补子、顶戴与朝珠资格按官修典制推导。"
+    },
+    "meta": {
+      "model": "gpt-image-2.5-sunburst",
+      "size": "2048x1152",
+      "quality": "high",
+      "usage": null,
+      "attempts": 1,
+      "ms": 39339
+    },
+    "promptMeta": {
+      "layout": "costume_breakdown",
+      "layoutLabel": "服饰拆解与色卡",
+      "ratio": "16:9",
+      "res": "2K",
+      "size": "2048x1152",
+      "detailPreset": "detailed",
+      "blocksEnabled": [
+        "format",
+        "layout",
+        "subject",
+        "profile",
+        "body",
+        "proportion",
+        "face",
+        "faceDetail",
+        "detailFace",
+        "hair",
+        "skinHair",
+        "detailBody",
+        "marks",
+        "realism",
+        "expression",
+        "outfit",
+        "signature",
+        "style",
+        "info",
+        "negative"
+      ],
+      "length": 1649,
+      "era": "qing_early",
+      "role": "official_civil",
+      "rank": "1",
+      "costumeChars": 96,
+      "evidence": {
+        "lookId": "qe_civil_1",
+        "level": "A/B",
+        "refs": [
+          "S1",
+          "S2",
+          "S3",
+          "S5"
+        ],
+        "note": "补子、顶戴与朝珠资格按官修典制推导。"
+      }
+    },
+    "createdAt": "2026-10-25T08:00:10.736Z",
+    "scores": [
+      1,
+      1,
+      1,
+      1,
+      1,
+      0,
+      0,
+      1,
+      1,
+      0
+    ],
+    "visualScore": 7,
+    "visualPass": true,
+    "layoutPass": false,
+    "sizePass": false,
+    "overallPass": false,
+    "visualNotes": "有五窗与色卡，但仍生成标题文字；不能通过无文字版式验收。",
+    "reviewMethod": "assistant-visual-review; 5 contact sheets; full originals 05,19,29; not a specialist certification",
+    "requestedSize": "2048x1152"
+  }
+]

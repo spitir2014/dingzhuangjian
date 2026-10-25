@@ -1,0 +1,18 @@
+{
+  "name": "zaoxiangtai",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "start": "node server.mjs",
+    "validate": "node scripts/validate-data.mjs",
+    "check": "node scripts/check-prompt.mjs",
+    "test:model": "node scripts/test-model.mjs",
+    "test:layouts": "node scripts/test-layouts.mjs",
+    "test": "npm run validate && npm run check && npm run test:model && npm run test:layouts && npm run test:p2 && npm run test:costume",
+    "test:p2": "node scripts/test-p2.mjs",
+    "p2:live:plan": "node scripts/run-p2-live-validation.mjs",
+    "test:batch": "node scripts/test-batch.mjs",
+    "test:costume": "node scripts/test-costume-e2e.mjs"
+  }
+}
