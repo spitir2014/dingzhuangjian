@@ -201,10 +201,11 @@
 <div class="modal" id="modal">
   <div class="modal-card">
     <h3 id="modalTitle">接入第三方生图接口</h3>
-    <p class="modal-note">接口需兼容 OpenAI 的 <code>/v1/models</code> 与 <code>/v1/images/generations</code>；地址只填域名也行（会依次试 <code>/v1/models</code>、<code>/models</code>）。密钥只存在本机服务端。</p>
+    <p class="modal-note">接口需兼容 OpenAI 的 <code>/v1/models</code> 与 <code>/v1/images/generations</code>；地址只填域名也行（会依次试 <code>/v1/models</code>、<code>/models</code>）。<strong>密钥不在这里填</strong>：只从项目根目录的 <code>.env</code> 读取，改完重启造像台生效。</p>
     <label class="form-row"><span>名称</span><input id="pvName" placeholder="例如：画布中转" /></label>
+    <label class="form-row"><span>标识</span><input id="pvId" placeholder="小写字母/数字，如 cpa（决定 .env 里的变量名）" /></label>
     <label class="form-row"><span>接口地址</span><input id="pvBase" placeholder="https://example.com/v1 或 https://example.com/canvas" /></label>
-    <label class="form-row"><span>API Key</span><input id="pvKey" placeholder="sk-..." /></label>
+    <label class="form-row"><span>密钥</span><input id="pvKey" disabled placeholder="由 .env 管理，改完重启生效" /></label>
     <div class="modal-actions">
       <button class="btn ghost" id="modalCancel">取消</button>
       <button class="btn primary" id="modalSave">保存并拉取模型</button>

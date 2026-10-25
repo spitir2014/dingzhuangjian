@@ -79,7 +79,6 @@ async function writeConfig(file, mockPort, settings) {
         id: "mock",
         name: "本地假上游",
         baseUrl: origin,
-        apiKey: "sk-test",
         authHeader: "Authorization",
         authPrefix: "Bearer",
         enabled: true,
@@ -99,7 +98,8 @@ async function startServer(options) {
     env: Object.assign({}, process.env, {
       PORT: String(options.port),
       ZXT_CONFIG: options.configPath,
-      ZXT_OUT: options.outDir
+      ZXT_OUT: options.outDir,
+      ZXT_KEY_MOCK: "sk-test" /* 方案 A：密钥只从环境变量来，不再写进 config.json */
     })
   });
   let stdout = "";

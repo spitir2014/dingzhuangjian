@@ -3171,11 +3171,11 @@ function renderManage() {
     const row = el("div", "manage-row");
     const info = el("div", "manage-info");
     info.appendChild(el("strong", null, p.name));
-    info.appendChild(el("span", "manage-sub", p.baseUrl + " · " + p.keyMask));
+    info.appendChild(el("span", "manage-sub", p.baseUrl + " · " + (p.hasKey ? p.keyMask : "⚠ 未配置密钥（.env 里加 " + (p.envKey || "ZXT_KEY_" + String(p.id).toUpperCase()) + "）")));
     row.appendChild(info);
     const acts = el("div", "manage-actions");
     const edit = el("button", "text-btn", "编辑");
-    edit.title = "修改名称 / 接口地址 / API Key（密钥留空表示不改）";
+    edit.title = "修改名称 / 接口地址；密钥在 .env 里改，改完重启";
     edit.addEventListener("click", function () {
       /* 先收起管理面板，否则两个弹窗层叠（同一个 z-index，后出现的会盖住编辑框） */
       $("#manageModal").classList.remove("on");
@@ -4590,8 +4590,20 @@ function openModal(mode, provider, opts) {
   if (saveBtn) saveBtn.textContent = editing ? "保存修改" : "保存并拉取模型";
   $("#pvName").value = editing ? editing.name : "";
   $("#pvBase").value = editing ? editing.baseUrl : "";
-  $("#pvKey").value = "";
-  $("#pvKey").placeholder = editing ? "留空 = 不修改（当前 " + editing.keyMask + "）" : "sk-...";
+  /* 方案 A：密钥只从 .env 读，弹窗里只负责告诉用户该改哪个变量名 */
+  const pvId = $("#pvId");
+  if (pvId) {
+    pvId.value = editing ? editing.id : "";
+    pvId.disabled = !!editing;
+    pvId.placeholder = editing ? "标识不可修改" : "小写字母/数字，如 cpa";
+  }
+  const keyInput = $("#pvKey");
+  keyInput.value = "";
+  keyInput.disabled = true;
+  keyInput.placeholder = editing && editing.envKey
+    ? "由 .env 的 " + editing.envKey + " 决定，改完重启生效"
+    : "保存后按提示写进 .env，重启生效";
+  keyInput.title = "密钥只从项目根目录的 .env 读取，这里不能修改；改完 .env 重启造像台即可生效。";
   $("#modal").classList.add("on");
 }
 function closeModal() {
@@ -4623,16 +4635,20 @@ async function saveProvider() {
     : null;
   const name = $("#pvName").value.trim() || (editing ? editing.name : "新服务商");
   const baseUrl = normalizeBaseUrl($("#pvBase").value);
-  const apiKey = $("#pvKey").value.trim();
   if (!baseUrl) { toast("接口地址要填"); return; }
-  if (!editing && !apiKey) { toast("地址和密钥都要填"); return; }
   if (!/^https?:\/\//i.test(baseUrl)) { toast("接口地址要以 http:// 或 https:// 开头"); return; }
-  if (apiKey && /^https?:\/\//i.test(apiKey)) {
-    toast("API Key 里填的是网址（" + apiKey.slice(0, 42) + "…），密钥一般以 sk- 开头；检查一下是不是把模型地址填到密钥里了");
-    return;
+  const payload = { name: name, baseUrl: baseUrl };
+  if (editing) {
+    payload.id = editing.id;
+  } else {
+    /* 标识会拼成环境变量名（ZXT_KEY_<标识>），只允许小写字母/数字/_/- */
+    const rawId = String(($("#pvId") && $("#pvId").value) || "").trim().toLowerCase();
+    if (rawId && !/^[a-z0-9_-]{1,32}$/.test(rawId)) {
+      toast("标识只能用 1–32 位小写字母、数字、下划线或短横线");
+      return;
+    }
+    if (rawId) payload.id = rawId;
   }
-  const payload = { name: name, baseUrl: baseUrl, apiKey: apiKey };
-  if (editing) payload.id = editing.id;
   const j = await api("/api/providers", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
@@ -4648,13 +4664,13 @@ async function saveProvider() {
   await loadProviders();
   if (editing) {
     /* 编辑：不切换当前服务商；改了地址或密钥就重新拉一遍模型 */
-    if (wasCurrent && (baseChanged || apiKey)) {
+    if (wasCurrent && baseChanged) {
       state.modelId = null;
       await loadModels();
       saveState();
     }
     reopenManageIfNeeded(back);
-    toast("已更新服务商「" + name + "」" + (wasCurrent && (baseChanged || apiKey) ? "，已重新拉取模型" : ""));
+    toast("已更新服务商「" + name + "」" + (wasCurrent && baseChanged ? "，已重新拉取模型" : "；密钥在 .env 里改，改完重启"));
     return;
   }
   const last = state.providers[state.providers.length - 1];
@@ -4662,8 +4678,13 @@ async function saveProvider() {
     state.providerId = last.id;
     $("#providerSel").value = last.id;
     state.modelId = null;
-    await loadModels();
+    await loadModels(); /* 没配密钥时会如实显示「拉取失败 + 缺哪个变量」，省得猜 */
     saveState(); /* 记住刚接入的服务商，刷新后还停在这个服务商上 */
+    reopenManageIfNeeded(back);
+    toast(last.hasKey
+      ? "已接入 " + name + "，模型 " + state.models.length + " 个"
+      : "已新增「" + name + "」。请在 .env 加一行 " + (last.envKey || "ZXT_KEY_" + String(last.id).toUpperCase()) + "=你的密钥，然后重启造像台");
+    return;
   }
   reopenManageIfNeeded(back);
   toast("已接入 " + name + "，模型 " + state.models.length + " 个");

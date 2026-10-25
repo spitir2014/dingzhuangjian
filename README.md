@@ -14,14 +14,34 @@
     ├── docs/                 设计与验收文档，入口见 docs/README.md
     ├── output/               生成产物（图片 + 同名 JSON + index.json）—— 不进 Git
     ├── _backup/              历史版本快照 —— 不进 Git
-    ├── config.json           服务商与密钥 —— 本地私有，不进 Git
-    ├── API Key.txt           首次启动用来生成 config.json 的原始密钥 —— 本地私有，不进 Git
-    ├── config.example.json   可提交的配置模板（占位符，无真实密钥）
+    ├── config.json           服务商结构（地址/开关/模型目录），**不含密钥** —— 会被程序重写，不进 Git
+    ├── .env                  **唯一存密钥的地方**，不进 Git
+    ├── .env.example          密钥模板（占位符），入库
+    ├── config.example.json   配置模板（占位符，无密钥）
     ├── package.json          npm 脚本入口
     └── 启动.bat              Windows 一键启动
 
-`config.json` 与 `API Key.txt` 里是真实密钥，**已在 `.gitignore` 中排除**。
-要把配置分享给别人，请复制 `config.example.json` 填自己的 key，不要提交这两个真文件。
+**密钥只存在 `.env` 里**：`config.json` 从设计上就不保存密钥（写盘时统一剥掉 `apiKey`），
+仓库里只有占位符版的 `.env.example`。详见下面的「密钥配置」。
+
+## 密钥配置（.env）
+
+    1. 复制 .env.example 为 .env
+    2. 每个服务商一行：ZXT_KEY_<服务商 id 大写>=密钥
+    3. 改完重启造像台
+
+变量名 = `ZXT_KEY_` + 服务商 `id`，**大写**，非字母数字一律换成下划线。当前三个：
+
+| 服务商 id | `.env` 变量名 |
+| --- | --- |
+| `cpa` | `ZXT_KEY_CPA` |
+| `p8fyijr` | `ZXT_KEY_P8FYIJR` |
+| `pboaco7` | `ZXT_KEY_PBOACO7` |
+
+- **缺密钥不会让服务起不来**：控制台打印 `[密钥缺失] …`，该服务商拉模型 / 出图时明确报错并告诉你缺哪个变量。
+- **网页里不能改密钥**：服务商弹窗只显示该服务商对应的变量名，「＋ 接入新的接口」新增后按提示写进 `.env` 再重启。
+- 测试或临时切换可以用环境变量 `ZXT_ENV` 指向另一份 `.env`、`ZXT_CONFIG` 指向另一份配置，互不干扰。
+- **为什么不用 config.json 存**：它会被「拉模型 / 隐藏模型 / 改地址」反复重写，一旦写盘就多一份明文副本；现在 `saveConfig()` 统一剥掉 `apiKey`，任何路径都写不进去。
 
 ## 启动
 
@@ -41,12 +61,13 @@
 
 ## 已接好的接口
 
-`API Key.txt` 会在首次启动时自动读入，生成 `config.json`。目前配了两个服务商：
+密钥来自 `.env`（见上一节），`config.json` 只存地址与开关。目前配了三个服务商：
 
 | 服务商 | 接口地址 | 账号/分组里的模型 |
 | --- | --- | --- |
 | 画布中转 | `https://cpa.shour.bond/canvas` | gpt-image-2.5-sunburst、seedream-5.0-lite、seedream-5.0-pro |
 | 1分一张 | `https://api-image.shour.bond` | gpt-image-2、gpt-image-2.5、gpt-image-2.5-flare、gpt-image-2.5-sunburst |
+| mlgb7 | `https://image.mlgb7.com` | 由密钥决定，见管理面板 |
 
 **模型列表是“按密钥”返回的**：同一个中转站，换一把密钥，`/v1/models` 返回的模型可能就不一样
 （画布中转那把只有 3 个，Shour token 那张“1分一张”分组是上面 4 个，`image2生成图模型` 分组则多两个 seedream）。
@@ -57,11 +78,11 @@
 - `GET  /v1/models`
 - `POST /v1/images/generations`
 
-接口地址填 `https://host`、`https://host/v1` 或 `https://host/v1/models` 都行（会自动裁成 host 再拼路径）；
-**API Key 里只能填 `sk-` 开头的密钥**，把模型地址粘进密钥框会保存失败并提示。
+接口地址填 `https://host`、`https://host/v1` 或 `https://host/v1/models` 都行（会自动裁成 host 再拼路径）。
+**密钥不在网页里填**：新增服务商时填一个「标识」（如 `cpa`），保存后把提示的 `ZXT_KEY_CPA` 写进 `.env`，再重启。
 
 下拉里的模型名就是请求里真正发出去的模型 id（上游的 `display_name` 只放在悬停提示 / 管理面板里作备注）。
-密钥只保存在本机服务端，页面只显示掩码。
+密钥只存在于本机 `.env`，页面只显示掩码。
 
 ## 界面
 
@@ -322,10 +343,10 @@
 
 顶栏「⋯」打开管理面板：
 
-- 服务商：查看地址与密钥掩码；每行有 **编辑** 和 **删除**
-  - 编辑可改名称 / 接口地址 / API Key；**API Key 留空表示不修改**（原密钥不显示在页面上）
+- 服务商：查看地址与密钥掩码；没配密钥的会显示 **⚠ 未配置密钥（.env 里加 ZXT_KEY_…）**；每行有 **编辑** 和 **删除**
+  - 编辑**只能改名称 / 接口地址**；密钥在 `.env` 里改（弹窗会显示该服务商对应的变量名），改完重启生效
   - 点「编辑」会先收起管理面板再弹出编辑框（两个弹窗不叠在一起），**保存或取消后自动回到管理面板**；Esc 也能关
-  - 改了地址或密钥、且改的是当前服务商，会自动重新拉一遍模型
+  - 改了地址、且改的是当前服务商，会自动重新拉一遍模型
   - 删除只删本地记录，不动上游
 - 模型：当前服务商拉到的全部模型，可单独「隐藏 / 显示」
   - 隐藏只是从下拉里移除，不删上游（上游模型本来也删不掉）

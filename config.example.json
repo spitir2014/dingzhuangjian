@@ -4,7 +4,6 @@
       "id": "example",
       "name": "示例服务商（换成你自己的）",
       "baseUrl": "https://api.example.com/v1",
-      "apiKey": "sk-把你的密钥填在这里",
       "authHeader": "Authorization",
       "authPrefix": "Bearer ",
       "enabled": true,

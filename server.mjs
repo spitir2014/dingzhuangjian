@@ -37,44 +37,71 @@ const MIME = {
   ".woff2": "font/woff2"
 };
 
+/* ---------- 密钥：只从 .env 读（方案 A） ----------
+   config.json 只存「结构」（地址 / 名称 / 开关 / 模型目录），密钥永不写盘。
+   换密钥 = 改 .env 里对应的那一行 + 重启造像台；网页里不再提供改密钥的入口。 */
+function providerEnvName(p) {
+  return "ZXT_KEY_" + String((p && p.id) || "").toUpperCase().replace(/[^A-Z0-9]/g, "_");
+}
+
+function keyMissingMessage(p) {
+  return "服务商「" + ((p && p.name) || (p && p.id) || "") + "」没有密钥：请在项目根目录的 .env 里加一行 " +
+    providerEnvName(p) + "=你的密钥，然后重启造像台（密钥只从 .env 读取，不会写进 config.json）";
+}
+
+/* 读进来的 config.json 就算残留了 apiKey 也一律丢掉，再从环境变量补 */
+function applyEnvKeys(cfg) {
+  (cfg.providers || []).forEach(function (p) {
+    delete p.apiKey;
+    const key = String(process.env[providerEnvName(p)] || "").trim();
+    if (key) p.apiKey = key;
+  });
+  return cfg;
+}
+
+/* 写盘时统一剥掉密钥：任何路径都不可能把 apiKey 写进 config.json */
+function omitSecrets(k, v) {
+  return k === "apiKey" ? undefined : v;
+}
+
 async function loadConfig() {
   try {
     const raw = await fs.readFile(CONFIG_FILE, "utf8");
     const cfg = JSON.parse(raw);
     if (!Array.isArray(cfg.providers) || cfg.providers.length === 0) throw new Error("empty");
-    return cfg;
+    return applyEnvKeys(cfg);
   } catch {
-    const cfg = await seedConfig();
-    await fs.writeFile(CONFIG_FILE, JSON.stringify(cfg, null, 2), "utf8");
+    const cfg = applyEnvKeys(seedConfig());
+    try { await fs.writeFile(CONFIG_FILE, JSON.stringify(cfg, omitSecrets, 2), "utf8"); } catch (e) {}
     return cfg;
   }
 }
 
-async function seedConfig() {
-  const providers = [];
-  try {
-    const txt = await fs.readFile(path.join(ROOT, "API Key.txt"), "utf8");
-    const base = (txt.match(/接口地址[:：]\s*(\S+)/) || [])[1];
-    const key = (txt.match(/API\s*Key[:：]\s*(\S+)/i) || [])[1];
-    if (base && key) {
-      providers.push({
-        id: "cpa",
-        name: "画布中转",
-        baseUrl: base.replace(/\/+$/, ""),
-        apiKey: key,
-        authHeader: "Authorization",
-        authPrefix: "Bearer ",
-        enabled: true
-      });
-    }
-  } catch (e) {}
-  return { providers: providers, settings: { downloadDir: "output", hiddenModels: {} } };
+/* 没有 config.json 时的默认结构。密钥来自 .env，这里不读任何密钥文件。 */
+function seedConfig() {
+  return { providers: [], settings: { downloadDir: "output", hiddenModels: {} } };
+}
+
+/* .env 必须在读 config 之前加载：密钥要靠它注入。
+   ZXT_ENV 可指向另一份 .env（测试用，避免读到本机真实密钥）。 */
+const ENV_FILE = process.env.ZXT_ENV ? path.resolve(process.env.ZXT_ENV) : path.join(ROOT, ".env");
+try {
+  process.loadEnvFile(ENV_FILE);
+} catch (e) {
+  /* 没有 .env 就安静跳过；缺哪个密钥会在下面逐条提示 */
 }
 
 let config = await loadConfig();
 
+/* 启动时就把缺密钥的服务商列出来，省得点到「生成」才发现 */
+(config.providers || []).forEach(function (p) {
+  if (!p.apiKey) {
+    console.warn("[密钥缺失] " + (p.name || p.id) + " → 请在 .env 写 " + providerEnvName(p) + "=你的密钥，然后重启");
+  }
+});
+
 async function saveConfig() {
-  await fs.writeFile(CONFIG_FILE, JSON.stringify(config, null, 2), "utf8");
+  await fs.writeFile(CONFIG_FILE, JSON.stringify(config, omitSecrets, 2), "utf8");
 }
 
 /* ---------- 运行参数与批次注册表 ---------- */
@@ -199,6 +226,8 @@ function publicProviders() {
       name: p.name,
       baseUrl: p.baseUrl,
       keyMask: maskKey(p.apiKey),
+      hasKey: !!p.apiKey,
+      envKey: providerEnvName(p),
       enabled: p.enabled !== false
     };
   });
@@ -312,6 +341,7 @@ function modelListFromJson(j) {
 async function handleModels(url, res) {
   const p = findProvider(url.searchParams.get("provider"));
   if (!p) return send(res, 404, { ok: false, error: "provider not found" });
+  if (!p.apiKey) return send(res, 400, { ok: false, error: keyMissingMessage(p) });
   const started = Date.now();
   const tried = [];
   for (const candidate of modelCatalogCandidates(p)) {
@@ -474,6 +504,7 @@ async function handleGenerate(req, res) {
   const body = await readJsonBody(req);
   const p = findProvider(body.providerId);
   if (!p) return send(res, 400, { ok: false, error: "未找到该服务商" });
+  if (!p.apiKey) return send(res, 400, { ok: false, error: keyMissingMessage(p) });
   if (!body.model) return send(res, 400, { ok: false, error: "未选择模型" });
   if (!body.prompt) return send(res, 400, { ok: false, error: "提示词为空" });
 
@@ -626,6 +657,7 @@ async function handleGenerateBatch(req, res) {
     const body = await readJsonBody(req, 4 * 1024 * 1024);
     const p = findProvider(body.providerId);
     if (!p) return send(res, 400, { ok: false, error: "未找到该服务商" });
+    if (!p.apiKey) return send(res, 400, { ok: false, error: keyMissingMessage(p) });
     const jobs = Array.isArray(body.jobs) ? body.jobs.slice(0, 10) : [];
     if (!jobs.length) return send(res, 400, { ok: false, error: "没有任务" });
     for (let i = 0; i < jobs.length; i++) {
@@ -1136,25 +1168,26 @@ const server = http.createServer(async function (req, res) {
     if (url.pathname === "/api/providers" && req.method === "POST") {
       const b = await readJsonBody(req, 1 << 20);
       if (!b.baseUrl) return send(res, 400, { ok: false, error: "接口地址不能为空" });
-      const rawKey = String(b.apiKey == null ? "" : b.apiKey).trim();
-      const id = b.id || "p" + Math.random().toString(36).slice(2, 8);
+      const givenId = String(b.id || "").trim().toLowerCase();
+      /* id 会拼进环境变量名，只允许小写字母/数字/_/-，其余一律重新生成 */
+      const id = /^[a-z0-9_-]{1,32}$/.test(givenId) ? givenId : "p" + Math.random().toString(36).slice(2, 8);
       const existing = findProvider(id);
-      if (!existing && !rawKey) return send(res, 400, { ok: false, error: "新增服务商时密钥不能为空" });
-      if (rawKey && /^https?:\/\//i.test(rawKey)) {
+      /* 方案 A：密钥只从 .env 读。网页提交密钥一律拒收，避免用户以为改了就生效 */
+      const rawKey = String(b.apiKey == null ? "" : b.apiKey).trim();
+      if (rawKey) {
         return send(res, 400, {
           ok: false,
-          error: "API Key 看起来是接口地址（" + rawKey.slice(0, 48) + "），密钥一般以 sk- 开头；请检查是不是把地址填到密钥里了"
+          error: "密钥不再通过网页保存：请在项目根目录的 .env 里写一行 " + providerEnvName({ id: id }) + "=你的密钥，然后重启造像台"
         });
       }
       const baseUrl = normalizeBaseUrl(b.baseUrl);
       if (!baseUrl) return send(res, 400, { ok: false, error: "接口地址不合法" });
       const name = String(b.name || "").trim() || (existing ? existing.name : "未命名服务商");
-      /* 编辑：密钥留空 = 保持原有密钥；改了地址就把上次命中的模型目录清掉，下次重新探测 */
+      /* 编辑：密钥不在网页里改（只改名称/地址）；改了地址就把上次命中的模型目录清掉，下次重新探测 */
       if (existing) {
         const baseChanged = baseUrl !== String(existing.baseUrl || "").replace(/\/+$/, "");
         existing.name = name;
         existing.baseUrl = baseUrl;
-        if (rawKey) existing.apiKey = rawKey;
         existing.authHeader = b.authHeader || existing.authHeader || "Authorization";
         if (b.authPrefix != null) existing.authPrefix = b.authPrefix;
         else if (existing.authPrefix == null) existing.authPrefix = "Bearer ";
@@ -1165,7 +1198,6 @@ const server = http.createServer(async function (req, res) {
           id: id,
           name: name,
           baseUrl: baseUrl,
-          apiKey: rawKey,
           authHeader: b.authHeader || "Authorization",
           authPrefix: b.authPrefix == null ? "Bearer " : b.authPrefix,
           enabled: true

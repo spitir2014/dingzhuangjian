@@ -16,14 +16,14 @@ await fs.rm(DIR, { recursive: true, force: true });
 await fs.mkdir(OUT, { recursive: true });
 const mock = await startMock({ mode: "ok" });
 await fs.writeFile(CFG, JSON.stringify({
-  providers: [{ id: "mock", name: "本地假上游", baseUrl: "http://127.0.0.1:" + mock.port, apiKey: "sk-test",
+  providers: [{ id: "mock", name: "本地假上游", baseUrl: "http://127.0.0.1:" + mock.port,
     authHeader: "Authorization", authPrefix: "Bearer", enabled: true, modelBase: "http://127.0.0.1:" + mock.port + "/v1" }],
   settings: { downloadDir: "output" }
 }, null, 2), "utf8");
 
 const child = spawn(process.execPath, [path.join(ROOT, "server.mjs")], {
   cwd: ROOT, stdio: ["ignore", "pipe", "pipe"],
-  env: Object.assign({}, process.env, { PORT: String(PORT), ZXT_CONFIG: CFG, ZXT_OUT: OUT })
+  env: Object.assign({}, process.env, { PORT: String(PORT), ZXT_CONFIG: CFG, ZXT_OUT: OUT, ZXT_KEY_MOCK: "sk-test" })
 });
 let logs = "";
 child.stdout.on("data", (c) => { logs += c; });

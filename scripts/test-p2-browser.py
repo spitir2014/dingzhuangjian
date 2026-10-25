@@ -8,8 +8,8 @@ ROOT=Path(__file__).resolve().parents[1]
 temp=ROOT/'tmp'/f'p2-browser-{time.time_ns()}'
 temp.mkdir(parents=True)
 config=temp/'config.json'
-config.write_text(json.dumps({'providers':[{'id':'mock','name':'离线测试','baseUrl':'http://127.0.0.1:1','apiKey':'sk-offline','enabled':True}],'settings':{}}),encoding='utf-8')
-env=dict(os.environ,PORT='8818',ZXT_CONFIG=str(config),ZXT_OUT=str(temp/'out'))
+config.write_text(json.dumps({'providers':[{'id':'mock','name':'离线测试','baseUrl':'http://127.0.0.1:1','enabled':True}],'settings':{}}),encoding='utf-8')
+env=dict(os.environ,PORT='8818',ZXT_CONFIG=str(config),ZXT_OUT=str(temp/'out'),ZXT_KEY_MOCK='sk-offline')
 server=subprocess.Popen(['node',str(ROOT/'server.mjs')],cwd=ROOT,env=env,stdout=subprocess.DEVNULL,stderr=subprocess.DEVNULL)
 base='http://127.0.0.1:8818'
 try:
