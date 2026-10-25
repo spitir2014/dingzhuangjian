@@ -23,7 +23,7 @@ const RATIOS = [
 const RES_LIST = ["1K", "2K", "4K"];
 const BATCH_LIST = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
 const QUALITIES = [["auto", "默认"], ["high", "高"], ["medium", "中"], ["low", "低"]];
-const STORE_KEY = "zaoxiangtai.v1";
+const STORE_KEY = "zaoxiangtai.v1"; /* 历史键名：显示名改「定妆间」后保持不动，避免丢用户编辑 */
 
 const state = {
   providers: [],
@@ -4603,7 +4603,7 @@ function openModal(mode, provider, opts) {
   keyInput.placeholder = editing && editing.envKey
     ? "由 .env 的 " + editing.envKey + " 决定，改完重启生效"
     : "保存后按提示写进 .env，重启生效";
-  keyInput.title = "密钥只从项目根目录的 .env 读取，这里不能修改；改完 .env 重启造像台即可生效。";
+  keyInput.title = "密钥只从项目根目录的 .env 读取，这里不能修改；改完 .env 重启定妆间即可生效。";
   $("#modal").classList.add("on");
 }
 function closeModal() {
@@ -4683,7 +4683,7 @@ async function saveProvider() {
     reopenManageIfNeeded(back);
     toast(last.hasKey
       ? "已接入 " + name + "，模型 " + state.models.length + " 个"
-      : "已新增「" + name + "」。请在 .env 加一行 " + (last.envKey || "ZXT_KEY_" + String(last.id).toUpperCase()) + "=你的密钥，然后重启造像台");
+      : "已新增「" + name + "」。请在 .env 加一行 " + (last.envKey || "ZXT_KEY_" + String(last.id).toUpperCase()) + "=你的密钥，然后重启定妆间");
     return;
   }
   reopenManageIfNeeded(back);
@@ -4694,7 +4694,7 @@ async function saveProvider() {
 const UI_BASE_W = 1440;
 const UI_BASE_H = 900;
 const UI = { scale: 1, hideLeft: false, hideRight: false };
-const PANEL_PREF_KEY = "zaoxiangtai.panels.v1";
+const PANEL_PREF_KEY = "zaoxiangtai.panels.v1"; /* 同上：历史键名，勿改 */
 
 function clampNum(n, lo, hi) { return Math.max(lo, Math.min(hi, n)); }
 

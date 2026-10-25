@@ -39,14 +39,14 @@ const MIME = {
 
 /* ---------- 密钥：只从 .env 读（方案 A） ----------
    config.json 只存「结构」（地址 / 名称 / 开关 / 模型目录），密钥永不写盘。
-   换密钥 = 改 .env 里对应的那一行 + 重启造像台；网页里不再提供改密钥的入口。 */
+   换密钥 = 改 .env 里对应的那一行 + 重启定妆间；网页里不再提供改密钥的入口。 */
 function providerEnvName(p) {
   return "ZXT_KEY_" + String((p && p.id) || "").toUpperCase().replace(/[^A-Z0-9]/g, "_");
 }
 
 function keyMissingMessage(p) {
   return "服务商「" + ((p && p.name) || (p && p.id) || "") + "」没有密钥：请在项目根目录的 .env 里加一行 " +
-    providerEnvName(p) + "=你的密钥，然后重启造像台（密钥只从 .env 读取，不会写进 config.json）";
+    providerEnvName(p) + "=你的密钥，然后重启定妆间（密钥只从 .env 读取，不会写进 config.json）";
 }
 
 /* 读进来的 config.json 就算残留了 apiKey 也一律丢掉，再从环境变量补 */
@@ -1177,7 +1177,7 @@ const server = http.createServer(async function (req, res) {
       if (rawKey) {
         return send(res, 400, {
           ok: false,
-          error: "密钥不再通过网页保存：请在项目根目录的 .env 里写一行 " + providerEnvName({ id: id }) + "=你的密钥，然后重启造像台"
+          error: "密钥不再通过网页保存：请在项目根目录的 .env 里写一行 " + providerEnvName({ id: id }) + "=你的密钥，然后重启定妆间"
         });
       }
       const baseUrl = normalizeBaseUrl(b.baseUrl);
@@ -1319,7 +1319,7 @@ function openBrowser(url) {
   }
 }
 
-/* 端口被占用时，判断占用者是不是造像台自己：GET / 返回 200 且页面里带应用名 */
+/* 端口被占用时，判断占用者是不是定妆间自己：GET / 返回 200 且页面里带应用名 */
 function probeRunningApp(callback) {
   let done = false;
   function finish(ok) {
@@ -1334,7 +1334,7 @@ function probeRunningApp(callback) {
       body += chunk;
       if (body.length > 65536) { finish(false); res.destroy(); }
     });
-    res.on("end", function () { finish(res.statusCode === 200 && body.indexOf("造像台") >= 0); });
+    res.on("end", function () { finish(res.statusCode === 200 && body.indexOf("定妆间") >= 0); });
     res.on("error", function () { finish(false); });
   });
   req.on("timeout", function () { req.destroy(); finish(false); });
@@ -1349,7 +1349,7 @@ server.on("error", function (e) {
   }
   probeRunningApp(function (ours) {
     if (ours) {
-      console.log("造像台已经在运行：" + BASE_URL);
+      console.log("定妆间工作台已经在运行：" + BASE_URL);
       if (OPEN_BROWSER) {
         openBrowser(BASE_URL);
         console.log("已在浏览器打开；这个窗口可以直接关掉。");
@@ -1360,7 +1360,7 @@ server.on("error", function (e) {
       process.exit(0);
       return;
     }
-    console.error("端口 " + PORT + " 已被其他程序占用，造像台起不来。");
+    console.error("端口 " + PORT + " 已被其他程序占用，定妆间工作台起不来。");
     console.error("处理办法：关掉占用 " + PORT + " 端口的程序，或用环境变量 PORT 换一个端口再启动。");
     process.exit(1);
   });
@@ -1377,11 +1377,11 @@ try {
   process.exit(1);
 }
 server.listen(PORT, HOST, function () {
-  console.log("造像台已启动：" + BASE_URL);
+  console.log("定妆间工作台已启动：" + BASE_URL);
   if (OPEN_BROWSER) {
-    console.log("浏览器会自动打开；关掉这个窗口就是停止造像台。");
+    console.log("浏览器会自动打开；关掉这个窗口就是停止定妆间工作台。");
     openBrowser(BASE_URL);
   } else {
-    console.log("直接打开 " + BASE_URL + " 即可；关掉这个窗口就是停止造像台。");
+    console.log("直接打开 " + BASE_URL + " 即可；关掉这个窗口就是停止定妆间工作台。");
   }
 });

@@ -3,7 +3,8 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>造像台 · 人物设定稿</title>
+<meta name="description" content="定妆间 · 本地人物设定稿工作台：随机人物 → 结构化提示词 → 生图 → 自动存档。" />
+<title>定妆间 · 人物设定稿工作台</title>
 <link rel="icon" href="data:," />
 <link rel="stylesheet" href="./style.css" />
 </head>
@@ -12,10 +13,10 @@
 
   <header class="topbar">
     <div class="brand">
-      <span class="seal">造</span>
+      <span class="seal">定</span>
       <div class="brand-copy">
-        <strong>造像台</strong>
-        <span>人物设定稿</span>
+        <strong>定妆间</strong>
+        <span class="brand-sub">人物设定稿工作台</span>
       </div>
     </div>
     <span class="tb-divider"></span>
@@ -131,7 +132,7 @@
         <div class="sheet" id="sheet">
           <div class="empty" id="emptyState">
             <div class="empty-grid" aria-hidden="true"></div>
-            <p class="empty-title">纸上还没有人</p>
+            <p class="empty-title">工作台上还没有人</p>
             <p class="empty-sub">调左侧参数，或者直接按「换一个」</p>
           </div>
           <img id="preview" alt="" />
@@ -192,7 +193,7 @@
   <button class="rail-toggle right" id="railRight" type="button" title="展开右栏 · 提示词编排（快捷键 ]）">提示词编排</button>
 
   <footer class="statusbar">
-    <span id="statusText">准备就绪</span>
+    <span id="statusText">工作台就绪</span>
     <span id="statusRight"></span>
   </footer>
 
@@ -201,7 +202,7 @@
 <div class="modal" id="modal">
   <div class="modal-card">
     <h3 id="modalTitle">接入第三方生图接口</h3>
-    <p class="modal-note">接口需兼容 OpenAI 的 <code>/v1/models</code> 与 <code>/v1/images/generations</code>；地址只填域名也行（会依次试 <code>/v1/models</code>、<code>/models</code>）。<strong>密钥不在这里填</strong>：只从项目根目录的 <code>.env</code> 读取，改完重启造像台生效。</p>
+    <p class="modal-note">接口需兼容 OpenAI 的 <code>/v1/models</code> 与 <code>/v1/images/generations</code>；地址只填域名也行（会依次试 <code>/v1/models</code>、<code>/models</code>）。<strong>密钥不在这里填</strong>：只从项目根目录的 <code>.env</code> 读取，改完重启定妆间生效。</p>
     <label class="form-row"><span>名称</span><input id="pvName" placeholder="例如：画布中转" /></label>
     <label class="form-row"><span>标识</span><input id="pvId" placeholder="小写字母/数字，如 cpa（决定 .env 里的变量名）" /></label>
     <label class="form-row"><span>接口地址</span><input id="pvBase" placeholder="https://example.com/v1 或 https://example.com/canvas" /></label>

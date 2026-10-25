@@ -1,4 +1,4 @@
-/* 造像台无浏览器测试底座
+/* 定妆间无浏览器测试底座
  *
  * 用法：
  *   import { createHarness } from "./lib/app-harness.mjs";

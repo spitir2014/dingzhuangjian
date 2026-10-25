@@ -973,3 +973,6 @@ input[type=range]::-webkit-slider-thumb{
 .prompt-warn{margin:0 0 5px;font-size:10px;line-height:1.5;color:var(--ink-3);padding:4px 6px;border-radius:4px;background:rgba(27,28,26,.045)}
 .prompt-warn.bad{color:#8a2f1e;background:rgba(164,67,46,.10)}
 .prompt-warn[hidden]{display:none}
+
+/* 品牌副标：基准 1440 宽也要可见——第二行点明「人物设定稿工作台」定位；它不占额外横向空间 */
+.topbar .brand-copy .brand-sub{display:block;font-size:8.5px;letter-spacing:.08em;white-space:nowrap}

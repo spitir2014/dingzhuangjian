@@ -1,5 +1,6 @@
 {
-  "name": "zaoxiangtai",
+  "name": "dingzhuangjian",
+  "description": "定妆间 · 人物设定稿工作台（本地人物设定稿生成器）",
   "version": "1.0.0",
   "private": true,
   "type": "module",
