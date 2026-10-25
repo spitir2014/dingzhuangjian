@@ -98,10 +98,11 @@ for (const t of layouts) {
   ok(p.length <= budget, t.label + "：" + p.length + " 字，在 " + budget + " 预算内");
 }
 
-/* 2) 老存档迁移（旧文案取自备份；同时核对 app.js 里的 LEGACY_* 注册表与备份一致） */
+/* 2) 老存档迁移（旧文案取自修复前的 templates 快照；同时核对 app.js 里的 LEGACY_* 注册表与快照一致） */
 console.log("[2] 老存档迁移");
+/* 夹具随仓库提交，放在 scripts/fixtures/：以前放在 tmp/，清理临时目录后测试就会失去校验能力 */
 let legacyT = null;
-try { legacyT = JSON.parse(await fs.readFile("tmp/backup-画幅逻辑修复/templates.json", "utf8")); } catch (e) {}
+try { legacyT = JSON.parse(await fs.readFile("scripts/fixtures/legacy-templates.json", "utf8")); } catch (e) {}
 const L = run("LEGACY_STRUCT");
 const LC = run("LEGACY_CONTENT");
 if (legacyT) {
@@ -112,11 +113,14 @@ if (legacyT) {
   }
   const lcOutfit = Array.isArray(LC.outfit) ? LC.outfit : [LC.outfit];
   if (lcOutfit.indexOf(legacyT.content.outfit.text) < 0 || LC.info !== legacyT.content.info.text || LC.realism !== legacyT.content.realism.text) same = false;
-  ok(same, "app.js 的 LEGACY_STRUCT / LEGACY_CONTENT 与备份里的旧文案逐字一致（迁移注册表没写错）");
+  ok(same, "app.js 的 LEGACY_STRUCT / LEGACY_CONTENT 与快照里的旧文案逐字一致（迁移注册表没写错）");
 } else {
-  console.log("  SKIP 没有备份文件，跳过注册表核对");
+  console.log("  FAIL 缺少夹具 scripts/fixtures/legacy-templates.json，迁移注册表校验被跳过");
+  ok(false, "老存档迁移夹具存在（scripts/fixtures/legacy-templates.json）");
 }
-const legacy = legacyT || { templates: layouts.map((t) => ({ id: t.id, structure: { format: { text: L.format }, style: { text: L.style }, negative: { text: L.negative }, layout: { text: L.layout[t.id] } } })), content: { outfit: { text: LC.outfit }, info: { text: LC.info } } };
+/* 兜底：没有夹具时用当前注册表合成（此时上面的校验会判 FAIL，不会再静默通过） */
+const fallbackOutfit = Array.isArray(LC.outfit) ? LC.outfit[LC.outfit.length - 1] : LC.outfit;
+const legacy = legacyT || { templates: layouts.map((t) => ({ id: t.id, structure: { format: { text: L.format }, style: { text: L.style }, negative: { text: L.negative }, layout: { text: L.layout[t.id] } } })), content: { outfit: { text: fallbackOutfit }, info: { text: LC.info }, realism: { text: LC.realism } } };
 
 run("state.blocks = []; state.templateText = {}; state.templateId = 'expression_grid';");
 state.templateText = {};

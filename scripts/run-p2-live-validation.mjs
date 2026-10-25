@@ -38,6 +38,7 @@ const cfg=await fetch(base+'/api/config').then(r=>r.json());
 const provider=cfg.providers.find(p=>p.name==='mlgb7');
 if(!provider)throw Error('mlgb7 provider unavailable');
 const journalPath='tmp/p2-live-journal.json';
+await fs.mkdir('tmp',{recursive:true}); /* tmp/ 是可清空的临时区，起手先确保存在 */
 const journal=JSON.parse(await fs.readFile(journalPath,'utf8').catch(()=>'[]'));
 if(journal.some(x=>x.type==='submit-intent'&&missing.some(m=>x.samples.includes(m.no))))throw Error('A previous submission may still be active. Reconcile the journal and archives before retrying.');
 async function record(event){journal.push({...event,time:new Date().toISOString()});await fs.writeFile(journalPath,JSON.stringify(journal,null,2)+'\n');}
