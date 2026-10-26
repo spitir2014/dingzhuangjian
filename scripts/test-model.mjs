@@ -287,9 +287,11 @@ function testT3() {
   };
 
   for (const p of allParams) {
-    if (p.virtual || p.id === "sex" || (p.type !== "choice" && p.type !== "number")) continue;
+    if (p.id === "sex" || (p.type !== "choice" && p.type !== "number")) continue;
     h.reset();
     if (p.group === "costume") eraEnv();
+    /* 品级只有在文官/武官/商贾下才有多个合法选项 */
+    if (p.id === "rank") h.run("setParamValue('role', 'official_civil');");
     if (p.type === "choice") {
       const n = h.run("allowedOptions(paramIndex[" + J(p.id) + "], currentSex()).length");
       if (n <= 1) {
@@ -325,36 +327,15 @@ function testT3() {
 }
 
 /* ------------------------------------------------------------------ *
- * 【T4】锁矩阵：逐参数 lock + 50 种子 rerollAll，值不变（白名单要写原因）
+ * 【T4】锁矩阵：逐参数 lock + 50 种子 rerollAll，值不变（含上下文 / 服饰槽位）
  * ------------------------------------------------------------------ */
 function testT4() {
   if (!requireApi("rerollAll", "T4")) return;
-  /* 白名单：这些参数的“改值”由上下文/身份卡硬约束决定，锁不是唯一来源 */
-  const WHY = {
-    sex: "rerollAll 会按权重重选性别；本用例把 sex 当稳定器一起锁住，避免它把其它参数的门控/范围带跑",
-    era: "虚拟上下文参数：rerollAll 明确跳过时代，锁对它是冗余（不在本用例考核）",
-    community: "虚拟上下文参数：由身份决定，rerollAll 不随机",
-    role: "虚拟上下文参数：由身份决定，rerollAll 不随机",
-    rank: "虚拟上下文参数：由身份卡决定，rerollAll 不随机",
-    occasion: "虚拟上下文参数：由身份卡决定，rerollAll 不随机",
-    headwear: "服饰槽位：由时代/身份卡硬约束决定（硬约束优先于锁），且 rerollAll 跳过 costume 组",
-    outer: "服饰槽位：由时代/身份卡硬约束决定（硬约束优先于锁），且 rerollAll 跳过 costume 组",
-    inner: "服饰槽位：由时代/身份卡硬约束决定（硬约束优先于锁），且 rerollAll 跳过 costume 组",
-    lower: "服饰槽位：由时代/身份卡硬约束决定（硬约束优先于锁），且 rerollAll 跳过 costume 组",
-    shoes: "服饰槽位：由时代/身份卡硬约束决定（硬约束优先于锁），且 rerollAll 跳过 costume 组",
-    accessory: "服饰槽位：由时代/身份卡硬约束决定（硬约束优先于锁），且 rerollAll 跳过 costume 组",
-    pattern: "服饰槽位：由时代/身份卡硬约束决定（硬约束优先于锁），且 rerollAll 跳过 costume 组",
-    material: "服饰槽位：由时代/身份卡硬约束决定（硬约束优先于锁），且 rerollAll 跳过 costume 组",
-    color: "服饰槽位：由时代/身份卡硬约束决定（硬约束优先于锁），且 rerollAll 跳过 costume 组"
-  };
-  const whitelisted = [];
   const violations = [];
   let tested = 0;
+  /* 性别锁单独测；其余参数锁定时把 sex 一起锁住，避免性别随机导致数值范围重夹 */
   for (const p of allParams) {
-    /* 白名单/虚拟参数要把原因打到输出里，不许静默跳过 */
-    if (p.virtual) { whitelisted.push([p.id, WHY[p.id] || "虚拟上下文参数：rerollAll 不随机"]); continue; }
-    if (p.id === "sex") { whitelisted.push([p.id, WHY.sex]); continue; }
-    if (Object.prototype.hasOwnProperty.call(WHY, p.id)) { whitelisted.push([p.id, WHY[p.id]]); continue; }
+    if (p.id === "sex") continue;
     tested++;
     h.reset();
     h.run("state.locks = new Set([" + J(p.id) + ", 'sex']);");
@@ -366,13 +347,21 @@ function testT4() {
     }
     if (bad) violations.push({ id: p.id, seed: bad.seed, before: before, after: bad.after });
   }
-  check(tested > 0, "锁矩阵覆盖参数（" + tested + " 个）");
-  whitelisted.forEach(function (item) {
-    console.log("  SKIP 白名单 " + item[0] + "：" + item[1]);
-  });
+  h.reset();
+  h.run("state.locks = new Set(['sex']);");
+  const sexBefore = state.params.sex;
+  let sexBad = null;
+  for (let seed = 1; seed <= 50; seed++) {
+    h.run("rerollAll(" + seed + ")");
+    if (state.params.sex !== sexBefore) { sexBad = { seed: seed, after: state.params.sex }; break; }
+  }
+  tested++;
+  if (sexBad) violations.push({ id: "sex", seed: sexBad.seed, before: sexBefore, after: sexBad.after });
+
+  check(tested === allParams.length, "锁矩阵覆盖全部参数（" + tested + " / " + allParams.length + " 个）");
   check(
     violations.length === 0,
-    "锁定后 50 个种子 rerollAll 值不变" +
+    "锁定后 50 个种子 rerollAll 值不变（含上下文 / 服饰槽位 / 性别）" +
     (violations.length ? "（" + violations.length + " 个被改：" + violations.slice(0, 10).map(function (v) { return v.id + "@seed" + v.seed + " " + J(v.before) + "→" + J(v.after); }).join("；") + "）" : "")
   );
   violations.slice(10).forEach(function (v) {
@@ -652,6 +641,40 @@ function testT12() {
 }
 
 /* ------------------------------------------------------------------ *
+ * 【T13】随机人物：87 项全部参与 + 逻辑不变量
+ * ------------------------------------------------------------------ */
+function testT13() {
+  if (!requireApi("rerollAll", "T13")) return;
+  const slots = h.run("costumeSlotIds()");
+  const seen = {};
+  allParams.forEach(function (p) { seen[p.id] = new Set([J(state.params[p.id])]); });
+  const violations = [];
+  for (let seed = 1; seed <= 300; seed++) {
+    h.run("rerollAll(" + seed + ")");
+    const P = state.params;
+    allParams.forEach(function (p) { seen[p.id].add(J(P[p.id])); });
+    if (P.era === "none") {
+      if (state.lookId) violations.push(seed + " 素体仍有 lookId");
+      slots.forEach(function (id) { if (P[id] && P[id] !== "none") violations.push(seed + " 素体槽位 " + id); });
+    } else if (state.lookId && !h.run("!!currentLook()")) {
+      violations.push(seed + " lookId 失效");
+    }
+    slots.forEach(function (id) {
+      const v = P[id];
+      if (!v || v === "none") return;
+      const ok = h.run("(function(id,v){var p=paramIndex[id];var o=(p.options||[]).find(function(x){return x.value===v;});return !!o && weightOf(o,currentSex())>0;})(" + J(id) + "," + J(v) + ")");
+      if (!ok) violations.push(seed + " 槽位门控非法 " + id + "=" + v);
+    });
+    if (state.meta.identity !== h.run("identityPhrase()")) violations.push(seed + " 身份词不一致");
+    if (P.sex === "female" && ["full", "goatee", "stubble"].indexOf(P.beard) >= 0) violations.push(seed + " 女性长胡子");
+    try { h.run("compilePrompt()"); } catch (e) { violations.push(seed + " 提示词异常"); }
+  }
+  const stuck = allParams.filter(function (p) { return seen[p.id].size < 2; }).map(function (p) { return p.id; });
+  check(stuck.length === 0, "随机人物覆盖全部 " + allParams.length + " 项参数（300 种子；未参与：" + (stuck.join(",") || "无") + "）");
+  check(violations.length === 0, "随机人物逻辑不变量成立（素体清槽 / 卡片有效 / 槽位门控 / 身份词 / 性别硬约束）" + (violations.length ? "（" + violations.slice(0, 5).join("；") + "）" : ""));
+}
+
+/* ------------------------------------------------------------------ *
  * 运行
  * ------------------------------------------------------------------ */
 const TESTS = [
@@ -659,7 +682,7 @@ const TESTS = [
   ["【T1】预览=发送（6 画幅 × 3 状态）", testT1],
   ["【T2】未知变量：不发送 / 有拦截", testT2],
   ["【T3】掷：连续 10 次至少 9 次换值", testT3],
-  ["【T4】锁矩阵：50 种子值不变（白名单有原因）", testT4],
+  ["【T4】锁矩阵：50 种子值不变（全部 87 项）", testT4],
   ["【T5】身份卡派生约束（36 卡 × 50 种子）", testT5],
   ["【T6】身份词：名词短语 / 无「·」/ ≤8 字", testT6],
   ["【T7】素体清理：槽位清空 / {{headwear}} 空", testT7],
@@ -667,7 +690,8 @@ const TESTS = [
   ["【T9】卡片有效性：失效即清槽 / 未失效可用", testT9],
   ["【T10】口径：effectiveUsage / 体检未接入", testT10],
   ["【T11】种子：同种子两次完全一致", testT11],
-  ["【T12】回归：6 画幅预算 / 无残留 / 人物档案", testT12]
+  ["【T12】回归：6 画幅预算 / 无残留 / 人物档案", testT12],
+  ["【T13】随机人物：全部参数参与 + 逻辑不变量", testT13]
 ];
 
 for (const item of TESTS) {

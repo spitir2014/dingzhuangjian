@@ -4,9 +4,10 @@
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <meta name="description" content="定妆间 · 本地人物设定稿工作台：随机人物 → 结构化提示词 → 生图 → 自动存档。" />
+<meta name="app-version" content="1.002" />
 <title>定妆间 · 人物设定稿工作台</title>
 <link rel="icon" href="data:," />
-<link rel="stylesheet" href="./style.css" />
+<link rel="stylesheet" href="./style.css?v=1.002" />
 </head>
 <body>
 <div class="app">
@@ -16,7 +17,7 @@
       <span class="seal">定</span>
       <div class="brand-copy">
         <strong>定妆间</strong>
-        <span class="brand-sub">人物设定稿工作台</span>
+        <span class="brand-sub">人物设定稿工作台 · v1.002</span>
       </div>
     </div>
     <span class="tb-divider"></span>
@@ -62,7 +63,8 @@
     </div>
 
     <div class="actions">
-      <button class="btn ghost" id="rerollAll">换一个</button>
+      <button class="btn ghost" id="reverseBtn" title="给一张参考图，用 LLM 反推出相似的提示词与风格；结果可存成风格预设">以图复刻</button>
+      <button class="btn ghost" id="rerollAll" title="随机生成一个人物：时代 / 身份卡 / 服饰一起换，可能抽到素体；锁定的项不变">随机人物</button>
       <button class="btn primary" id="generateBtn">生 成</button>
     </div>
   </header>
@@ -124,6 +126,7 @@
             <button class="zoom-btn" id="zoomIn" type="button" title="放大（滚轮向上）" aria-label="放大">＋</button>
             <button class="text-btn zoom-fit" id="zoomFit" type="button" title="还原为整张适配（也可双击画面）">适应</button>
           </div>
+          <button class="text-btn style-chip" id="activeStyleChip" hidden title="当前套用的复刻提示词 / 风格预设；点一下清除"></button>
           <button class="text-btn" id="copyPrompt">复制提示词</button>
         </div>
       </div>
@@ -133,7 +136,7 @@
           <div class="empty" id="emptyState">
             <div class="empty-grid" aria-hidden="true"></div>
             <p class="empty-title">工作台上还没有人</p>
-            <p class="empty-sub">调左侧参数，或者直接按「换一个」</p>
+            <p class="empty-sub">调左侧参数，或者直接按「随机人物」</p>
           </div>
           <img id="preview" alt="" />
           <div class="loading" id="loading">
@@ -202,11 +205,12 @@
 <div class="modal" id="modal">
   <div class="modal-card">
     <h3 id="modalTitle">接入第三方生图接口</h3>
-    <p class="modal-note">接口需兼容 OpenAI 的 <code>/v1/models</code> 与 <code>/v1/images/generations</code>；地址只填域名也行（会依次试 <code>/v1/models</code>、<code>/models</code>）。<strong>密钥不在这里填</strong>：只从项目根目录的 <code>.env</code> 读取，改完重启定妆间生效。</p>
+    <p class="modal-note" id="modalNote">接口需兼容 OpenAI 的 <code>/v1/models</code> 与 <code>/v1/images/generations</code>；地址只填域名也行（会依次试 <code>/v1/models</code>、<code>/models</code>）。<strong>密钥会保存进项目根目录的 <code>.env</code></strong>（<code>config.json</code> 不保存），保存后立即生效，也可以直接手改 <code>.env</code>。</p>
     <label class="form-row"><span>名称</span><input id="pvName" placeholder="例如：画布中转" /></label>
     <label class="form-row"><span>标识</span><input id="pvId" placeholder="小写字母/数字，如 cpa（决定 .env 里的变量名）" /></label>
     <label class="form-row"><span>接口地址</span><input id="pvBase" placeholder="https://example.com/v1 或 https://example.com/canvas" /></label>
-    <label class="form-row"><span>密钥</span><input id="pvKey" disabled placeholder="由 .env 管理，改完重启生效" /></label>
+    <label class="form-row"><span>密钥</span><input id="pvKey" placeholder="粘贴密钥（保存时写入 .env；留空表示不修改）" autocomplete="off" spellcheck="false" /></label>
+    <label class="form-row" id="pvStrengthRow" hidden><span>强度参数名（LLM 可选）</span><input id="pvStrength" placeholder="reasoning_effort（留空 = 用默认；填 none = 不发强度参数）" spellcheck="false" /></label>
     <div class="modal-actions">
       <button class="btn ghost" id="modalCancel">取消</button>
       <button class="btn primary" id="modalSave">保存并拉取模型</button>
@@ -224,6 +228,14 @@
         <button class="text-btn" id="manageAddProvider">＋ 新增服务商</button>
       </div>
       <div class="manage-list" id="providerList"></div>
+    </div>
+
+    <div class="manage-section">
+      <div class="manage-head">
+        <span>反推服务商（LLM）</span>
+        <button class="text-btn" id="manageAddLlm" title="给「以图复刻」接入一个支持图片输入的 LLM 服务商">＋ 新增反推服务商</button>
+      </div>
+      <div class="manage-list" id="llmProviderList"></div>
     </div>
 
     <div class="manage-section">
@@ -373,8 +385,112 @@
   </div>
 </div>
 
+<div class="modal" id="reverseModal">
+  <div class="modal-card reverse-card">
+    <h3>参考图复刻</h3>
+    <p class="modal-note">给一张图，用视觉大模型反推出相似的提示词与风格；可以保存成风格预设，套到任何角色上。反推走单独的 LLM 服务商，不占用生图服务商。</p>
+
+    <div class="rev-top">
+      <div class="rev-col">
+        <div class="rev-label">参考图</div>
+        <div class="rev-drop" id="revDrop" title="点击选择图片；也可以拖进来或直接 Ctrl+V 粘贴">
+          <img id="revPreview" alt="" hidden />
+          <div class="rev-drop-empty" id="revDropEmpty">
+            <strong>点击 / 拖入 / 粘贴</strong>
+            <span>png · jpeg · webp，单张 ≤ 15MB</span>
+          </div>
+          <input type="file" id="revFile" accept="image/png,image/jpeg,image/webp" hidden />
+        </div>
+        <div class="rev-url-row">
+          <input id="revUrl" placeholder="或粘贴图片链接 https://…" spellcheck="false" autocomplete="off" />
+          <button class="text-btn" id="revUrlLoad">载入</button>
+        </div>
+        <p class="rev-hint" id="revImgMeta">还没有参考图</p>
+      </div>
+
+      <div class="rev-col">
+        <div class="rev-label">反推模型</div>
+        <div class="form-row"><span>服务商</span>
+          <div class="rev-inline">
+            <select id="revProviderSel"></select>
+            <button class="mini" id="revAddProvider" type="button" title="接入新的 LLM 服务商">＋</button>
+          </div>
+        </div>
+        <div class="form-row"><span>模型</span>
+          <div class="rev-inline">
+            <select id="revModelSel"></select>
+            <button class="mini" id="revRefreshModels" type="button" title="重新拉取模型列表">↻</button>
+          </div>
+        </div>
+        <div class="form-row"><span>强度</span>
+          <select id="revStrengthSel">
+            <option value="auto">自动（不传强度参数）</option>
+            <option value="low">低</option>
+            <option value="medium">中</option>
+            <option value="high">高</option>
+          </select>
+        </div>
+        <div class="form-row"><span>系统提示词</span>
+          <div class="rev-inline">
+            <select id="revSysSel"></select>
+            <button class="text-btn" id="revSysToggle" type="button" title="新增 / 修改 / 删除系统提示词">编辑</button>
+          </div>
+        </div>
+        <label class="form-row"><span>额外要求（可选）</span>
+          <textarea id="revInstruction" rows="2" placeholder="例如：保留清代质感；不要现代元素；只写风格段"></textarea>
+        </label>
+        <button class="btn primary rev-run" id="revRun">开始复刻</button>
+        <p class="rev-hint" id="revStatus"></p>
+      </div>
+    </div>
+
+    <div class="rev-sys-editor" id="revSysEditor" hidden>
+      <div class="rev-label">系统提示词管理</div>
+      <div class="rev-sys-head">
+        <select id="revSysEditSel"></select>
+        <button class="text-btn" id="revSysNew" type="button">新建</button>
+        <button class="text-btn" id="revSysReset" type="button" title="把内置那条恢复成出厂文字">恢复默认</button>
+      </div>
+      <input id="revSysName" placeholder="名称（例如：我的复刻提示词）" />
+      <textarea id="revSysText" rows="6" placeholder="把复刻系统提示词粘贴到这里"></textarea>
+      <div class="rev-sys-actions">
+        <button class="text-btn danger" id="revSysDelete" type="button">删除这条</button>
+        <button class="btn ghost" id="revSysSave" type="button">保存这条</button>
+      </div>
+    </div>
+
+    <div class="rev-result" id="revResultWrap" hidden>
+      <div class="rev-label">复刻结果</div>
+      <textarea id="revResult" rows="7" placeholder="反推出来的提示词会出现在这里，可手动修改"></textarea>
+      <label class="form-row"><span>风格段（套到别的角色时追加；没拆出来可以手写）</span>
+        <textarea id="revStyleText" rows="3"></textarea>
+      </label>
+      <div class="rev-result-row">
+        <input id="revName" placeholder="风格名，例如：清冷棚拍柔光" />
+        <input id="revTags" placeholder="标签，用、或逗号分隔（可选）" />
+      </div>
+      <div class="rev-actions">
+        <button class="text-btn" id="revCopy" type="button">复制提示词</button>
+        <button class="btn ghost" id="revSaveStyle" type="button">保存为风格预设</button>
+        <button class="btn ghost" id="revUseSuffix" type="button">套用到当前人物</button>
+        <button class="btn primary" id="revUseFull" type="button">用这段提示词生成</button>
+      </div>
+      <p class="rev-hint">「套用到当前人物」= 把风格段追加到现有提示词末尾；「用这段提示词生成」= 本次整段替换，左栏参数不参与。生成前都可以再改文字。</p>
+    </div>
+
+    <div class="rev-styles">
+      <div class="manage-head"><span>已保存的风格预设</span><span class="rev-count" id="revStyleCount">—</span></div>
+      <div class="manage-list rev-style-list" id="revStyleList"></div>
+    </div>
+
+    <div class="modal-actions">
+      <button class="btn ghost" id="revClose">关闭</button>
+    </div>
+  </div>
+</div>
+
 <div class="toast" id="toast"></div>
 
-<script src="./app.js"></script>
+<script src="./app.js?v=1.002"></script>
 </body>
 </html>

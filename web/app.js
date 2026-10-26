@@ -43,9 +43,9 @@ const state = {
   activeGen: 0,
   meta: { name: "", identity: "", personality: "", trait: "", bio: "", styleKeywords: [] },
   highlights: [],
-  /* 当前套用的身份卡 id（只用于「换一个」后把发型/胡须等硬约束再压回去） */
+  /* 当前套用的身份卡 id（只用于「随机人物」后把发型/胡须等硬约束再压回去） */
   lookId: "",
-  /* 用户手动改过、由身份卡管辖的参数：下一次「换一个」/换卡时清空 */
+  /* 用户手动改过、由身份卡管辖的参数：下一次「随机人物」/换卡时清空 */
   lookCustomized: {},
   /* 用户手动改过的派生目标（发长/刘海/身形等）：本次会话内不让派生规则再改回去 */
   manualOverrides: {},
@@ -77,7 +77,23 @@ const state = {
   /* 进行中批次（服务端 batch 的本地镜像）；null = 当前空闲 */
   batch: null,
   /* 生成中是否让画布跟随最新出图；生成中点存档看旧图会临时关掉，可用「↩ 回到最新」开回来 */
-  followLatest: true
+  followLatest: true,
+  /* 参考图复刻：LLM 服务商（与生图服务商分开） */
+  llmProviders: [],
+  llmProviderId: null,
+  llmModels: [],
+  llmModelsFor: "",
+  llmModelId: null,
+  llmStrength: "auto",
+  /* 系统提示词（可增删改选）与风格预设 */
+  reversePrompts: [],
+  reversePromptId: "default",
+  stylePresets: [],
+  /* 当前生效的复刻提示词 / 风格：{ id, name, mode: "full" | "suffix", prompt, styleSuffix } */
+  activeStyle: null,
+  /* 复刻弹窗里的临时状态（不持久化） */
+  revImage: null,
+  revBusy: false
 };
 
 function defaultMeta() {
@@ -118,6 +134,13 @@ async function loadData() {
     // 朝代 / 服饰词表：文件缺失时整套服饰功能自动降级为「素体」
     fetch("/data/eras.json")
       .then(function (r) { return r.ok ? r.json() : null; })
+      .catch(function () { return null; }),
+    // 参考图复刻：系统提示词 + 已保存的风格预设（服务端 data/*.json）
+    fetch("/api/reverse-prompts")
+      .then(function (r) { return r.ok ? r.json() : null; })
+      .catch(function () { return null; }),
+    fetch("/api/styles")
+      .then(function (r) { return r.ok ? r.json() : null; })
       .catch(function () { return null; })
   ]);
   DATA.params = list[0];
@@ -130,6 +153,12 @@ async function loadData() {
     : ((list[1] && list[1].templates) || []);
   DATA.presets = (list[4] && Array.isArray(list[4].presets)) ? list[4].presets : [];
   DATA.eras = list[5] || null;
+  const rp = list[6];
+  if (rp && rp.ok && Array.isArray(rp.prompts) && rp.prompts.length) {
+    state.reversePrompts = rp.prompts;
+    if (!state.reversePromptId) state.reversePromptId = rp.defaultId || rp.prompts[0].id;
+  }
+  state.stylePresets = (list[7] && list[7].ok && Array.isArray(list[7].styles)) ? list[7].styles : [];
   DATA.params.groups.forEach(function (g) {
     g.params.forEach(function (p) { paramIndex[p.id] = p; });
   });
@@ -162,7 +191,12 @@ function saveState() {
       detailPreset: state.detailPreset,
       collapsedGroups: state.collapsedGroups,
       blocks: state.blocks,
-      templateText: state.templateText
+      templateText: state.templateText,
+      llmProviderId: state.llmProviderId,
+      llmModelId: state.llmModelId,
+      llmStrength: state.llmStrength,
+      reversePromptId: state.reversePromptId,
+      activeStyle: state.activeStyle
     }));
   } catch (e) {}
 }
@@ -197,6 +231,19 @@ function restoreState() {
     state.collapsedGroups = Array.isArray(s.collapsedGroups) ? s.collapsedGroups.slice() : DEFAULT_COLLAPSED.slice();
     if (state.uiVersion < 2 && !state.collapsedGroups.length) state.collapsedGroups = DEFAULT_COLLAPSED.slice();
     state.uiVersion = 2;
+    state.llmProviderId = s.llmProviderId || null;
+    state.llmModelId = s.llmModelId || null;
+    state.llmStrength = ["auto", "low", "medium", "high"].indexOf(s.llmStrength) >= 0 ? s.llmStrength : "auto";
+    state.reversePromptId = s.reversePromptId || "default";
+    state.activeStyle = (s.activeStyle && typeof s.activeStyle === "object" && (s.activeStyle.prompt || s.activeStyle.styleSuffix))
+      ? {
+          id: String(s.activeStyle.id || ""),
+          name: String(s.activeStyle.name || ""),
+          mode: s.activeStyle.mode === "suffix" ? "suffix" : "full",
+          prompt: String(s.activeStyle.prompt || ""),
+          styleSuffix: String(s.activeStyle.styleSuffix || "")
+        }
+      : null;
     restoreBlocks(s);
     return true;
   } catch (e) { return false; }
@@ -360,13 +407,13 @@ function clampToSex() {
 
 /* ======================================================================
    参数求值管线
-   所有入口（改值 / 掷 / 换一个 / 换卡 / 切性别 / 切时代）都只调 commitParams，
+   所有入口（改值 / 掷 / 随机人物 / 换卡 / 切性别 / 切时代）都只调 commitParams，
    顺序固定：上下文 → 硬约束（性别/门控）→ 身份卡 → 相关性 → 派生 → 清理。
    优先级：硬约束 > 锁定 > 派生 > 相关性 > 随机；被更高优先级拦下的调整进体检。
    ====================================================================== */
 
 /* 当前有效的身份卡：era / sex / role / community 任一不符都视为失效。
-   gateOk / 换一个 / 卡片覆盖 / 证据 / 槽位清理 共用这一个判定。 */
+   gateOk / 随机人物 / 卡片覆盖 / 证据 / 槽位清理 共用这一个判定。 */
 function currentLook() {
   if (!eraOn()) return null;
   const looks = (DATA.eras && DATA.eras.looks) || [];
@@ -564,7 +611,7 @@ function commitParams(opts) {
   applyCorrelations(rng);
   applyDerived();
   sanitizeParams();
-  if (reason === "reroll" || reason === "card" || reason === "sex" || changed === "era" || changed === "role" || changed === "rank") {
+  if (reason === "reroll" || reason === "card" || reason === "sex" || changed === "era" || changed === "role" || changed === "rank" || changed === "community") {
     if (state.params.role && state.params.role !== "none") state.meta.identity = identityPhrase();
   }
   state.paramRevision = (state.paramRevision || 0) + 1;
@@ -573,28 +620,184 @@ function commitParams(opts) {
 }
 
 /* ---------- rolling ---------- */
+
+/* 服饰槽位 id（以 eras.json 为准） */
+function costumeSlotIds() {
+  return ((DATA.eras && DATA.eras.slots) || []).map(function (s) { return s.id; });
+}
+function lockedCostumeSlots() {
+  return costumeSlotIds().filter(function (id) { return state.locks.has(id); });
+}
+/* 随机人物时可选的身份卡：时代 + 锁定的性别/旗分/身份/品级/场合/槽位都要对上 */
+function rerollLookCandidates(era) {
+  const L = state.locks;
+  const sex = currentSex();
+  const slotLocks = lockedCostumeSlots();
+  return ((DATA.eras && DATA.eras.looks) || []).filter(function (look) {
+    if (look.era !== era) return false;
+    /* 性别先随机好，卡片只在同性别里挑，避免卡片张数把性别比例带偏 */
+    if (look.sex && look.sex !== sex) return false;
+    if (L.has("community") && String(look.community || "none") !== String(state.params.community || "none")) return false;
+    if (L.has("role") && String(look.role || "none") !== String(state.params.role || "none")) return false;
+    if (L.has("rank") && String(look.rank || "none") !== String(state.params.rank || "none")) return false;
+    if (L.has("occasion") && String(look.occasion || "daily") !== String(state.params.occasion || "daily")) return false;
+    for (let i = 0; i < slotLocks.length; i++) {
+      if (String((look.slots || {})[slotLocks[i]]) !== String(state.params[slotLocks[i]])) return false;
+    }
+    return true;
+  });
+}
+/* 一次合法取值：没有可用选项时退回默认值，避免随机人物在空数组上崩 */
+function rollOptionValue(rng, p) {
+  const sex = currentSex();
+  const opts = allowedOptions(p, sex);
+  if (!opts.length) return p.default;
+  return pickWeighted(rng, opts, sex).value;
+}
+/* 随机人物选性别时避开与锁定值冲突的性别：锁了女性旗头就不随机成男性 */
+function lockedValueFitsSex(id, sex) {
+  const p = paramIndex[id];
+  if (!p || p.id === "sex") return true;
+  if (p.type === "number") {
+    const range = sexRange(p, sex);
+    const v = Number(state.params[id]);
+    return !isFinite(v) || (v >= range[0] && v <= range[1]);
+  }
+  if (p.type === "choice" || p.type === "sex") {
+    const o = (p.options || []).find(function (x) { return x.value === state.params[id]; });
+    if (!o || !o.w) return true;
+    const w = o.w[sex];
+    return typeof w !== "number" || w > 0;
+  }
+  return true;
+}
+function pickRerollSex(rng) {
+  const sp = paramIndex.sex;
+  const locked = Array.from(state.locks);
+  const opts = sp.options.filter(function (o) {
+    return locked.every(function (id) { return lockedValueFitsSex(id, o.value); });
+  });
+  if (!opts.length) return currentSex();
+  const weights = sp.weights || {};
+  let total = 0;
+  opts.forEach(function (o) { total += weights[o.value] || 1; });
+  let r = rng() * total;
+  for (let i = 0; i < opts.length; i++) {
+    r -= weights[opts[i].value] || 1;
+    if (r <= 0) return opts[i].value;
+  }
+  return opts[opts.length - 1].value;
+}
+/* 试一个上下文值，看它会不会让别的锁定项失去合法选项（例如锁了品级又随机身份） */
+function contextValueKeepsLocks(id, value) {
+  const prev = state.params[id];
+  state.params[id] = value;
+  let safe = true;
+  state.locks.forEach(function (lid) {
+    if (lid === id || !paramIndex[lid]) return;
+    const lp = paramIndex[lid];
+    if (lp.type !== "choice" && lp.type !== "sex") return;
+    const o = (lp.options || []).find(function (x) { return x.value === state.params[lid]; });
+    if (o && weightOf(o, currentSex()) === 0) safe = false;
+  });
+  state.params[id] = prev;
+  return safe;
+}
+/* 上下文兜底：没有身份卡时，按门控逐项随机（时代已经定好，不在这里改） */
+function randomizeContextParams(rng) {
+  ["community", "role", "rank", "occasion"].forEach(function (id) {
+    if (state.locks.has(id)) return;
+    const p = paramIndex[id];
+    if (!p) return;
+    const opts = allowedOptions(p, currentSex()).filter(function (o) {
+      return contextValueKeepsLocks(id, o.value);
+    });
+    if (!opts.length) return;
+    state.params[id] = pickWeighted(rng, opts, currentSex()).value;
+  });
+}
+/* 没有身份卡时逐槽位随机（门控 + 性别权重） */
+function randomizeCostumeSlots(rng) {
+  if (!eraOn()) { clearCostumeSlots(); return; }
+  costumeSlotIds().forEach(function (id) {
+    if (state.locks.has(id)) return;
+    const p = paramIndex[id];
+    if (!p) return;
+    state.params[id] = rollOptionValue(rng, p);
+  });
+}
+/* 随机人物：时代 / 身份卡 / 服饰 / 人物参数一起换；锁定的项不动；结果仍受门控与派生约束 */
 function rerollAll(seed, opts) {
   state.seed = (seed == null ? Math.floor(Math.random() * 4294967296) : seed) >>> 0;
   const rng = mulberry32(state.seed);
-  const look = currentLook();
-  if (look && look.sex) {
-    state.params.sex = look.sex;
-  } else if (!state.locks.has("sex")) {
-    state.params.sex = pickSex(rng);
+  const L = state.locks;
+  const slotLocks = lockedCostumeSlots();
+
+  /* 0) 性别：不锁就先随机定下来；锁定值不兼容的性别跳过，避免锁被性别硬约束改掉 */
+  if (!L.has("sex")) state.params.sex = pickRerollSex(rng);
+
+  /* 1) 时代：不锁就随机。锁了服饰槽位时保持当前时代，否则槽位锁会被素体或门控清掉。 */
+  if (!L.has("era") && !slotLocks.length) {
+    state.params.era = pickWeighted(rng, paramIndex.era.options, currentSex()).value;
   }
+
+  /* 2) 身份卡：按锁定条件随机一张；选不到卡时走无卡兜底 */
+  let look = null;
+  if (eraOn()) {
+    let cands = rerollLookCandidates(state.params.era);
+    if (cands.length > 1 && state.lookId) {
+      const others = cands.filter(function (l) { return l.id !== state.lookId; });
+      if (others.length) cands = others;
+    }
+    if (cands.length) look = cands[Math.floor(rng() * cands.length)];
+  }
+
+  if (look) {
+    applyLookData(look, { silent: true, respectLocks: true });
+    /* 卡片没覆盖到的槽位补随机；卡片覆盖到的整套槽位保持整卡形制 */
+    costumeSlotIds().forEach(function (id) {
+      if (L.has(id)) return;
+      if (look.slots && Object.prototype.hasOwnProperty.call(look.slots, id)) return;
+      const p = paramIndex[id];
+      if (p) state.params[id] = rollOptionValue(rng, p);
+    });
+  } else {
+    /* 无卡兜底也要保住锁定的槽位：先记下来，清空后再放回去 */
+    const keptSlots = {};
+    if (eraOn()) {
+      costumeSlotIds().forEach(function (id) {
+        if (L.has(id)) keptSlots[id] = state.params[id];
+      });
+    }
+    state.lookId = "";
+    state.lookCustomized = {};
+    state.manualOverrides = {};
+    clearCostumeSlots();
+    Object.keys(keptSlots).forEach(function (k) { state.params[k] = keptSlots[k]; });
+    /* 锁了槽位又没有匹配的卡：身份上下文不动，免得把锁定槽位的门控弄失效 */
+    if (!slotLocks.length) randomizeContextParams(rng);
+    if (eraOn()) randomizeCostumeSlots(rng);
+  }
+
+  /* 3) 其余参数全量重掷：上下文（virtual）与服饰槽位已经单独处理 */
   DATA.params.groups.forEach(function (g) {
-    /* 时代/身份是上下文，不参与随机；服饰槽位由身份卡决定，也不随机换 */
-    if (g.id === "costume" || g.id === "context") return;
+    if (g.id === "costume") return;
     g.params.forEach(function (p) {
-      if (p.id === "sex") return;
-      if (p.virtual) return;
-      if (state.locks.has(p.id)) return;
+      if (p.id === "sex" || p.virtual) return;
+      if (L.has(p.id)) return;
       state.params[p.id] = rollParam(rng, p);
     });
   });
-  /* 「换一个」只换人，不换时代/身份卡：清掉手动自定义与派生豁免，把硬约束重新压回 */
-  state.lookCustomized = {};
-  state.manualOverrides = {};
+
+  /* 4) 锁定 + 身份卡管辖：标记成自定义，commit 时不再让卡片压回去 */
+  const own = cardOverrides();
+  Object.keys(own).forEach(function (k) {
+    if (L.has(k)) {
+      state.lookCustomized = state.lookCustomized || {};
+      state.lookCustomized[k] = true;
+    }
+  });
+
   state.meta = genMeta(rng, currentSex());
   state.meta.identity = identityPhrase();
   commitParams({ reason: "reroll", rng: rng, silent: !!(opts && opts.silent) });
@@ -602,7 +805,11 @@ function rerollAll(seed, opts) {
 
 function rollParam(rng, p) {
   const sex = currentSex();
-  if (p.type === "choice") return pickWeighted(rng, allowedOptions(p, sex), sex).value;
+  if (p.type === "choice") {
+    const opts = allowedOptions(p, sex);
+    if (!opts.length) return p.default;
+    return pickWeighted(rng, opts, sex).value;
+  }
   if (p.id === "age") {
     const r = Math.pow(rng(), 1.55);
     return Math.round(p.min + r * (p.max - p.min));
@@ -645,7 +852,7 @@ function applyCorrelations(rng) {
 
 function rollOne(id) {
   const p = paramIndex[id];
-  if (!p || p.id === "sex" || p.virtual) return;
+  if (!p || p.id === "sex") return;
   const salt = (state.rollTick = (state.rollTick || 0) + 1);
   const rng = mulberry32((state.seed ^ hashId(id) ^ Math.imul(salt, 2654435761)) >>> 0);
   /* 拒绝采样：连续掷必须换一个值（只有一个合法选项时才允许不变） */
@@ -786,25 +993,40 @@ function expandCovers(set, vars) {
 }
 function applyLookData(look, opts) {
   if (!look) return false;
-  const sexChanged = !!look.sex && look.sex !== currentSex();
+  const respectLocks = !!(opts && opts.respectLocks);
+  const L = state.locks;
+  const keptSlots = {};
+  if (respectLocks) {
+    ((DATA.eras && DATA.eras.slots) || []).forEach(function (s) {
+      if (L.has(s.id)) keptSlots[s.id] = state.params[s.id];
+    });
+  }
+  const nextSex = (look.sex && !(respectLocks && L.has("sex"))) ? look.sex : currentSex();
+  const sexChanged = nextSex !== currentSex();
   state.lookId = look.id;
-  if (look.sex) state.params.sex = look.sex;
-  state.params.era = look.era;
-  state.params.community = look.community || "none";
-  state.params.role = look.role || "none";
-  state.params.rank = look.rank ? String(look.rank) : "none";
-  state.params.occasion = look.occasion || "daily";
-  /* 换卡 = 重新受这张卡约束：清掉手动自定义与派生豁免，槽位先清空再按卡填 */
+  if (look.sex && !(respectLocks && L.has("sex"))) state.params.sex = look.sex;
+  if (!(respectLocks && L.has("era"))) state.params.era = look.era;
+  if (!(respectLocks && L.has("community"))) state.params.community = look.community || "none";
+  if (!(respectLocks && L.has("role"))) state.params.role = look.role || "none";
+  if (!(respectLocks && L.has("rank"))) state.params.rank = look.rank ? String(look.rank) : "none";
+  if (!(respectLocks && L.has("occasion"))) state.params.occasion = look.occasion || "daily";
+  /* 换卡 = 重新受这张卡约束：清掉手动自定义与派生豁免，槽位先清空再按卡填。
+     随机人物走 respectLocks：被锁的项保留原值，不跟卡走。 */
   state.lookCustomized = {};
   state.manualOverrides = {};
   clearCostumeSlots();
-  Object.keys(look.slots || {}).forEach(function (k) { state.params[k] = look.slots[k]; });
+  Object.keys(keptSlots).forEach(function (k) { state.params[k] = keptSlots[k]; });
+  Object.keys(look.slots || {}).forEach(function (k) {
+    if (respectLocks && L.has(k)) return;
+    state.params[k] = look.slots[k];
+  });
   Object.keys(look.overrides || {}).forEach(function (k) {
+    if (respectLocks && L.has(k)) return;
     const p = paramIndex[k];
     if (p && p.options && p.options.some(function (o) { return o.value === look.overrides[k]; })) state.params[k] = look.overrides[k];
   });
   /* 卡片换了性别：姓名/性格/简介必须跟着换，不能留男名配女卡 */
-  if (sexChanged) state.meta = genMeta(mulberry32((state.seed + 99) >>> 0), look.sex);
+  if (sexChanged) state.meta = genMeta(mulberry32((state.seed + 99) >>> 0), nextSex);
   state.meta.identity = identityPhrase();
   return true;
 }
@@ -966,12 +1188,68 @@ function compileBlockText(b, vars) {
 }
 
 /* ======================================================================
+   复刻提示词 / 风格预设（叠加在常规提示词之上）
+   full   = 整段替换本次提示词（左栏参数与右栏段落都不参与）
+   suffix = 把风格段追加到常规提示词末尾（保留当前人物）
+   ====================================================================== */
+function activeStyle() {
+  const s = state.activeStyle;
+  if (!s) return null;
+  if (s.mode === "suffix") return String(s.styleSuffix || "").trim() ? s : null;
+  return String(s.prompt || "").trim() ? s : null;
+}
+function updateStyleChip() {
+  const chip = $("#activeStyleChip");
+  if (!chip) return;
+  const s = activeStyle();
+  if (!s) {
+    chip.hidden = true;
+    chip.textContent = "";
+    return;
+  }
+  chip.hidden = false;
+  chip.textContent = (s.mode === "suffix" ? "风格：" : "复刻提示词：") + (s.name || "未命名") + " ✕";
+  chip.title = s.mode === "suffix"
+    ? "已把风格段追加到当前提示词末尾；点一下清除，回到纯参数提示词"
+    : "本次生成使用整段复刻提示词，左栏参数与右栏段落都不参与；点一下清除";
+}
+function setActiveStyle(style) {
+  state.activeStyle = style || null;
+  updateStyleChip();
+  updatePromptPreview();
+  saveState();
+}
+function clearActiveStyle() {
+  state.activeStyle = null;
+  syncStage();
+  saveState();
+  toast("已清除复刻提示词 / 风格，回到参数生成的提示词");
+}
+
+/* ======================================================================
    提示词快照：预览 / 复制 / 生成发送 共用这一份，谁也不许再单独拼一遍
    ====================================================================== */
 function buildPromptSnapshot() {
   const vars = buildVars();
   const tpl = currentTemplate();
   const tplVars = (tpl && tpl.vars) || {};
+  const style = activeStyle();
+  /* 整段复刻：直接返回复刻提示词，不拼左栏参数；预览和实际发送仍然共用这一份 */
+  if (style && style.mode === "full") {
+    const externalText = String(style.prompt || "").trim();
+    return {
+      text: externalText,
+      vars: vars,
+      segments: [{ id: "__style_full", kind: "custom", label: "复刻提示词", raw: externalText, text: externalText, emptyKeys: [], literal: true }],
+      used: new Set(),
+      empty: [],
+      unknown: [],
+      overrides: Object.keys(tplVars),
+      external: true,
+      style: { id: style.id || "", name: style.name || "", mode: "full" },
+      stats: { chars: externalText.length, vars: 0, empty: 0, unknown: 0 }
+    };
+  }
   const segments = [];
   const used = new Set();
   const empty = [];
@@ -1000,6 +1278,21 @@ function buildPromptSnapshot() {
     if (!text.trim()) return;
     segments.push({ id: b.id, kind: b.kind, label: b.label, raw: raw, text: text, emptyKeys: segEmpty });
   });
+  /* 只套风格：把风格段作为最后一段正文追加，时代负向词仍然压在最后 */
+  if (style && style.mode === "suffix") {
+    const suffix = String(style.styleSuffix || "").trim();
+    if (suffix) {
+      segments.push({
+        id: "__style_suffix",
+        kind: "custom",
+        label: "风格预设 · " + (style.name || ""),
+        raw: "",
+        text: "风格与质感：" + suffix,
+        emptyKeys: [],
+        literal: true
+      });
+    }
+  }
   const tail = eraNegative();
   const body = segments.map(function (seg) { return seg.text.trim(); }).join("\n\n");
   const text = tail ? (body ? body + "\n\n" + tail : tail) : body;
@@ -1013,6 +1306,8 @@ function buildPromptSnapshot() {
     empty: empty,
     unknown: unknown,
     overrides: Object.keys(tplVars),
+    external: false,
+    style: style ? { id: style.id || "", name: style.name || "", mode: style.mode } : null,
     stats: { chars: text.length, vars: usedSet.size, empty: empty.length, unknown: unknown.length }
   };
 }
@@ -1036,9 +1331,9 @@ const CANVAS_VARS = {
   costume: { label: "朝代服饰形制句", source: "左栏 · 时代与身份 / 服饰", group: "服饰", target: "costume" },
   costumeNeg: { label: "时代负向词", source: "data/eras.json 的时代包", group: "服饰", target: "costume" },
   ageLook: { label: "年龄感", source: "左栏 · 身份 · 年龄", group: "面目", target: "ratio" },
-  name: { label: "姓名", source: "「换一个」随机生成", group: "自动生成", target: "stage" },
-  identity: { label: "身份", source: "「换一个」随机生成", group: "自动生成", target: "stage" },
-  trait: { label: "标签", source: "「换一个」随机生成", group: "自动生成", target: "stage" },
+  name: { label: "姓名", source: "「随机人物」随机生成", group: "自动生成", target: "stage" },
+  identity: { label: "身份", source: "「随机人物」随机生成", group: "自动生成", target: "stage" },
+  trait: { label: "标签", source: "「随机人物」随机生成", group: "自动生成", target: "stage" },
   masculinity: { label: "气质（presentation 的别名）", source: "左栏 · 身份 · 气质", group: "身份", target: "ratio" }
 };
 
@@ -1189,8 +1484,10 @@ function renderTemplateHTML(text, vars, opts) {
 
 function compilePromptHTML(opts) {
   const snap = buildPromptSnapshot();
-  const parts = snap.segments.map(function (seg) { return renderTemplateHTML(seg.raw, snap.vars, opts); });
-  const tail = eraNegative();
+  const parts = snap.segments.map(function (seg) {
+    return seg.literal ? escapeHtml(seg.text) : renderTemplateHTML(seg.raw, snap.vars, opts);
+  });
+  const tail = snap.external ? "" : eraNegative();
   if (tail) parts.push(escapeHtml(tail));
   return parts.join("\n\n");
 }
@@ -1528,7 +1825,7 @@ function renderSexSelector(host, used) {
     if (next) setSex(next.value);
   });
   const lock = el("button", "mini", "锁");
-  lock.title = "锁定后「换一个」不会改变性别";
+  lock.title = "锁定后「随机人物」不会改变性别";
   if (state.locks.has("sex")) lock.classList.add("on");
   lock.addEventListener("click", function () {
     if (state.locks.has("sex")) state.locks.delete("sex");
@@ -1666,7 +1963,7 @@ function paramFlags(p) {
   if ((state.highlights || []).indexOf(p.id) >= 0) box.appendChild(el("span", "pf-star", "★"));
   if (state.locks.has(p.id)) {
     const lock = el("span", "pf-lock", "锁");
-    if (cardOwned(p.id)) lock.title = "身份卡优先：换一个/换卡时会按卡片改它";
+    if (cardOwned(p.id)) lock.title = "身份卡优先：手动换卡时会按卡片改它；随机人物会保留锁值";
     box.appendChild(lock);
   }
   if (cardOwned(p.id)) {
@@ -1719,13 +2016,11 @@ function buildParamBody(p) {
   const star = el("button", "mini star" + (starred ? " on" : ""), starred ? "★" : "☆");
   star.title = "设为记忆点（最多 3 个）";
   star.addEventListener("click", function (e) { e.stopPropagation(); toggleHighlight(p.id); });
-  /* 上下文（时代/旗分/身份/品级/场合）与服饰槽位不参与「换一个」，不给掷/锁 */
-  const ctxOnly = p.virtual || paramGroupOf(p.id) === "costume";
   const dice = el("button", "mini", "掷");
   dice.title = "单独重掷这一项";
   dice.addEventListener("click", function (e) { e.stopPropagation(); rollOne(p.id); });
   const lock = el("button", "mini" + (state.locks.has(p.id) ? " on" : ""), "锁");
-  lock.title = "锁定后「换一个」不会改动";
+  lock.title = "锁定后「随机人物」不会改动";
   lock.addEventListener("click", function (e) {
     e.stopPropagation();
     if (state.locks.has(p.id)) state.locks.delete(p.id); else state.locks.add(p.id);
@@ -1733,10 +2028,11 @@ function buildParamBody(p) {
     renderParams();
   });
   const info = el("button", "mini", "说明");
-  info.title = ctxOnly ? "上下文 / 槽位由身份卡与门控决定" : "参数说明、可用性别、用在哪些段";
+  info.title = "参数说明、可用性别、用在哪些段";
   info.addEventListener("click", function (e) { e.stopPropagation(); openParamDetail(p.id); });
-  if (!ctxOnly) { tools.appendChild(dice); tools.appendChild(lock); }
-  tools.insertBefore(star, tools.firstChild);
+  tools.appendChild(star);
+  tools.appendChild(dice);
+  tools.appendChild(lock);
   tools.appendChild(info);
   head.appendChild(tools);
   body.appendChild(head);
@@ -1821,15 +2117,13 @@ function openParamPop(id, anchor) {
   }
   pop.appendChild(list);
   const actions = el("div", "param-pop-actions");
-  const pMeta = paramIndex[id];
-  const ctxOnly = !pMeta || pMeta.virtual || paramGroupOf(id) === "costume";
   const roll = el("button", "mini", "掷");
   roll.type = "button";
   roll.title = "单独重掷这一项";
   roll.addEventListener("click", function () { rollOne(id); closeParamPop(); });
   const lock = el("button", "mini" + (state.locks.has(id) ? " on" : ""), "锁");
   lock.type = "button";
-  lock.title = "锁定后「换一个」不会改动";
+  lock.title = "锁定后「随机人物」不会改动";
   lock.addEventListener("click", function () {
     if (state.locks.has(id)) state.locks.delete(id); else state.locks.add(id);
     saveState();
@@ -1838,7 +2132,8 @@ function openParamPop(id, anchor) {
   const info = el("button", "mini", "说明");
   info.type = "button";
   info.addEventListener("click", function () { closeParamPop(); openParamDetail(id); });
-  if (!ctxOnly) { actions.appendChild(roll); actions.appendChild(lock); }
+  actions.appendChild(roll);
+  actions.appendChild(lock);
   actions.appendChild(info);
   pop.appendChild(actions);
   document.body.appendChild(pop);
@@ -1931,7 +2226,7 @@ function renderParams() {
     const items = g.params.filter(function (p) { return p.id !== "sex" && paramPassesFilter(p, used); });
     if (!items.length && !hidden) return;
     visible += Math.max(items.length, 1);
-    const collapsed = !hidden && !full && !searching && state.collapsedGroups.indexOf(g.id) >= 0;
+    const collapsed = !full && !searching && state.collapsedGroups.indexOf(g.id) >= 0;
     const wrap = el("section", "group" + (collapsed ? " collapsed" : ""));
     const head = el("div", "group-head");
     head.appendChild(el("span", "group-chevron", collapsed ? "▸" : "▾"));
@@ -1953,7 +2248,7 @@ function renderParams() {
       tip.appendChild(go);
       wrap.appendChild(tip);
     }
-    /* 身份卡：服饰组的快捷入口，折叠时也能看见 */
+    /* 身份卡：服饰组展开时显示；折叠时和 9 个槽位一起收起 */
     if (g.id === "costume" && !hidden) {
       const looks = ((DATA.eras && DATA.eras.looks) || []).filter(function (look) { return look.era === state.params.era; });
       if (looks.length) {
@@ -2276,7 +2571,7 @@ function collectHealthIssues() {
     const p = paramIndex[id];
     issues.cards.push({
       id: "card-lock-" + id,
-      reason: "「" + (p ? p.label : id) + "」的锁会被身份卡「" + (look ? look.label : "") + "」覆盖：换一个/换卡时按卡片改。",
+      reason: "「" + (p ? p.label : id) + "」的锁会被身份卡「" + (look ? look.label : "") + "」覆盖：手动换卡时按卡片改；随机人物会保留锁值。",
       fix: { unlock: [id] },
       params: [id]
     });
@@ -2993,9 +3288,14 @@ function updatePromptPreview() {
   if (!pre) return;
   const prevScroll = pre.scrollTop;
   pre.innerHTML = snap.segments
-    .map(function (seg) { return renderTemplateHTML(seg.raw, snap.vars, { mode: "exact" }); })
+    .map(function (seg) {
+      /* 复刻提示词 / 风格段是外部原文，不解析 {{变量}}，原样转义 */
+      if (seg.literal) return escapeHtml(seg.text);
+      return renderTemplateHTML(seg.raw, snap.vars, { mode: "exact" });
+    })
     .join("\n\n");
-  const eraTailText = eraNegative();
+  /* 整段复刻时不再追加时代负向词：那段原文就是这次要发的全部内容 */
+  const eraTailText = snap.external ? "" : eraNegative();
   if (eraTailText) pre.innerHTML += "\n\n" + escapeHtml(eraTailText);
   pre.scrollTop = prevScroll;
   const len = snap.stats.chars;
@@ -3004,14 +3304,24 @@ function updatePromptPreview() {
   const budgetClass = len > budget + 400 ? "over" : len > budget ? "warn" : "ok";
   const meta = $("#promptMeta");
   if (meta) {
-    meta.innerHTML = snap.stats.vars + " 变量"
-      + (snap.stats.empty ? " · 空 " + snap.stats.empty : "")
-      + " · " + len + " 字 · <span class=\"budget budget-" + budgetClass + "\">预算 " + budget + "</span>";
-    meta.title = "提示词里的高亮词就是被替换的变量：悬停看来源，点击定位。点「变量表」看全部映射。\n空值不输出文字；未知变量会在发送前剥掉并拦截生成。\n预算：素体态单图 1800 / 多视图 2100；清装态 2000 / 2300（多约 100 字的服饰句）。";
+    if (snap.external) {
+      meta.innerHTML = "复刻提示词 · " + len + " 字" + (snap.style && snap.style.name ? " · " + escapeHtml(snap.style.name) : "");
+      meta.title = "本次生成直接使用参考图复刻出来的提示词；左栏参数和右栏段落都不参与。点画布上方的「复刻提示词：… ✕」恢复。";
+    } else {
+      meta.innerHTML = snap.stats.vars + " 变量"
+        + (snap.stats.empty ? " · 空 " + snap.stats.empty : "")
+        + " · " + len + " 字 · <span class=\"budget budget-" + budgetClass + "\">预算 " + budget + "</span>"
+        + (snap.style ? " · 风格 " + escapeHtml(snap.style.name || "未命名") : "");
+      meta.title = "提示词里的高亮词就是被替换的变量：悬停看来源，点击定位。点「变量表」看全部映射。\n空值不输出文字；未知变量会在发送前剥掉并拦截生成。\n预算：素体态单图 1800 / 多视图 2100；清装态 2000 / 2300（多约 100 字的服饰句）。";
+    }
   }
   const warn = $("#promptWarn");
   if (warn) {
-    if (snap.unknown.length) {
+    if (snap.external) {
+      warn.hidden = false;
+      warn.className = "prompt-warn";
+      warn.textContent = "正在用「" + ((snap.style && snap.style.name) || "复刻提示词") + "」整段生成：左栏参数与右栏段落都不参与本次提示词。点画布上方的风格标签可清除。";
+    } else if (snap.unknown.length) {
       warn.hidden = false;
       warn.className = "prompt-warn bad";
       warn.textContent = "已移除 " + snap.unknown.length + " 个未知变量：" + snap.unknown.map(function (u) { return "{{" + u.key + "}}"; }).join(" ") + "；先到「体检」修正再生成";
@@ -3025,6 +3335,7 @@ function updatePromptPreview() {
     }
   }
   updateParamUsage(snap);
+  updateStyleChip();
   scheduleBlockMetaRefresh();
 }
 
@@ -3083,6 +3394,7 @@ async function api(path, opt) {
 async function loadProviders() {
   const j = await api("/api/config");
   state.providers = (j && j.providers) || [];
+  state.llmProviders = (j && j.llmProviders) || [];
   state.hidden = (j && j.hiddenModels) || {};
   const sel = $("#providerSel");
   sel.textContent = "";
@@ -3101,6 +3413,14 @@ async function loadProviders() {
     state.providerId = state.providers[0] ? state.providers[0].id : null;
   }
   if (state.providerId) sel.value = state.providerId;
+  if (!state.llmProviderId || !state.llmProviders.some(function (p) { return p.id === state.llmProviderId; })) {
+    state.llmProviderId = state.llmProviders[0] ? state.llmProviders[0].id : null;
+    state.llmModelId = null;
+    state.llmModels = [];
+    state.llmModelsFor = "";
+  }
+  const rev = $("#reverseModal");
+  if (rev && rev.classList.contains("on")) renderReverseProviders();
 }
 
 async function loadModels() {
@@ -3161,6 +3481,52 @@ function openManage() {
   $("#manageModal").classList.add("on");
 }
 
+function renderLlmProviders() {
+  const host = $("#llmProviderList");
+  if (!host) return;
+  host.textContent = "";
+  if (!state.llmProviders.length) {
+    host.appendChild(el("p", "manage-empty", "还没有反推服务商：点右上角「＋ 新增反推服务商」"));
+    return;
+  }
+  state.llmProviders.forEach(function (p) {
+    const row = el("div", "manage-row");
+    const info = el("div", "manage-info");
+    info.appendChild(el("strong", null, p.name));
+    info.appendChild(el("span", "manage-sub", p.baseUrl + " · " + (p.hasKey ? p.keyMask : "⚠ 未配置密钥（点「编辑」填入，或写 .env 的 " + (p.envKey || "ZXT_KEY_" + String(p.id).toUpperCase()) + "）")));
+    row.appendChild(info);
+    const acts = el("div", "manage-actions");
+    const edit = el("button", "text-btn", "编辑");
+    edit.title = "修改名称 / 接口地址 / 密钥 / 强度参数名";
+    edit.addEventListener("click", function () {
+      $("#manageModal").classList.remove("on");
+      openModal("edit", p, { kind: "llm", fromManage: true });
+    });
+    acts.appendChild(edit);
+    const del = el("button", "text-btn danger", "删除");
+    del.addEventListener("click", async function () {
+      if (!window.confirm("删除反推服务商「" + p.name + "」？")) return;
+      const r = await api("/api/providers?kind=llm&id=" + encodeURIComponent(p.id), { method: "DELETE" });
+      if (r && r.ok) {
+        state.llmProviders = r.llmProviders || [];
+        if (state.llmProviderId === p.id) {
+          state.llmProviderId = null;
+          state.llmModelId = null;
+          state.llmModels = [];
+          state.llmModelsFor = "";
+        }
+        await loadProviders();
+        renderReverseProviders();
+        renderManage();
+        toast("已删除反推服务商「" + p.name + "」");
+      }
+    });
+    acts.appendChild(del);
+    row.appendChild(acts);
+    host.appendChild(row);
+  });
+}
+
 function renderManage() {
   const pl = $("#providerList");
   pl.textContent = "";
@@ -3171,11 +3537,11 @@ function renderManage() {
     const row = el("div", "manage-row");
     const info = el("div", "manage-info");
     info.appendChild(el("strong", null, p.name));
-    info.appendChild(el("span", "manage-sub", p.baseUrl + " · " + (p.hasKey ? p.keyMask : "⚠ 未配置密钥（.env 里加 " + (p.envKey || "ZXT_KEY_" + String(p.id).toUpperCase()) + "）")));
+    info.appendChild(el("span", "manage-sub", p.baseUrl + " · " + (p.hasKey ? p.keyMask : "⚠ 未配置密钥（点「编辑」填入，或写 .env 的 " + (p.envKey || "ZXT_KEY_" + String(p.id).toUpperCase()) + "）")));
     row.appendChild(info);
     const acts = el("div", "manage-actions");
     const edit = el("button", "text-btn", "编辑");
-    edit.title = "修改名称 / 接口地址；密钥在 .env 里改，改完重启";
+    edit.title = "修改名称 / 接口地址 / 密钥；密钥会写入 .env";
     edit.addEventListener("click", function () {
       /* 先收起管理面板，否则两个弹窗层叠（同一个 z-index，后出现的会盖住编辑框） */
       $("#manageModal").classList.remove("on");
@@ -3199,6 +3565,8 @@ function renderManage() {
     row.appendChild(acts);
     pl.appendChild(row);
   });
+
+  renderLlmProviders();
 
   $("#manageProviderName").textContent = providerName();
   const ml = $("#modelList");
@@ -3237,6 +3605,582 @@ function providerName() {
   const p = state.providers.find(function (x) { return x.id === state.providerId; });
   return p ? p.name : "—";
 }
+
+/* ======================================================================
+   参考图复刻：LLM 服务商 / 系统提示词 / 反推 / 风格预设
+   ====================================================================== */
+let reverseEditingNew = false;
+
+function revProvider() {
+  return state.llmProviders.find(function (p) { return p.id === state.llmProviderId; }) || null;
+}
+function revProviderName() {
+  const p = revProvider();
+  return p ? p.name : "—";
+}
+function reversePromptsList() {
+  return Array.isArray(state.reversePrompts) ? state.reversePrompts : [];
+}
+function selectedReversePrompt() {
+  const list = reversePromptsList();
+  if (!list.length) return null;
+  return list.find(function (p) { return p.id === state.reversePromptId; }) || list[0];
+}
+function setRevHint(text, isErr) {
+  const el = $("#revStatus");
+  if (!el) return;
+  el.textContent = text || "";
+  el.className = "rev-hint" + (isErr ? " err" : "");
+}
+
+function renderReverseProviders() {
+  const sel = $("#revProviderSel");
+  if (!sel) return;
+  sel.textContent = "";
+  if (!state.llmProviders.length) {
+    const o = el("option", null, "还没有反推服务商");
+    o.value = "";
+    sel.appendChild(o);
+    sel.disabled = true;
+  } else {
+    sel.disabled = false;
+    state.llmProviders.forEach(function (p) {
+      const o = el("option", null, p.name + (p.hasKey ? "  (" + p.keyMask + ")" : "  ⚠ 缺密钥"));
+      o.value = p.id;
+      sel.appendChild(o);
+    });
+    if (!state.llmProviderId || !state.llmProviders.some(function (p) { return p.id === state.llmProviderId; })) {
+      state.llmProviderId = state.llmProviders[0].id;
+      state.llmModelId = null;
+      state.llmModels = [];
+      state.llmModelsFor = "";
+    }
+    sel.value = state.llmProviderId;
+  }
+  renderReversePromptSelect();
+  renderReverseModelOptions();
+}
+
+function renderReverseModelOptions() {
+  const sel = $("#revModelSel");
+  if (!sel) return;
+  sel.textContent = "";
+  if (!state.llmProviderId) {
+    const o = el("option", null, "先选服务商");
+    o.value = "";
+    sel.appendChild(o);
+    sel.disabled = true;
+    return;
+  }
+  if (state.llmModelsFor !== state.llmProviderId) {
+    const o = el("option", null, "点 ↻ 拉取模型");
+    o.value = "";
+    sel.appendChild(o);
+    sel.disabled = false;
+    return;
+  }
+  sel.disabled = false;
+  if (!state.llmModels.length) {
+    const o = el("option", null, "没有可用模型");
+    o.value = "";
+    sel.appendChild(o);
+    return;
+  }
+  state.llmModels.forEach(function (m) {
+    const opt = el("option", null, m.id);
+    opt.value = m.id;
+    if (m.display && m.display !== m.id) opt.title = "上游显示名：" + m.display;
+    sel.appendChild(opt);
+  });
+  if (!state.llmModelId || !state.llmModels.some(function (m) { return m.id === state.llmModelId; })) {
+    state.llmModelId = state.llmModels[0].id;
+  }
+  sel.value = state.llmModelId;
+}
+
+async function loadReverseModels() {
+  const id = state.llmProviderId;
+  if (!id) { renderReverseModelOptions(); return; }
+  const sel = $("#revModelSel");
+  if (sel) {
+    sel.disabled = true;
+    sel.textContent = "";
+    const loading = el("option", null, "拉取中…");
+    loading.value = "";
+    sel.appendChild(loading);
+  }
+  setRevHint("正在从反推服务商拉取模型列表…");
+  const j = await api("/api/models?provider=" + encodeURIComponent(id));
+  if (!j || !j.ok) {
+    state.llmModels = [];
+    state.llmModelsFor = id;
+    renderReverseModelOptions();
+    setRevHint("模型拉取失败：" + ((j && j.error) || "未知错误"), true);
+    return;
+  }
+  state.llmModels = j.models || [];
+  state.llmModelsFor = id;
+  if (!state.llmModelId || !state.llmModels.some(function (m) { return m.id === state.llmModelId; })) {
+    state.llmModelId = state.llmModels[0] ? state.llmModels[0].id : null;
+  }
+  renderReverseModelOptions();
+  setRevHint("已连接「" + revProviderName() + "」，模型 " + state.llmModels.length + " 个");
+}
+
+function renderReversePromptSelect() {
+  const list = reversePromptsList();
+  const sel = $("#revSysSel");
+  const editSel = $("#revSysEditSel");
+  if (!sel) return;
+  sel.textContent = "";
+  if (editSel) editSel.textContent = "";
+  if (!list.length) {
+    const o = el("option", null, "（没有系统提示词）");
+    o.value = "";
+    sel.appendChild(o);
+    sel.disabled = true;
+    if (editSel) { const e2 = el("option", null, "（没有系统提示词）"); e2.value = ""; editSel.appendChild(e2); editSel.disabled = true; }
+    renderReverseSysEditor();
+    return;
+  }
+  sel.disabled = false;
+  if (editSel) editSel.disabled = false;
+  list.forEach(function (p) {
+    const label = p.name + (p.builtin ? "（内置）" : "");
+    const o = el("option", null, label);
+    o.value = p.id;
+    sel.appendChild(o);
+    if (editSel) {
+      const o2 = el("option", null, label);
+      o2.value = p.id;
+      editSel.appendChild(o2);
+    }
+  });
+  const cur = selectedReversePrompt();
+  if (cur) {
+    if (!reverseEditingNew) state.reversePromptId = cur.id;
+    sel.value = state.reversePromptId;
+    if (editSel) editSel.value = state.reversePromptId;
+  }
+  renderReverseSysEditor();
+}
+
+function renderReverseSysEditor() {
+  const nameEl = $("#revSysName");
+  const textEl = $("#revSysText");
+  if (!nameEl || !textEl) return;
+  if (reverseEditingNew) return;
+  const p = selectedReversePrompt();
+  const delBtn = $("#revSysDelete");
+  if (!p) {
+    nameEl.value = "";
+    textEl.value = "";
+    if (delBtn) delBtn.disabled = true;
+    return;
+  }
+  nameEl.value = p.name;
+  textEl.value = p.text;
+  if (delBtn) {
+    delBtn.disabled = reversePromptsList().length <= 1;
+    delBtn.title = p.builtin ? "内置提示词也能删；删掉后用「恢复默认」找回" : "";
+  }
+}
+
+function selectReversePrompt(id) {
+  if (!reversePromptsList().some(function (p) { return p.id === id; })) return;
+  state.reversePromptId = id;
+  reverseEditingNew = false;
+  const sel = $("#revSysSel"), editSel = $("#revSysEditSel");
+  if (sel) sel.value = id;
+  if (editSel) editSel.value = id;
+  renderReverseSysEditor();
+  saveState();
+}
+
+async function saveReversePromptFromEditor() {
+  const name = $("#revSysName").value.trim();
+  const text = $("#revSysText").value.trim();
+  if (!text) { toast("系统提示词不能为空"); return; }
+  const cur = reverseEditingNew ? null : selectedReversePrompt();
+  const payload = { id: cur ? cur.id : "", name: name || (cur ? cur.name : "未命名系统提示词"), text: text };
+  const j = await api("/api/reverse-prompts", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(payload)
+  });
+  if (!j || !j.ok) { toast("保存失败：" + ((j && j.error) || "未知错误"), 5000); return; }
+  state.reversePrompts = j.prompts || [];
+  state.reversePromptId = (j.prompt && j.prompt.id) || j.defaultId || state.reversePromptId;
+  reverseEditingNew = false;
+  renderReversePromptSelect();
+  saveState();
+  toast("系统提示词已保存");
+}
+
+async function deleteReversePrompt() {
+  const p = reverseEditingNew ? null : selectedReversePrompt();
+  if (!p) { toast("没有选中系统提示词"); return; }
+  if (!window.confirm("删除系统提示词「" + p.name + "」？")) return;
+  const j = await api("/api/reverse-prompts?id=" + encodeURIComponent(p.id), { method: "DELETE" });
+  if (!j || !j.ok) { toast("删除失败：" + ((j && j.error) || "未知错误")); return; }
+  state.reversePrompts = j.prompts || [];
+  state.reversePromptId = j.defaultId || (state.reversePrompts[0] && state.reversePrompts[0].id) || "default";
+  reverseEditingNew = false;
+  renderReversePromptSelect();
+  saveState();
+  toast("已删除系统提示词");
+}
+
+async function resetReversePrompts() {
+  const j = await api("/api/reverse-prompts/reset", { method: "POST", headers: { "Content-Type": "application/json" }, body: "{}" });
+  if (!j || !j.ok) { toast("恢复默认失败：" + ((j && j.error) || "未知错误")); return; }
+  state.reversePrompts = j.prompts || [];
+  state.reversePromptId = j.defaultId || "default";
+  reverseEditingNew = false;
+  renderReversePromptSelect();
+  saveState();
+  toast("内置系统提示词已恢复出厂文字");
+}
+
+/* ----- 参考图 ----- */
+function setRevImageMeta(text, isErr) {
+  const el = $("#revImgMeta");
+  if (!el) return;
+  el.textContent = text || "";
+  el.className = "rev-hint" + (isErr ? " err" : "");
+}
+
+function setReverseImage(dataUrl, meta) {
+  state.revImage = {
+    dataUrl: dataUrl,
+    mime: (meta && meta.mime) || "",
+    width: (meta && meta.width) || 0,
+    height: (meta && meta.height) || 0,
+    source: (meta && meta.source) || null
+  };
+  const img = $("#revPreview");
+  if (img) { img.src = dataUrl; img.hidden = false; }
+  const empty = $("#revDropEmpty");
+  if (empty) empty.hidden = true;
+  const dims = state.revImage.width && state.revImage.height ? " · " + state.revImage.width + "×" + state.revImage.height : "";
+  const size = meta && meta.bytes ? " · " + Math.round(meta.bytes / 1024) + "KB" : "";
+  setRevImageMeta("参考图已就绪" + dims + size);
+}
+
+function clearReverseImage() {
+  state.revImage = null;
+  const img = $("#revPreview");
+  if (img) { img.hidden = true; img.removeAttribute("src"); }
+  const empty = $("#revDropEmpty");
+  if (empty) empty.hidden = false;
+  setRevImageMeta("还没有参考图");
+}
+
+/* 统一缩到最长边 1536：既省 token，也避免上游限制 base64 体积 */
+function downscaleForReverse(dataUrl) {
+  return new Promise(function (resolve) {
+    const img = new Image();
+    img.onload = function () {
+      const w = img.naturalWidth || img.width;
+      const h = img.naturalHeight || img.height;
+      const scale = Math.min(1, 1536 / Math.max(w, h));
+      if (scale >= 1 && dataUrl.length < 4 * 1024 * 1024) {
+        const m = /^data:([^;]+);/.exec(dataUrl);
+        resolve({ dataUrl: dataUrl, mime: m ? m[1] : "image/png", width: w, height: h });
+        return;
+      }
+      const cw = Math.max(1, Math.round(w * scale));
+      const ch = Math.max(1, Math.round(h * scale));
+      const canvas = document.createElement("canvas");
+      canvas.width = cw;
+      canvas.height = ch;
+      canvas.getContext("2d").drawImage(img, 0, 0, cw, ch);
+      resolve({ dataUrl: canvas.toDataURL("image/jpeg", 0.9), mime: "image/jpeg", width: cw, height: ch });
+    };
+    img.onerror = function () { resolve(null); };
+    img.src = dataUrl;
+  });
+}
+
+async function handleReverseFile(file) {
+  if (!file) return;
+  if (!/^image\/(png|jpeg|webp)$/i.test(file.type || "")) {
+    toast("只支持 png / jpeg / webp 图片");
+    return;
+  }
+  if (file.size > 15 * 1024 * 1024) { toast("图片太大（上限 15MB）"); return; }
+  setRevImageMeta("正在读图…");
+  let dataUrl = "";
+  try {
+    dataUrl = await new Promise(function (resolve, reject) {
+      const fr = new FileReader();
+      fr.onload = function () { resolve(String(fr.result || "")); };
+      fr.onerror = function () { reject(new Error("读图失败")); };
+      fr.readAsDataURL(file);
+    });
+  } catch (e) {
+    setRevImageMeta("读图失败，换一张试试", true);
+    return;
+  }
+  const out = await downscaleForReverse(dataUrl);
+  if (!out) { setRevImageMeta("这张图读不出来，换一张试试", true); return; }
+  setReverseImage(out.dataUrl, {
+    mime: out.mime,
+    width: out.width,
+    height: out.height,
+    bytes: Math.round(out.dataUrl.length * 0.75),
+    source: { kind: "upload", url: file.name || "" }
+  });
+}
+
+async function loadReverseFromUrl() {
+  const input = $("#revUrl");
+  const url = input ? input.value.trim() : "";
+  if (!url) { toast("先粘贴图片链接"); return; }
+  setRevImageMeta("正在抓取图片链接…");
+  const j = await api("/api/fetch-image", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ url: url })
+  });
+  if (!j || !j.ok) { setRevImageMeta("抓取失败：" + ((j && j.error) || "未知错误"), true); return; }
+  const out = await downscaleForReverse(j.dataUrl);
+  if (!out) { setRevImageMeta("图片抓下来了但读不出来", true); return; }
+  setReverseImage(out.dataUrl, {
+    mime: out.mime,
+    width: out.width,
+    height: out.height,
+    bytes: j.bytes,
+    source: { kind: "url", url: j.finalUrl || url }
+  });
+}
+
+/* ----- 反推 ----- */
+function splitReverseResult(text) {
+  const m = /(?:^|\n)\s*风格与质感\s*[：:]\s*/.exec(text);
+  if (!m) return { style: "" };
+  return { style: text.slice(m.index + m[0].length).trim() };
+}
+
+function defaultReverseName() {
+  const d = new Date();
+  const pad = function (n) { return String(n).padStart(2, "0"); };
+  return "复刻风格 " + (d.getMonth() + 1) + "-" + pad(d.getDate()) + " " + pad(d.getHours()) + ":" + pad(d.getMinutes());
+}
+
+function showReverseResult(text, meta) {
+  const full = String(text || "").trim();
+  const parts = splitReverseResult(full);
+  $("#revResult").value = full;
+  $("#revStyleText").value = parts.style || "";
+  $("#revName").value = defaultReverseName();
+  $("#revTags").value = "";
+  $("#revResultWrap").hidden = false;
+  const note = (meta && meta.strengthIgnored) ? "（服务商不支持强度参数，已自动忽略）" : "";
+  setRevHint("复刻完成" + note + " · " + full.length + " 字；可以改完再保存或套用");
+  try { $("#revResultWrap").scrollIntoView({ block: "nearest", behavior: "smooth" }); } catch (e) {}
+}
+
+async function runReverse() {
+  if (state.revBusy) return;
+  const p = revProvider();
+  if (!p) { toast("先接入一个反推服务商（LLM）"); return; }
+  if (!p.hasKey) {
+    toast("这个服务商还没有密钥：点「＋」编辑填入，或写 .env 的 " + (p.envKey || "ZXT_KEY_…"), 6000);
+    return;
+  }
+  if (!state.revImage || !state.revImage.dataUrl) { toast("先给一张参考图：上传 / 拖入 / 粘贴 / 链接都行"); return; }
+  const sys = selectedReversePrompt();
+  if (!sys || !String(sys.text || "").trim()) { toast("先选一个系统提示词（点「编辑」可以新增或修改）"); return; }
+  const model = $("#revModelSel").value || state.llmModelId;
+  if (!model) { toast("先选反推模型"); return; }
+
+  state.revBusy = true;
+  const btn = $("#revRun");
+  if (btn) { btn.disabled = true; btn.textContent = "复刻中…"; }
+  setRevHint("正在把参考图发给「" + p.name + " · " + model + "」…");
+  try {
+    const j = await api("/api/reverse", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        providerId: p.id,
+        model: model,
+        systemPrompt: sys.text,
+        systemPromptId: sys.id,
+        imageDataUrl: state.revImage.dataUrl,
+        instruction: $("#revInstruction").value.trim(),
+        strength: state.llmStrength
+      })
+    });
+    if (!j || !j.ok) {
+      const msg = (j && j.error) || "未知错误";
+      setRevHint("复刻失败：" + msg, true);
+      toast("复刻失败：" + msg, 6000);
+      return;
+    }
+    showReverseResult(j.text, j.meta);
+  } finally {
+    state.revBusy = false;
+    if (btn) { btn.disabled = false; btn.textContent = "开始复刻"; }
+  }
+}
+
+/* ----- 风格预设 ----- */
+function makeThumb(dataUrl) {
+  if (!dataUrl) return Promise.resolve("");
+  return new Promise(function (resolve) {
+    const img = new Image();
+    img.onload = function () {
+      const w = img.naturalWidth || img.width;
+      const h = img.naturalHeight || img.height;
+      const scale = Math.min(1, 320 / Math.max(w, h));
+      const cw = Math.max(1, Math.round(w * scale));
+      const ch = Math.max(1, Math.round(h * scale));
+      const canvas = document.createElement("canvas");
+      canvas.width = cw;
+      canvas.height = ch;
+      canvas.getContext("2d").drawImage(img, 0, 0, cw, ch);
+      resolve(canvas.toDataURL("image/jpeg", 0.72));
+    };
+    img.onerror = function () { resolve(""); };
+    img.src = dataUrl;
+  });
+}
+
+async function saveReverseAsStyle() {
+  const prompt = $("#revResult").value.trim();
+  if (!prompt) { toast("先反推出一段提示词"); return; }
+  const name = $("#revName").value.trim() || defaultReverseName();
+  const styleSuffix = $("#revStyleText").value.trim();
+  const tags = $("#revTags").value.split(/[、,，;；\s]+/).map(function (s) { return s.trim(); }).filter(Boolean).slice(0, 8);
+  const p = revProvider();
+  const sys = selectedReversePrompt();
+  setRevHint("正在保存风格预设…");
+  const thumb = await makeThumb(state.revImage ? state.revImage.dataUrl : "");
+  const j = await api("/api/styles", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      name: name,
+      prompt: prompt,
+      styleSuffix: styleSuffix,
+      tags: tags,
+      thumb: thumb,
+      source: state.revImage ? state.revImage.source : null,
+      llm: {
+        providerId: p ? p.id : "",
+        providerName: p ? p.name : "",
+        model: state.llmModelId || "",
+        strength: state.llmStrength,
+        systemPromptId: sys ? sys.id : ""
+      }
+    })
+  });
+  if (!j || !j.ok) { setRevHint("保存失败：" + ((j && j.error) || "未知错误"), true); toast("保存失败：" + ((j && j.error) || ""), 5000); return; }
+  state.stylePresets = j.styles || [];
+  renderReverseStyles();
+  setRevHint("已保存风格预设「" + name + "」");
+  toast("已保存为风格预设「" + name + "」");
+}
+
+function useReverseResult(mode) {
+  const prompt = $("#revResult").value.trim();
+  const styleText = $("#revStyleText").value.trim();
+  if (mode === "full" && !prompt) { toast("提示词是空的"); return; }
+  if (mode === "suffix" && !styleText) { toast("风格段是空的：填一段，或改用「用这段提示词生成」"); return; }
+  setActiveStyle({
+    id: "",
+    name: $("#revName").value.trim() || defaultReverseName(),
+    mode: mode,
+    prompt: prompt,
+    styleSuffix: styleText
+  });
+  closeReverseModal();
+  toast(mode === "full" ? "已切换为整段复刻提示词，点「生成」出图" : "已把风格段套到当前人物提示词末尾，点「生成」出图", 5000);
+}
+
+function applyStylePreset(s, mode) {
+  if (mode === "suffix" && !String(s.styleSuffix || "").trim()) {
+    toast("这条预设没有风格段，只能用「整段生成」");
+    return;
+  }
+  setActiveStyle({ id: s.id || "", name: s.name || "", mode: mode, prompt: s.prompt || "", styleSuffix: s.styleSuffix || "" });
+  closeReverseModal();
+  toast(mode === "full" ? "已切换为预设「" + s.name + "」的整段提示词" : "已把「" + s.name + "」的风格段套到当前提示词末尾", 5000);
+}
+
+async function deleteStylePreset(s) {
+  if (!window.confirm("删除风格预设「" + s.name + "」？")) return;
+  const j = await api("/api/styles?id=" + encodeURIComponent(s.id), { method: "DELETE" });
+  if (!j || !j.ok) { toast("删除失败：" + ((j && j.error) || "未知错误")); return; }
+  state.stylePresets = j.styles || [];
+  if (state.activeStyle && state.activeStyle.id === s.id) setActiveStyle(null);
+  renderReverseStyles();
+  toast("已删除风格预设");
+}
+
+function renderReverseStyles() {
+  const host = $("#revStyleList");
+  if (!host) return;
+  host.textContent = "";
+  const list = Array.isArray(state.stylePresets) ? state.stylePresets : [];
+  const count = $("#revStyleCount");
+  if (count) count.textContent = list.length ? list.length + " 个" : "—";
+  if (!list.length) {
+    host.appendChild(el("p", "rev-empty", "还没有保存的风格预设：反推完点「保存为风格预设」"));
+    return;
+  }
+  list.forEach(function (s) {
+    const row = el("div", "manage-row rev-style-row");
+    if (s.thumb) {
+      const img = document.createElement("img");
+      img.className = "rev-thumb";
+      img.alt = "";
+      img.src = s.thumb;
+      row.appendChild(img);
+    } else {
+      row.appendChild(el("div", "rev-thumb"));
+    }
+    const info = el("div", "manage-info rev-style-meta");
+    info.appendChild(el("strong", null, s.name || "未命名风格"));
+    const when = s.createdAt ? new Date(s.createdAt).toLocaleString() : "";
+    const tags = (s.tags || []).join("、");
+    const model = s.llm && s.llm.model ? s.llm.model : "";
+    info.appendChild(el("span", "manage-sub", [tags, model, when].filter(Boolean).join(" · ") || "—"));
+    row.appendChild(info);
+    const acts = el("div", "rev-style-actions");
+    const bFull = el("button", "text-btn", "整段生成");
+    bFull.title = "用这条预设的完整提示词生图";
+    bFull.addEventListener("click", function () { applyStylePreset(s, "full"); });
+    const bSuffix = el("button", "text-btn", "套用风格");
+    bSuffix.title = "只把风格段追加到当前人物提示词";
+    bSuffix.addEventListener("click", function () { applyStylePreset(s, "suffix"); });
+    const bDel = el("button", "text-btn danger", "删除");
+    bDel.addEventListener("click", function () { deleteStylePreset(s); });
+    acts.appendChild(bFull);
+    acts.appendChild(bSuffix);
+    acts.appendChild(bDel);
+    row.appendChild(acts);
+    host.appendChild(row);
+  });
+}
+
+function openReverseModal() {
+  reverseEditingNew = false;
+  renderReverseProviders();
+  renderReverseStyles();
+  const strength = $("#revStrengthSel");
+  if (strength) strength.value = state.llmStrength;
+  $("#reverseModal").classList.add("on");
+  if (state.llmProviderId && (state.llmModelsFor !== state.llmProviderId || !state.llmModels.length)) {
+    loadReverseModels();
+  }
+}
+function closeReverseModal() {
+  $("#reverseModal").classList.remove("on");
+}
+
 
 /* ---------- archive ---------- */
 function historyEmptyText() {
@@ -3704,7 +4648,10 @@ function snapshotJob(idx, total) {
       role: state.params.role || "none",
       rank: state.params.rank || "none",
       costumeChars: (buildVars().costume || "").length,
-      evidence: currentLookEvidence()
+      evidence: currentLookEvidence(),
+      /* 存档里记下这次用的是复刻提示词还是风格段，便于事后复现 */
+      style: snap.style || null,
+      externalPrompt: !!snap.external
     },
     filenameHint: (state.meta.name || "无名") + "_" + state.params.height + "cm_" + currentTemplate().label,
     character: {
@@ -4268,7 +5215,7 @@ function bindUI() {
 
   $("#rerollAll").addEventListener("click", function () {
     rerollAll();
-    toast("换了一个人 · 种子 " + state.seed);
+    toast("已随机人物 · 种子 " + state.seed);
   });
 
   $("#unlockAll").addEventListener("click", function () {
@@ -4469,6 +5416,7 @@ function bindUI() {
       else if ($("#healthModal").classList.contains("on")) $("#healthModal").classList.remove("on");
       else if ($("#varModal").classList.contains("on")) $("#varModal").classList.remove("on");
       else if ($("#trashModal").classList.contains("on")) $("#trashModal").classList.remove("on");
+      else if ($("#reverseModal").classList.contains("on")) closeReverseModal();
       else if ($("#modal").classList.contains("on")) closeModal();
       else if ($("#manageModal").classList.contains("on")) $("#manageModal").classList.remove("on");
     }
@@ -4547,6 +5495,114 @@ function bindUI() {
   $("#modalSave").addEventListener("click", saveProvider);
   $("#modal").addEventListener("click", function (e) { if (e.target.id === "modal") closeModal(); });
 
+  /* ---------- 参考图复刻（图 → 提示词 / 风格） ---------- */
+  $("#reverseBtn").addEventListener("click", openReverseModal);
+  $("#revClose").addEventListener("click", closeReverseModal);
+  $("#reverseModal").addEventListener("click", function (e) { if (e.target.id === "reverseModal") closeReverseModal(); });
+  $("#activeStyleChip").addEventListener("click", clearActiveStyle);
+
+  $("#revProviderSel").addEventListener("change", function (e) {
+    state.llmProviderId = e.target.value || null;
+    state.llmModelId = null;
+    state.llmModels = [];
+    state.llmModelsFor = "";
+    saveState();
+    if (state.llmProviderId) loadReverseModels(); else renderReverseModelOptions();
+  });
+  $("#revModelSel").addEventListener("change", function (e) {
+    state.llmModelId = e.target.value || null;
+    saveState();
+  });
+  $("#revRefreshModels").addEventListener("click", function () { loadReverseModels(); });
+  $("#revStrengthSel").addEventListener("change", function (e) {
+    state.llmStrength = ["auto", "low", "medium", "high"].indexOf(e.target.value) >= 0 ? e.target.value : "auto";
+    saveState();
+  });
+  $("#revAddProvider").addEventListener("click", function () {
+    closeReverseModal();
+    openModal("add", null, { kind: "llm", fromReverse: true });
+  });
+  const addLlmBtn = $("#manageAddLlm");
+  if (addLlmBtn) addLlmBtn.addEventListener("click", function () {
+    $("#manageModal").classList.remove("on");
+    openModal("add", null, { kind: "llm", fromManage: true });
+  });
+
+  $("#revSysToggle").addEventListener("click", function () {
+    const box = $("#revSysEditor");
+    box.hidden = !box.hidden;
+    if (!box.hidden) { reverseEditingNew = false; renderReversePromptSelect(); }
+  });
+  $("#revSysSel").addEventListener("change", function (e) { selectReversePrompt(e.target.value); });
+  $("#revSysEditSel").addEventListener("change", function (e) { selectReversePrompt(e.target.value); });
+  $("#revSysNew").addEventListener("click", function () {
+    reverseEditingNew = true;
+    $("#revSysName").value = "";
+    $("#revSysText").value = "";
+    $("#revSysText").focus();
+  });
+  $("#revSysSave").addEventListener("click", saveReversePromptFromEditor);
+  $("#revSysDelete").addEventListener("click", deleteReversePrompt);
+  $("#revSysReset").addEventListener("click", resetReversePrompts);
+
+  /* 参考图：点击 / 拖拽 / 粘贴 / 链接 */
+  $("#revDrop").addEventListener("click", function (e) {
+    if (e.target && e.target.id === "revFile") return;
+    $("#revFile").click();
+  });
+  $("#revFile").addEventListener("change", function (e) {
+    const f = e.target.files && e.target.files[0];
+    e.target.value = "";
+    if (f) handleReverseFile(f);
+  });
+  ["dragenter", "dragover"].forEach(function (name) {
+    $("#revDrop").addEventListener(name, function (e) {
+      e.preventDefault();
+      $("#revDrop").classList.add("over");
+    });
+  });
+  ["dragleave", "drop"].forEach(function (name) {
+    $("#revDrop").addEventListener(name, function (e) {
+      e.preventDefault();
+      $("#revDrop").classList.remove("over");
+    });
+  });
+  $("#revDrop").addEventListener("drop", function (e) {
+    const f = e.dataTransfer && e.dataTransfer.files && e.dataTransfer.files[0];
+    if (f) handleReverseFile(f);
+  });
+  document.addEventListener("paste", function (e) {
+    const modal = $("#reverseModal");
+    if (!modal || !modal.classList.contains("on")) return;
+    const items = (e.clipboardData && e.clipboardData.items) || [];
+    for (let i = 0; i < items.length; i++) {
+      if (items[i].type && items[i].type.indexOf("image/") === 0) {
+        const f = items[i].getAsFile();
+        if (f) { e.preventDefault(); handleReverseFile(f); break; }
+      }
+    }
+  });
+  $("#revUrlLoad").addEventListener("click", loadReverseFromUrl);
+  $("#revUrl").addEventListener("keydown", function (e) {
+    if (e.key === "Enter") { e.preventDefault(); loadReverseFromUrl(); }
+  });
+  $("#revRun").addEventListener("click", runReverse);
+  $("#revCopy").addEventListener("click", function () {
+    const text = $("#revResult").value.trim();
+    if (!text) { toast("还没有可复制的提示词"); return; }
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(text).then(
+        function () { toast("提示词已复制 · " + text.length + " 字"); },
+        function () { toast("复制失败：浏览器不允许剪贴板访问，请手动选中复制", 4200); }
+      );
+    } else {
+      toast("复制失败：浏览器不支持剪贴板，请手动选中复制", 4200);
+    }
+  });
+  $("#revSaveStyle").addEventListener("click", saveReverseAsStyle);
+  $("#revUseFull").addEventListener("click", function () { useReverseResult("full"); });
+  $("#revUseSuffix").addEventListener("click", function () { useReverseResult("suffix"); });
+
   initZoom();
 }
 
@@ -4578,32 +5634,50 @@ function fillStaticSelects() {
 }
 
 let editingProviderId = null;
+let editingProviderKind = "image"; /* image = 生图服务商；llm = 参考图反推用的 LLM */
 let modalReturnToManage = false; /* 从管理面板进来的弹窗，关掉后回管理面板 */
+let modalReturnToReverse = false; /* 从「以图复刻」进来的弹窗，关掉后回复刻面板 */
 
 function openModal(mode, provider, opts) {
+  opts = opts || {};
   const editing = mode === "edit" && provider ? provider : null;
   editingProviderId = editing ? editing.id : null;
-  modalReturnToManage = !!(opts && opts.fromManage);
+  editingProviderKind = opts.kind || (editing && editing.kind) || "image";
+  const isLlm = editingProviderKind === "llm";
+  modalReturnToManage = !!opts.fromManage;
+  modalReturnToReverse = !!opts.fromReverse;
   const title = $("#modalTitle");
-  if (title) title.textContent = editing ? "编辑服务商" : "接入第三方生图接口";
+  if (title) title.textContent = editing
+    ? (isLlm ? "编辑反推服务商" : "编辑服务商")
+    : (isLlm ? "接入反推模型（LLM）" : "接入第三方生图接口");
+  const note = $("#modalNote");
+  if (note) {
+    note.innerHTML = isLlm
+      ? "接口需兼容 OpenAI 的 <code>/v1/models</code> 与 <code>/v1/chat/completions</code>，模型要支持图片输入（vision）。地址只填域名也行（会依次试 <code>/v1/models</code>、<code>/models</code>）。<strong>密钥仍只写进 <code>.env</code></strong>，保存后立即生效。"
+      : "接口需兼容 OpenAI 的 <code>/v1/models</code> 与 <code>/v1/images/generations</code>；地址只填域名也行（会依次试 <code>/v1/models</code>、<code>/models</code>）。<strong>密钥会保存进项目根目录的 <code>.env</code></strong>（<code>config.json</code> 不保存），保存后立即生效，也可以直接手改 <code>.env</code>。";
+  }
+  const strengthRow = $("#pvStrengthRow");
+  if (strengthRow) strengthRow.hidden = !isLlm;
+  const strengthInput = $("#pvStrength");
+  if (strengthInput) strengthInput.value = isLlm && editing ? (editing.strengthParam == null ? "" : editing.strengthParam) : "";
   const saveBtn = $("#modalSave");
   if (saveBtn) saveBtn.textContent = editing ? "保存修改" : "保存并拉取模型";
   $("#pvName").value = editing ? editing.name : "";
   $("#pvBase").value = editing ? editing.baseUrl : "";
-  /* 方案 A：密钥只从 .env 读，弹窗里只负责告诉用户该改哪个变量名 */
+  /* 密钥只进 .env：弹窗里可以粘贴，保存时由服务端写回 .env（config.json 不保存） */
   const pvId = $("#pvId");
   if (pvId) {
     pvId.value = editing ? editing.id : "";
     pvId.disabled = !!editing;
-    pvId.placeholder = editing ? "标识不可修改" : "小写字母/数字，如 cpa";
+    pvId.placeholder = editing ? "标识不可修改" : "小写字母/数字，如 cpa / vision";
   }
   const keyInput = $("#pvKey");
   keyInput.value = "";
-  keyInput.disabled = true;
-  keyInput.placeholder = editing && editing.envKey
-    ? "由 .env 的 " + editing.envKey + " 决定，改完重启生效"
-    : "保存后按提示写进 .env，重启生效";
-  keyInput.title = "密钥只从项目根目录的 .env 读取，这里不能修改；改完 .env 重启定妆间即可生效。";
+  keyInput.disabled = false;
+  keyInput.placeholder = editing
+    ? (editing.hasKey ? "已保存 " + editing.keyMask + "（留空 = 不修改）" : "粘贴密钥，保存时写入 .env")
+    : "粘贴密钥（可选；保存时写入 .env）";
+  keyInput.title = "密钥会写入项目根目录的 .env，config.json 不保存；保存后立即生效，重启也不会丢。留空表示不改动已有密钥。";
   $("#modal").classList.add("on");
 }
 function closeModal() {
@@ -4614,12 +5688,21 @@ function closeModal() {
     renderManage();
     $("#manageModal").classList.add("on");
   }
+  if (modalReturnToReverse) {
+    modalReturnToReverse = false;
+    openReverseModal();
+  }
 }
 
 function reopenManageIfNeeded(back) {
   if (!back) return;
   renderManage();
   $("#manageModal").classList.add("on");
+}
+
+function reopenReverseIfNeeded(back) {
+  if (!back) return;
+  openReverseModal();
 }
 
 /* 接口地址允许粘贴成 …/v1 或 …/v1/models，程序自己会拼 /v1/models 与 /v1/images/generations */
@@ -4630,14 +5713,19 @@ function normalizeBaseUrl(raw) {
 }
 
 async function saveProvider() {
+  const kind = editingProviderKind;
+  const isLlm = kind === "llm";
+  const pool = isLlm ? state.llmProviders : state.providers;
   const editing = editingProviderId
-    ? state.providers.find(function (x) { return x.id === editingProviderId; })
+    ? pool.find(function (x) { return x.id === editingProviderId; })
     : null;
-  const name = $("#pvName").value.trim() || (editing ? editing.name : "新服务商");
+  const name = $("#pvName").value.trim() || (editing ? editing.name : (isLlm ? "反推服务商" : "新服务商"));
   const baseUrl = normalizeBaseUrl($("#pvBase").value);
   if (!baseUrl) { toast("接口地址要填"); return; }
   if (!/^https?:\/\//i.test(baseUrl)) { toast("接口地址要以 http:// 或 https:// 开头"); return; }
-  const payload = { name: name, baseUrl: baseUrl };
+  /* 密钥只进 .env：这里填的会由服务端写回 .env，config.json 不保存 */
+  const key = $("#pvKey").value.trim();
+  const payload = { name: name, baseUrl: baseUrl, kind: kind };
   if (editing) {
     payload.id = editing.id;
   } else {
@@ -4649,44 +5737,93 @@ async function saveProvider() {
     }
     if (rawId) payload.id = rawId;
   }
+  if (isLlm) payload.strengthParam = String(($("#pvStrength") && $("#pvStrength").value) || "").trim();
   const j = await api("/api/providers", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(payload)
   });
   if (!j || !j.ok) { toast("保存失败：" + ((j && j.error) || "")); return; }
-  const wasCurrent = !!(editing && state.providerId === editing.id);
+  const wasCurrent = !!(editing && (isLlm ? state.llmProviderId === editing.id : state.providerId === editing.id));
   const baseChanged = editing ? normalizeBaseUrl(editing.baseUrl) !== baseUrl : false;
-  const back = modalReturnToManage;
-  modalReturnToManage = false; /* 这里自己决定何时回管理面板，避免用旧列表渲染一次 */
+  const backManage = modalReturnToManage;
+  const backReverse = modalReturnToReverse;
+  modalReturnToManage = false; /* 这里自己决定何时回面板，避免用旧列表渲染一次 */
+  modalReturnToReverse = false;
   closeModal();
-  state.providers = j.providers;
+  state.providers = j.providers || state.providers;
+  state.llmProviders = j.llmProviders || state.llmProviders;
   await loadProviders();
+  /* 新增时服务端可能自动生成标识：以服务端返回的 id 为准 */
+  const targetId = editing ? editing.id : (j.id || "");
+  let keySaved = false;
+  if (targetId && key) {
+    const kr = await api("/api/providers/key", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ providerId: targetId, apiKey: key })
+    });
+    if (kr && kr.ok) {
+      keySaved = true;
+      state.providers = kr.providers || state.providers;
+      state.llmProviders = kr.llmProviders || state.llmProviders;
+      await loadProviders();
+    } else {
+      toast("服务商已保存，但密钥写进 .env 失败：" + ((kr && kr.error) || "未知错误"), 6000);
+    }
+  }
+  if (isLlm) {
+    /* LLM 分支：切到刚保存的反推服务商，重新拉模型，更新「以图复刻」面板 */
+    if (!editing && targetId) state.llmProviderId = targetId;
+    state.llmModels = [];
+    state.llmModelsFor = "";
+    if (state.llmProviderId) await loadReverseModels();
+    saveState();
+    reopenManageIfNeeded(backManage);
+    reopenReverseIfNeeded(backReverse);
+    const target = state.llmProviders.find(function (p) { return p.id === state.llmProviderId; });
+    if (editing) {
+      toast("已更新反推服务商「" + name + "」" + (keySaved
+        ? "，密钥已写入 .env"
+        : (wasCurrent && (baseChanged || keySaved) ? "，已重新拉取模型" : "")));
+    } else {
+      toast(target && target.hasKey
+        ? "已接入反推服务商「" + name + "」，模型 " + state.llmModels.length + " 个"
+        : "已新增「" + name + "」。在「编辑」里粘贴密钥，或写 .env 的 " + ((target && target.envKey) || "ZXT_KEY_…"), 6000);
+    }
+    return;
+  }
   if (editing) {
     /* 编辑：不切换当前服务商；改了地址或密钥就重新拉一遍模型 */
-    if (wasCurrent && baseChanged) {
+    const changed = wasCurrent && (baseChanged || keySaved);
+    if (changed) {
       state.modelId = null;
       await loadModels();
       saveState();
     }
-    reopenManageIfNeeded(back);
-    toast("已更新服务商「" + name + "」" + (wasCurrent && baseChanged ? "，已重新拉取模型" : "；密钥在 .env 里改，改完重启"));
+    reopenManageIfNeeded(backManage);
+    reopenReverseIfNeeded(backReverse);
+    toast("已更新服务商「" + name + "」" + (keySaved
+      ? "，密钥已写入 .env"
+      : (changed ? "，已重新拉取模型" : "；要换密钥就粘贴到「密钥」框里再保存")));
     return;
   }
-  const last = state.providers[state.providers.length - 1];
-  if (last) {
-    state.providerId = last.id;
-    $("#providerSel").value = last.id;
+  if (targetId) {
+    state.providerId = targetId;
+    $("#providerSel").value = targetId;
     state.modelId = null;
     await loadModels(); /* 没配密钥时会如实显示「拉取失败 + 缺哪个变量」，省得猜 */
     saveState(); /* 记住刚接入的服务商，刷新后还停在这个服务商上 */
-    reopenManageIfNeeded(back);
-    toast(last.hasKey
+    reopenManageIfNeeded(backManage);
+    reopenReverseIfNeeded(backReverse);
+    const target = state.providers.find(function (p) { return p.id === targetId; });
+    toast(target && target.hasKey
       ? "已接入 " + name + "，模型 " + state.models.length + " 个"
-      : "已新增「" + name + "」。请在 .env 加一行 " + (last.envKey || "ZXT_KEY_" + String(last.id).toUpperCase()) + "=你的密钥，然后重启定妆间");
+      : "已新增「" + name + "」。在「编辑」里粘贴密钥，或写 .env 的 " + ((target && target.envKey) || "ZXT_KEY_…") + " 后重启");
     return;
   }
-  reopenManageIfNeeded(back);
+  reopenManageIfNeeded(backManage);
+  reopenReverseIfNeeded(backReverse);
   toast("已接入 " + name + "，模型 " + state.models.length + " 个");
 }
 

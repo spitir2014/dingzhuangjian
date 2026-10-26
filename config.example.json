@@ -2,7 +2,7 @@
   "providers": [
     {
       "id": "example",
-      "name": "示例服务商（换成你自己的）",
+      "name": "示例生图服务商（换成你自己的）",
       "baseUrl": "https://api.example.com/v1",
       "authHeader": "Authorization",
       "authPrefix": "Bearer ",
@@ -10,8 +10,21 @@
       "modelBase": "https://api.example.com/v1"
     }
   ],
+  "llmProviders": [
+    {
+      "id": "vision",
+      "name": "示例反推服务商（视觉 LLM）",
+      "baseUrl": "https://api.example.com/v1",
+      "authHeader": "Authorization",
+      "authPrefix": "Bearer ",
+      "enabled": true,
+      "modelBase": "https://api.example.com/v1",
+      "strengthParam": "reasoning_effort"
+    }
+  ],
   "settings": {
     "downloadDir": "output",
-    "hiddenModels": {}
+    "hiddenModels": {},
+    "llmTimeoutMs": 180000
   }
 }

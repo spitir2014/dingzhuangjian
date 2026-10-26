@@ -1,6 +1,8 @@
-/* 本地假上游：只实现 OpenAI 兼容的两个接口，用来离线跑批次流程。
+/* 本地假上游：只实现 OpenAI 兼容的接口，用来离线跑批次流程与参考图反推。
    - GET  /v1/models             → { data: [{ id: "mock-image", object: "model" }] }
    - POST /v1/images/generations → 按 MOCK_MODE 返回：ok / slow / stall / 503
+   - POST /v1/chat/completions   → 固定返回一段「反推提示词」，用于参考图复刻测试
+   - GET  /v1/mock-image.png     → 返回一张 1×1 PNG，用于「图片链接 → data URL」测试
 
    零依赖、只监听 127.0.0.1、不联网、不花钱。
 
@@ -19,7 +21,7 @@ import path from "node:path";
 import { fileURLToPath } from "node:url";
 
 /* 1×1 RGBA 最小合法 PNG（IHDR / IDAT / IEND 的 CRC 都正确），生图接口返回这张 */
-const MIN_PNG_B64 =
+export const MIN_PNG_B64 =
   "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR4nGPQrrn2HwAE0AJ9U2q3xQAAAABJRU5ErkJggg==";
 
 const MODES = ["ok", "slow", "stall", "503"];
@@ -82,8 +84,48 @@ export async function startMock(options = {}) {
   const times503 = toNumber(opts.times503 != null ? opts.times503 : process.env.MOCK_503_TIMES, DEFAULT_503_TIMES);
 
   let hits503 = 0;
+  /* 可选：第一次收到 strength 参数就返回 400，用来验证「去掉强度参数重试」的兜底 */
+  const rejectStrength = opts.rejectStrength === true;
+  let strengthRejected = false;
   const sockets = new Set();
   const timers = new Set();
+
+  function chatJson(body) {
+    const messages = (body && body.messages) || [];
+    const text = JSON.stringify(messages);
+    const hasImage = text.indexOf("data:image") >= 0;
+    const strength = body.reasoning_effort || body.strength || "none";
+    const content = "画面：mock 反推提示词，固定机位与柔和光线，材质清晰。\n\n风格与质感：mock 风格段（" +
+      (hasImage ? "含图" : "无图") + "，强度 " + strength + "）";
+    return {
+      id: "chatcmpl-mock",
+      object: "chat.completion",
+      created: Math.floor(Date.now() / 1000),
+      model: (body && body.model) || "mock-vision",
+      choices: [{ index: 0, message: { role: "assistant", content: content }, finish_reason: "stop" }],
+      usage: { prompt_tokens: 12, completion_tokens: 24, total_tokens: 36 }
+    };
+  }
+
+  function handleChat(req, res) {
+    let raw = "";
+    let aborted = false;
+    req.on("data", function (c) { raw += c; });
+    req.on("aborted", function () { aborted = true; });
+    req.on("close", function () { aborted = true; });
+    req.on("error", function () { aborted = true; });
+    req.on("end", function () {
+      if (aborted || res.writableEnded || res.destroyed) return;
+      if (!req.socket || req.socket.destroyed) return;
+      let body = {};
+      try { body = JSON.parse(raw || "{}"); } catch (e) { body = {}; }
+      if (rejectStrength && body.reasoning_effort && !strengthRejected) {
+        strengthRejected = true;
+        return sendJson(res, 400, { error: { message: "mock upstream：不支持 reasoning_effort" } });
+      }
+      sendJson(res, 200, chatJson(body));
+    });
+  }
 
   function imageJson(model) {
     return {
@@ -141,6 +183,22 @@ export async function startMock(options = {}) {
     }
     if (req.method === "POST" && url.pathname === "/v1/images/generations") {
       return handleGenerate(req, res);
+    }
+    if (req.method === "POST" && url.pathname === "/v1/chat/completions") {
+      return handleChat(req, res);
+    }
+    if (req.method === "GET" && url.pathname === "/v1/redirect-image") {
+      res.writeHead(302, { Location: "/v1/mock-image.png" });
+      return res.end();
+    }
+    if (req.method === "GET" && url.pathname === "/v1/mock-image.png") {
+      const buf = Buffer.from(MIN_PNG_B64, "base64");
+      res.writeHead(200, {
+        "Content-Type": "image/png",
+        "Content-Length": buf.length,
+        "Cache-Control": "no-store"
+      });
+      return res.end(buf);
     }
     if (req.method === "GET" && (url.pathname === "/" || url.pathname === "/health")) {
       return sendJson(res, 200, { ok: true, mode: mode, delayMs: delayMs, times503: times503, hits503: hits503 });

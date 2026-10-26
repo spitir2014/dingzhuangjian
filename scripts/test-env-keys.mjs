@@ -1,10 +1,12 @@
-/* 密钥契约测试（方案 A）：密钥只从 .env 读，config.json 永不落盘。
+/* 密钥契约测试（方案 A）：密钥只存 .env，config.json 永不落盘。
    覆盖：
    1) 没有 .env / 缺密钥：服务照常启动，/api/config 报 hasKey=false 并给出变量名
    2) 缺密钥拉模型：400，错误里带该服务商应填的变量名
-   3) 网页提交密钥：400，明确指向 .env（不能假装改成功）
+   3) 往 /api/providers 提交密钥：400，明确指向 .env（不能假装改成功）
    4) 有 .env：hasKey=true，掩码取前 4 后 4
    5) 任何一次保存之后，config.json 里都不允许出现 apiKey 字段
+   6) 网页弹窗填密钥（POST /api/providers/key）：写进 .env、立即生效、
+      重复保存替换同一行、拒绝跨站来源
 */
 import fs from "node:fs/promises";
 import path from "node:path";
@@ -75,6 +77,38 @@ await sleep(200);
 let disk = await fs.readFile(CFG, "utf8");
 ok(disk.indexOf("hiddenModels") >= 0, "确认真的写了 config.json（hiddenModels 已更新）");
 ok(!/\"apiKey\"/.test(disk), "写盘后 config.json 里没有 apiKey 字段");
+
+/* ---------- 网页弹窗里填密钥：写回 .env，立即生效 ---------- */
+r = await postJson("/api/providers/key", { providerId: "nope", apiKey: "sk-x" });
+ok(r.status === 404, "未知服务商写密钥：404");
+
+r = await postJson("/api/providers/key", { providerId: "mock", apiKey: "   " });
+ok(r.status === 400, "空密钥：400");
+
+r = await postJson("/api/providers/key", { providerId: "mock", apiKey: "sk-a\r\nZXT_KEY_BAD=1" });
+ok(r.status === 400, "含换行的密钥：400");
+
+r = await getJson("/api/providers/key", {
+  method: "POST",
+  headers: { "Content-Type": "application/json", "Origin": "http://evil.example" },
+  body: JSON.stringify({ providerId: "mock", apiKey: "sk-evil" })
+});
+ok(r.status === 403, "跨站来源写密钥：403");
+
+r = await postJson("/api/providers/key", { providerId: "mock", apiKey: "sk-ui-567890" });
+ok(r.status === 200 && r.body.providers[0].hasKey === true, "网页填密钥：200 且 hasKey=true");
+ok(r.body.providers[0].keyMask === "sk-u••••••••7890", "网页填密钥：掩码正确");
+let envDisk = await fs.readFile(ENV_MISSING, "utf8");
+ok(/^ZXT_KEY_MOCK=sk-ui-567890$/m.test(envDisk), "网页填密钥：已写入 .env");
+ok(envDisk.indexOf("ZXT_KEY_BAD") < 0, "非法密钥没有写进 .env");
+
+/* 再存一次：同名变量只能有一行（替换而不是追加） */
+r = await postJson("/api/providers/key", { providerId: "mock", apiKey: "sk-ui-999900" });
+envDisk = await fs.readFile(ENV_MISSING, "utf8");
+ok((envDisk.match(/^ZXT_KEY_MOCK=/gm) || []).length === 1 && /^ZXT_KEY_MOCK=sk-ui-999900$/m.test(envDisk), "重复保存：替换同一行，不重复追加");
+
+disk = await fs.readFile(CFG, "utf8");
+ok(!/\"apiKey\"/.test(disk), "网页填密钥后 config.json 里仍然没有 apiKey 字段");
 await stop(s.child);
 
 /* ---------- 第二段：有 .env ---------- */

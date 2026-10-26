@@ -1,8 +1,12 @@
 {
   "name": "dingzhuangjian",
   "description": "定妆间 · 人物设定稿工作台（本地人物设定稿生成器）",
-  "version": "1.0.0",
+  "version": "1.002",
   "private": true,
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/spitir2014/dingzhuangjian.git"
+  },
   "type": "module",
   "scripts": {
     "start": "node server.mjs",
@@ -10,8 +14,9 @@
     "check": "node scripts/check-prompt.mjs",
     "test:model": "node scripts/test-model.mjs",
     "test:layouts": "node scripts/test-layouts.mjs",
-    "test": "npm run validate && npm run check && npm run test:env && npm run test:model && npm run test:layouts && npm run test:p2 && npm run test:costume",
+    "test": "npm run validate && npm run check && npm run test:env && npm run test:reverse && npm run test:model && npm run test:layouts && npm run test:p2 && npm run test:costume",
     "test:p2": "node scripts/test-p2.mjs",
+    "test:reverse": "node scripts/test-reverse.mjs",
     "p2:live:plan": "node scripts/run-p2-live-validation.mjs",
     "test:batch": "node scripts/test-batch.mjs",
     "test:costume": "node scripts/test-costume-e2e.mjs",

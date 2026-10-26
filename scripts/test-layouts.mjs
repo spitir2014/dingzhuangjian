@@ -46,7 +46,7 @@ const NAMES = ["bandFor","isContentBlock","currentTemplate","templateSuppressedI
   "ratioOrient","templateOrient","ratioAllowed","ensureRatioForTemplate",
   "defaultBlocks","ensureBlockSkeleton","applyTemplateStructure","applyDetailPresetFlags",
   "migrateLegacyContent","migrateLegacyStructure","loadBlocks","compileBlockText","compilePrompt",
-  "buildPromptSnapshot","expandCovers","clearCostumeSlots","identityPhrase","currentLook","genMeta","mulberry32","pick","randInt",
+  "buildPromptSnapshot","activeStyle","expandCovers","clearCostumeSlots","identityPhrase","currentLook","genMeta","mulberry32","pick","randInt",
   "buildVars","currentSex","sexMeta","currentRatio","sizeString","aspectText",
   "costumeText","applyLookData","budgetFor","eraOn","eraDef","optionLabel","costumeRolePhrase","currentRankInfo","eraNegative"];
 const CONSTS = ["DETAIL_PRESETS","LEGACY_CONTENT","LEGACY_STRUCT"];

@@ -795,7 +795,7 @@ input[type=range]::-webkit-slider-thumb{
 .profile-edit{font-size:9px;color:var(--accent);flex:none}
 .group-head{cursor:pointer;user-select:none}
 .group-chevron{font-size:9px;color:var(--ink-4);width:9px;flex:none}
-.group.collapsed .group-body{display:none}
+.group.collapsed > :not(.group-head){display:none}
 .group-head:hover .group-title{color:var(--accent)}
 .param-name{cursor:pointer}
 .param-name:hover{color:var(--accent)}
@@ -976,3 +976,60 @@ input[type=range]::-webkit-slider-thumb{
 
 /* 品牌副标：基准 1440 宽也要可见——第二行点明「人物设定稿工作台」定位；它不占额外横向空间 */
 .topbar .brand-copy .brand-sub{display:block;font-size:8.5px;letter-spacing:.08em;white-space:nowrap}
+
+/* ---------- 参考图复刻 ---------- */
+.modal-card.reverse-card{width:780px;max-width:94vw;max-height:90vh;overflow:auto}
+.rev-top{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:18px;align-items:start}
+.rev-label{font-size:9.5px;letter-spacing:.16em;color:var(--ink-4);margin:0 0 6px}
+.rev-drop{
+  position:relative;min-height:240px;border:1px dashed var(--line);border-radius:6px;background:#fff;
+  display:flex;align-items:center;justify-content:center;overflow:hidden;cursor:pointer;transition:.12s;
+}
+.rev-drop:hover,.rev-drop.over{border-color:var(--accent);background:var(--accent-soft)}
+.rev-drop img{display:block;max-width:100%;max-height:320px;object-fit:contain}
+.rev-drop img[hidden]{display:none}
+.rev-drop-empty{display:flex;flex-direction:column;align-items:center;gap:3px;text-align:center;color:var(--ink-4);pointer-events:none}
+.rev-drop-empty[hidden]{display:none}
+.rev-drop-empty strong{font-size:11.5px;font-weight:500;color:var(--ink-2);letter-spacing:.06em}
+.rev-drop-empty span{font-size:9.5px}
+.rev-url-row{display:flex;gap:5px;margin-top:7px}
+.rev-url-row input{flex:1;min-width:0}
+.rev-hint{margin:6px 0 0;font-size:9.5px;line-height:1.6;color:var(--ink-4);min-height:14px}
+.rev-hint.err{color:var(--seal)}
+.rev-inline{display:flex;gap:4px;align-items:stretch}
+.rev-inline select{flex:1;min-width:0}
+.rev-inline .mini{flex:none}
+.rev-run{width:100%;margin-top:2px}
+.rev-sys-editor{margin-top:16px;padding-top:12px;border-top:1px solid var(--line)}
+.rev-sys-head{display:flex;gap:6px;align-items:center;margin-bottom:6px}
+.rev-sys-head select{flex:1;min-width:0}
+#revSysName{margin-bottom:5px}
+#revSysText,#revResult,#revStyleText{width:100%;box-sizing:border-box;border:1px solid var(--line);border-radius:4px;padding:7px 8px;background:#fff;color:var(--ink);resize:vertical;line-height:1.7}
+#revSysText,#revResult{font-family:var(--font-mono);font-size:10.5px}
+.rev-sys-actions{display:flex;justify-content:space-between;gap:8px;margin-top:6px}
+.rev-result{margin-top:16px;padding-top:12px;border-top:1px solid var(--line)}
+.rev-result-row{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:7px 0 0}
+.rev-result-row input{min-width:0}
+.rev-actions{display:flex;justify-content:flex-end;gap:6px;flex-wrap:wrap;margin-top:9px}
+.rev-styles{margin-top:16px;padding-top:12px;border-top:1px solid var(--line)}
+.rev-count{font-size:9.5px;color:var(--ink-4)}
+.rev-style-list{max-height:220px}
+.rev-style-row{display:flex;align-items:center;gap:9px}
+.rev-thumb{width:42px;height:42px;object-fit:cover;border-radius:3px;border:1px solid var(--line);flex:none;background:#F2F3EF}
+.rev-style-meta{flex:1;min-width:0}
+.rev-style-tags{font-size:9.5px;color:var(--ink-4);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.rev-style-actions{display:flex;gap:2px;flex:none}
+.rev-empty{margin:0;padding:12px;font-size:10.5px;color:var(--ink-4)}
+.style-chip{color:var(--accent);border-color:rgba(43,95,118,.35);background:var(--accent-soft);max-width:220px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.style-chip[hidden]{display:none}
+.form-row select,.form-row textarea{
+  width:100%;box-sizing:border-box;border:1px solid var(--line);border-radius:4px;padding:6px 7px;
+  font-size:11px;background:#fff;color:var(--ink);resize:vertical;
+}
+.form-row select:focus,.form-row textarea:focus{outline:none;border-color:var(--accent);box-shadow:0 0 0 3px rgba(43,95,118,.1)}
+#pvStrengthRow[hidden]{display:none}
+@media (max-width:900px){
+  .rev-top{grid-template-columns:1fr}
+  .rev-result-row{grid-template-columns:1fr}
+}
+

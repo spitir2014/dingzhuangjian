@@ -37,6 +37,9 @@ node_modules/
 *.log
 npm-debug.log*
 
+# 历史脚本 bug 误建的系统盘缓存目录（若再现也不入库）
+%SystemDrive%/
+
 # 系统垃圾文件
 Thumbs.db
 Desktop.ini

@@ -9,7 +9,13 @@ import { imageDimensions } from "./scripts/image-dimensions.mjs";
 
 const ROOT = path.dirname(fileURLToPath(import.meta.url));
 const WEB = path.join(ROOT, "web");
-const DATA = path.join(ROOT, "data");
+/* 版本号单一来源：package.json（启动时读一次，读失败退回 "0.0.0"） */
+const APP_VERSION = await fs
+  .readFile(path.join(ROOT, "package.json"), "utf8")
+  .then(function (s) { return JSON.parse(s).version; })
+  .catch(function () { return "0.0.0"; });
+/* 数据目录默认 <root>/data；测试用 ZXT_DATA 指到临时目录，避免把用户的提示词/风格预设写脏 */
+const DATA = process.env.ZXT_DATA ? path.resolve(process.env.ZXT_DATA) : path.join(ROOT, "data");
 /* 目录与配置允许环境变量覆盖：自检/测试用临时端口 + 临时目录，不碰真实配置和输出 */
 const OUT = process.env.ZXT_OUT ? path.resolve(process.env.ZXT_OUT) : path.join(ROOT, "output");
 const CONFIG_FILE = process.env.ZXT_CONFIG ? path.resolve(process.env.ZXT_CONFIG) : path.join(ROOT, "config.json");
@@ -37,9 +43,10 @@ const MIME = {
   ".woff2": "font/woff2"
 };
 
-/* ---------- 密钥：只从 .env 读（方案 A） ----------
+/* ---------- 密钥：唯一存放地是 .env ----------
    config.json 只存「结构」（地址 / 名称 / 开关 / 模型目录），密钥永不写盘。
-   换密钥 = 改 .env 里对应的那一行 + 重启定妆间；网页里不再提供改密钥的入口。 */
+   网页服务商弹窗里填的密钥会写回 .env（POST /api/providers/key，立即生效）；
+   手动改 .env 同样有效，改完重启定妆间。 */
 function providerEnvName(p) {
   return "ZXT_KEY_" + String((p && p.id) || "").toUpperCase().replace(/[^A-Z0-9]/g, "_");
 }
@@ -49,9 +56,12 @@ function keyMissingMessage(p) {
     providerEnvName(p) + "=你的密钥，然后重启定妆间（密钥只从 .env 读取，不会写进 config.json）";
 }
 
-/* 读进来的 config.json 就算残留了 apiKey 也一律丢掉，再从环境变量补 */
+/* 读进来的 config.json 就算残留了 apiKey 也一律丢掉，再从环境变量补。
+   两类服务商（生图 / LLM 反推）共用同一套密钥约定：ZXT_KEY_<id 大写>。 */
 function applyEnvKeys(cfg) {
-  (cfg.providers || []).forEach(function (p) {
+  if (!Array.isArray(cfg.providers)) cfg.providers = [];
+  if (!Array.isArray(cfg.llmProviders)) cfg.llmProviders = [];
+  cfg.providers.concat(cfg.llmProviders).forEach(function (p) {
     delete p.apiKey;
     const key = String(process.env[providerEnvName(p)] || "").trim();
     if (key) p.apiKey = key;
@@ -79,7 +89,7 @@ async function loadConfig() {
 
 /* 没有 config.json 时的默认结构。密钥来自 .env，这里不读任何密钥文件。 */
 function seedConfig() {
-  return { providers: [], settings: { downloadDir: "output", hiddenModels: {} } };
+  return { providers: [], llmProviders: [], settings: { downloadDir: "output", hiddenModels: {} } };
 }
 
 /* .env 必须在读 config 之前加载：密钥要靠它注入。
@@ -91,10 +101,33 @@ try {
   /* 没有 .env 就安静跳过；缺哪个密钥会在下面逐条提示 */
 }
 
+/* 网页弹窗里填的密钥：写回 .env（唯一存放地）。保留文件里的注释和其它服务商，
+   只替换同名变量那一行；没有就追加一行。值里不能有换行（调用处已校验）。 */
+async function saveEnvKey(name, value) {
+  let text = "";
+  try {
+    text = await fs.readFile(ENV_FILE, "utf8");
+  } catch (e) {
+    text = "";
+  }
+  const eol = text.indexOf("\r\n") >= 0 ? "\r\n" : "\n";
+  const line = name + "=" + (/^[A-Za-z0-9_\-./+=]+$/.test(value) ? value : JSON.stringify(value));
+  const safeName = name.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+  /* g：同名变量万一被写了多行，全部替换成一行，避免 Node 读哪一行不确定 */
+  const re = new RegExp("^[ \\t]*(?:export[ \\t]+)?" + safeName + "[ \\t]*=.*$", "gm");
+  if (re.test(text)) {
+    text = text.replace(re, function () { return line; });
+  } else {
+    if (text && !/\r?\n$/.test(text)) text += eol;
+    text += line + eol;
+  }
+  await fs.writeFile(ENV_FILE, text, "utf8");
+}
+
 let config = await loadConfig();
 
-/* 启动时就把缺密钥的服务商列出来，省得点到「生成」才发现 */
-(config.providers || []).forEach(function (p) {
+/* 启动时就把缺密钥的服务商列出来，省得点到「生成」才发现（生图 / LLM 都查） */
+(config.providers || []).concat(config.llmProviders || []).forEach(function (p) {
   if (!p.apiKey) {
     console.warn("[密钥缺失] " + (p.name || p.id) + " → 请在 .env 写 " + providerEnvName(p) + "=你的密钥，然后重启");
   }
@@ -219,22 +252,40 @@ function maskKey(k) {
   return k.slice(0, 4) + "••••••••" + k.slice(-4);
 }
 
-function publicProviders() {
-  return config.providers.map(function (p) {
-    return {
-      id: p.id,
-      name: p.name,
-      baseUrl: p.baseUrl,
-      keyMask: maskKey(p.apiKey),
-      hasKey: !!p.apiKey,
-      envKey: providerEnvName(p),
-      enabled: p.enabled !== false
-    };
-  });
+function publicProvider(p, kind) {
+  return {
+    id: p.id,
+    name: p.name,
+    baseUrl: p.baseUrl,
+    keyMask: maskKey(p.apiKey),
+    hasKey: !!p.apiKey,
+    envKey: providerEnvName(p),
+    enabled: p.enabled !== false,
+    kind: kind,
+    authHeader: p.authHeader || "Authorization",
+    strengthParam: p.strengthParam == null ? "reasoning_effort" : String(p.strengthParam)
+  };
 }
 
+/* 生图服务商：/v1/images/generations；LLM 服务商：/v1/chat/completions（参考图反推用）。
+   两套列表分开存，避免 LLM 模型混进生图模型下拉。 */
+function publicProviders() {
+  return (config.providers || []).map(function (p) { return publicProvider(p, "image"); });
+}
+function publicLlmProviders() {
+  return (config.llmProviders || []).map(function (p) { return publicProvider(p, "llm"); });
+}
+
+/* 生图专用：/api/generate、批次、密钥缺失提示都只认这一套 */
 function findProvider(id) {
-  return config.providers.find(function (p) { return p.id === id; });
+  return (config.providers || []).find(function (p) { return p.id === id; });
+}
+function findLlmProvider(id) {
+  return (config.llmProviders || []).find(function (p) { return p.id === id; });
+}
+/* 拉模型 / 写密钥两类服务商都支持 */
+function findProviderAnywhere(id) {
+  return findProvider(id) || findLlmProvider(id);
 }
 
 /* 接口地址允许粘贴成 …/v1 或 …/v1/models：本程序自己会拼 /v1/models 和 /v1/images/generations，
@@ -339,7 +390,8 @@ function modelListFromJson(j) {
 }
 
 async function handleModels(url, res) {
-  const p = findProvider(url.searchParams.get("provider"));
+  /* 生图 / LLM 两类服务商都走这个接口：/v1/models 是两家共用的 */
+  const p = findProviderAnywhere(url.searchParams.get("provider"));
   if (!p) return send(res, 404, { ok: false, error: "provider not found" });
   if (!p.apiKey) return send(res, 400, { ok: false, error: keyMissingMessage(p) });
   const started = Date.now();
@@ -384,6 +436,368 @@ async function handleModels(url, res) {
     ok: false,
     error: "拉取模型失败：试过的地址都不是模型目录（" + tried.join("、") + "）",
     tried: tried
+  });
+}
+
+/* ======================================================================
+   参考图复刻（图 → 提示词 / 风格）
+   - 系统提示词：data/reverse-prompts.json，可在网页里增删改选
+   - 风格预设：data/styles.json，保存反推结果，随时套到别的角色上
+   - 调用：LLM 服务商（config.llmProviders）的 /v1/chat/completions，图片走 image_url
+   ====================================================================== */
+const REVERSE_PROMPTS_FILE = path.join(DATA, "reverse-prompts.json");
+const STYLES_FILE = path.join(DATA, "styles.json");
+const STRENGTH_OPTIONS = ["auto", "low", "medium", "high"];
+const MAX_FETCH_IMAGE_BYTES = 15 * 1024 * 1024;
+const MAX_REVERSE_IMAGE_CHARS = 30 * 1024 * 1024;
+/* 默认禁止抓本机/内网（SSRF）；离线测试可以用 ZXT_ALLOW_LOCAL_IMAGE_FETCH=1 放开 */
+const ALLOW_LOCAL_IMAGE_FETCH = process.env.ZXT_ALLOW_LOCAL_IMAGE_FETCH === "1";
+
+/* 出厂系统提示词：用户第一次打开就有东西可用；可以在网页里改成自己的版本 */
+const DEFAULT_REVERSE_PROMPT_TEXT = [
+  "你是「定妆间」的视觉反推助手。用户会给你一张参考图，请把它反推成一段可直接用于文生图模型的中文提示词。",
+  "",
+  "先拆解画面：画幅与构图、机位与焦段、主体姿态与取景、光线方向与色温、材质与质感、色彩与后期、背景与环境、整体风格流派。只写画面里能看到的视觉事实，不猜测姓名、身份、剧情，不复述图中文字内容。",
+  "",
+  "写作要求：",
+  "1. 输出一段连续的中文提示词，分句写，每句以中文标点结尾；不要标题、不要编号、不要 markdown、不要解释。",
+  "2. 先写画面与主体，再写光线、材质、色彩和镜头，最后写质感与风格；少用空泛形容词，多写可执行的具体描述（例如「柔光从左上 45 度打入」「哑光丝绸，只有微弱高光」）。",
+  "3. 若图中有人物：只描述外形与神态里可复现的特征，保持中性、可替换，不指认真实人物；遇到裸露或敏感内容改成得体的服装描述。",
+  "4. 若图中有文字、水印、logo：不要复述文字，在提示词末尾写「不要任何文字、水印、logo」。",
+  "",
+  "最后另起一段，以「风格与质感：」开头，写 2–4 句与具体人物无关、可以套用到其它角色身上的风格描述（光线、色调、质感、镜头、后期、氛围）。这一段会被单独保存成风格模板。",
+  "",
+  "只输出提示词本身，不要任何前后缀说明。"
+].join("\n");
+
+function defaultReversePrompts() {
+  return {
+    version: 1,
+    defaultId: "default",
+    prompts: [{ id: "default", name: "默认 · 参考图复刻", builtin: true, text: DEFAULT_REVERSE_PROMPT_TEXT }]
+  };
+}
+
+function cleanStoredPrompt(p) {
+  if (!p || typeof p !== "object") return null;
+  const id = String(p.id || "").trim();
+  const text = String(p.text || "");
+  if (!id || !text.trim()) return null;
+  return {
+    id: id.slice(0, 40),
+    name: String(p.name || "未命名系统提示词").trim().slice(0, 40) || "未命名系统提示词",
+    text: text.slice(0, 60000),
+    builtin: p.builtin === true
+  };
+}
+
+async function loadReversePrompts() {
+  try {
+    const j = JSON.parse(await fs.readFile(REVERSE_PROMPTS_FILE, "utf8"));
+    const prompts = (Array.isArray(j && j.prompts) ? j.prompts : []).map(cleanStoredPrompt).filter(Boolean);
+    if (prompts.length) {
+      const defaultId = prompts.some(function (p) { return p.id === j.defaultId; }) ? j.defaultId : prompts[0].id;
+      return { version: 1, defaultId: defaultId, prompts: prompts };
+    }
+  } catch (e) {}
+  return defaultReversePrompts();
+}
+
+async function saveReversePrompts(data) {
+  await fs.writeFile(REVERSE_PROMPTS_FILE, JSON.stringify(data, null, 2), "utf8");
+}
+
+function cleanStyle(b) {
+  const prompt = String((b && b.prompt) || "").trim();
+  if (!prompt) throw new Error("复刻提示词不能为空");
+  if (prompt.length > 30000) throw new Error("复刻提示词太长（上限 30000 字）");
+  const styleSuffix = String((b && b.styleSuffix) || "").trim().slice(0, 12000);
+  const name = String((b && b.name) || "").trim().slice(0, 40) || "未命名风格";
+  const tags = (Array.isArray(b && b.tags) ? b.tags : [])
+    .map(function (x) { return String(x || "").trim().slice(0, 20); })
+    .filter(Boolean).slice(0, 8);
+  const thumb = String((b && b.thumb) || "");
+  if (thumb && (!/^data:image\/(png|jpeg|webp);base64,/i.test(thumb) || thumb.length > 512000)) {
+    throw new Error("缩略图不合法（只接受 png/jpeg/webp，且不超过 500KB）");
+  }
+  const source = b && b.source && typeof b.source === "object"
+    ? { kind: String(b.source.kind || "").slice(0, 16), url: String(b.source.url || "").slice(0, 2000) }
+    : null;
+  const llm = b && b.llm && typeof b.llm === "object"
+    ? {
+        providerId: String(b.llm.providerId || "").slice(0, 40),
+        providerName: String(b.llm.providerName || "").slice(0, 60),
+        model: String(b.llm.model || "").slice(0, 80),
+        strength: STRENGTH_OPTIONS.indexOf(b.llm.strength) >= 0 ? b.llm.strength : "auto",
+        systemPromptId: String(b.llm.systemPromptId || "").slice(0, 40)
+      }
+    : null;
+  const id = String((b && b.id) || "").trim();
+  return {
+    id: /^[a-z0-9_-]{1,40}$/.test(id) ? id : "",
+    name: name,
+    prompt: prompt,
+    styleSuffix: styleSuffix,
+    tags: tags,
+    thumb: thumb,
+    source: source,
+    llm: llm
+  };
+}
+
+async function loadStyles() {
+  try {
+    const j = JSON.parse(await fs.readFile(STYLES_FILE, "utf8"));
+    const styles = [];
+    (Array.isArray(j && j.styles) ? j.styles : []).forEach(function (raw) {
+      if (!raw || typeof raw !== "object") return;
+      let s;
+      try { s = cleanStyle(raw); } catch (e) { return; }
+      if (!s.id) s.id = "st-" + (styles.length + 1);
+      s.createdAt = typeof raw.createdAt === "string" ? raw.createdAt : null;
+      s.updatedAt = typeof raw.updatedAt === "string" ? raw.updatedAt : null;
+      styles.push(s);
+    });
+    return { version: 1, styles: styles };
+  } catch (e) {
+    return { version: 1, styles: [] };
+  }
+}
+
+async function saveStyles(data) {
+  await fs.writeFile(STYLES_FILE, JSON.stringify(data, null, 2), "utf8");
+}
+
+/* ---------- LLM 调用：OpenAI 兼容 /v1/chat/completions，图片用 image_url ---------- */
+function messageText(j) {
+  const msg = j && Array.isArray(j.choices) && j.choices[0] ? j.choices[0].message : null;
+  if (!msg) return "";
+  if (typeof msg.content === "string") return msg.content;
+  if (Array.isArray(msg.content)) {
+    return msg.content.map(function (part) {
+      if (typeof part === "string") return part;
+      if (part && typeof part.text === "string") return part.text;
+      return "";
+    }).join("");
+  }
+  return "";
+}
+
+async function callUpstreamChat(p, body) {
+  const started = Date.now();
+  const systemPrompt = String(body.systemPrompt || "").trim();
+  const instruction = String(body.instruction || "").trim() || "请按系统提示词复刻这张参考图。";
+  const strength = STRENGTH_OPTIONS.indexOf(body.strength) >= 0 ? body.strength : "auto";
+  /* 强度参数名可配置；填 none（或空）表示完全不发这个字段 */
+  const rawParam = p.strengthParam == null ? "reasoning_effort" : String(p.strengthParam).trim();
+  const strengthParam = rawParam.toLowerCase() === "none" ? "" : rawParam;
+  const timeoutMs = Math.max(5000, Math.min(600000, Number(body.timeoutMs) || settingsNum("llmTimeoutMs", 180000)));
+  const payload = {
+    model: body.model,
+    messages: [
+      { role: "system", content: systemPrompt },
+      {
+        role: "user",
+        content: [
+          { type: "text", text: instruction },
+          { type: "image_url", image_url: { url: body.imageDataUrl } }
+        ]
+      }
+    ],
+    stream: false
+  };
+  if (strength !== "auto" && strengthParam) payload[strengthParam] = strength;
+  let strengthIgnored = false;
+  let r = null;
+  let text = "";
+  let lastStatus = 0;
+  try {
+    r = await fetch(providerApiBase(p) + "/chat/completions", {
+      method: "POST",
+      headers: Object.assign({ "Content-Type": "application/json" }, authHeaders(p)),
+      body: JSON.stringify(payload),
+      signal: AbortSignal.timeout(timeoutMs)
+    });
+    text = await r.text();
+    lastStatus = r.status;
+    /* 部分中转不认 reasoning_effort：去掉强度参数再试一次，别让一个可选开关把整次反推打死 */
+    if (!r.ok && r.status === 400 && payload[strengthParam]) {
+      delete payload[strengthParam];
+      strengthIgnored = true;
+      r = await fetch(providerApiBase(p) + "/chat/completions", {
+        method: "POST",
+        headers: Object.assign({ "Content-Type": "application/json" }, authHeaders(p)),
+        body: JSON.stringify(payload),
+        signal: AbortSignal.timeout(timeoutMs)
+      });
+      text = await r.text();
+      lastStatus = r.status;
+    }
+    if (!r.ok) {
+      const info = upstreamErrorInfo(lastStatus, text);
+      return { ok: false, status: lastStatus, code: info.code, error: info.msg, ms: Date.now() - started };
+    }
+    let j = null;
+    try { j = JSON.parse(text); } catch (e) {}
+    if (!j) return { ok: false, code: "bad_response", error: "上游返回非 JSON", ms: Date.now() - started };
+    const content = messageText(j).trim();
+    if (!content) {
+      return { ok: false, code: "bad_response", error: "上游没有返回提示词文本", detail: text.slice(0, 400), ms: Date.now() - started };
+    }
+    return {
+      ok: true,
+      text: content.slice(0, 60000),
+      meta: {
+        model: j.model || body.model,
+        usage: j.usage || null,
+        strength: strength,
+        strengthIgnored: strengthIgnored,
+        ms: Date.now() - started
+      }
+    };
+  } catch (e) {
+    const timedOut = !!(e && (e.name === "TimeoutError" || e.name === "AbortError"));
+    return {
+      ok: false,
+      code: timedOut ? "timeout" : "network_error",
+      error: timedOut ? "上游超过 " + timeoutMs + "ms 未响应" : "请求失败：" + String(e.message || e),
+      ms: Date.now() - started
+    };
+  }
+}
+
+async function handleReverse(req, res) {
+  let body = {};
+  try {
+    body = await readJsonBody(req, MAX_REVERSE_IMAGE_CHARS + 2 * 1024 * 1024);
+  } catch (e) {
+    return send(res, 400, { ok: false, error: "请求体太大或不是合法 JSON" });
+  }
+  const p = findLlmProvider(body.providerId);
+  if (!p) return send(res, 400, { ok: false, error: "未找到反推服务商：先在「以图复刻」里接入一个 LLM 服务商" });
+  if (!p.apiKey) return send(res, 400, { ok: false, error: keyMissingMessage(p) });
+  if (!body.model) return send(res, 400, { ok: false, error: "未选择反推模型" });
+  const systemPrompt = String(body.systemPrompt || "").trim();
+  if (!systemPrompt) return send(res, 400, { ok: false, error: "系统提示词为空：先选一个或写一个" });
+  const image = String(body.imageDataUrl || "");
+  if (!/^data:image\/(png|jpeg|jpg|webp);base64,/i.test(image)) {
+    return send(res, 400, { ok: false, error: "参考图不合法：只接受 png / jpeg / webp 的 base64 data URL" });
+  }
+  if (image.length > MAX_REVERSE_IMAGE_CHARS) {
+    return send(res, 400, { ok: false, error: "参考图太大（上限约 20MB）" });
+  }
+  const out = await callUpstreamChat(p, {
+    model: body.model,
+    systemPrompt: systemPrompt,
+    instruction: body.instruction,
+    imageDataUrl: image,
+    strength: body.strength,
+    timeoutMs: body.timeoutMs
+  });
+  if (!out.ok) {
+    return send(res, 200, { ok: false, code: out.code, status: out.status, error: out.error, detail: out.detail, ms: out.ms });
+  }
+  return send(res, 200, { ok: true, text: out.text, meta: out.meta });
+}
+
+/* ---------- 图片链接 → data URL（浏览器跨域拿不到像素，统一由本机服务代抓） ---------- */
+function isBlockedImageHost(hostname) {
+  const h = String(hostname || "").toLowerCase().replace(/^\[|\]$/g, "");
+  if (!h) return true;
+  if (h === "localhost" || h.endsWith(".localhost") || h.endsWith(".local") || h === "0.0.0.0") return true;
+  if (h === "::1" || h === "::") return true;
+  const m = /^(\d{1,3})\.(\d{1,3})\.(\d{1,3})\.(\d{1,3})$/.exec(h);
+  if (!m) return false;
+  const a = Number(m[1]);
+  const b = Number(m[2]);
+  if (a === 127 || a === 10 || a === 0) return true;
+  if (a === 169 && b === 254) return true;
+  if (a === 172 && b >= 16 && b <= 31) return true;
+  if (a === 192 && b === 168) return true;
+  if (a === 100 && b >= 64 && b <= 127) return true;
+  return false;
+}
+
+function detectImageMime(buf) {
+  if (!buf || buf.length < 12) return null;
+  if (buf[0] === 0x89 && buf[1] === 0x50 && buf[2] === 0x4e && buf[3] === 0x47) return "image/png";
+  if (buf[0] === 0xff && buf[1] === 0xd8 && buf[2] === 0xff) return "image/jpeg";
+  if (buf.subarray(0, 4).toString("ascii") === "RIFF" && buf.subarray(8, 12).toString("ascii") === "WEBP") return "image/webp";
+  return null;
+}
+
+async function handleFetchImage(req, res) {
+  let body = {};
+  try {
+    body = await readJsonBody(req, 16 * 1024);
+  } catch (e) {
+    return send(res, 400, { ok: false, error: "请求不合法" });
+  }
+  const raw = String(body.url || "").trim();
+  let u = null;
+  try { u = new URL(raw); } catch (e) {}
+  if (!u) return send(res, 400, { ok: false, error: "图片链接不合法" });
+  if (u.protocol !== "http:" && u.protocol !== "https:") {
+    return send(res, 400, { ok: false, error: "只支持 http / https 的图片链接" });
+  }
+  if (!ALLOW_LOCAL_IMAGE_FETCH && isBlockedImageHost(u.hostname)) {
+    return send(res, 400, { ok: false, error: "不允许抓取本机或内网地址" });
+  }
+  let r = null;
+  try {
+    /* 手动跟跳转：每一跳都重新校验协议与主机，避免 public → 127.0.0.1 的 SSRF 绕过 */
+    let current = u;
+    for (let hop = 0; hop < 4; hop++) {
+      if (current.protocol !== "http:" && current.protocol !== "https:") {
+        return send(res, 400, { ok: false, error: "跳转后的地址不是 http / https" });
+      }
+      if (!ALLOW_LOCAL_IMAGE_FETCH && isBlockedImageHost(current.hostname)) {
+        return send(res, 400, { ok: false, error: "不允许抓取本机或内网地址" });
+      }
+      r = await fetch(current.href, {
+        redirect: "manual",
+        headers: { Accept: "image/*,*/*;q=0.8", "User-Agent": "dingzhuangjian/1.0" },
+        signal: AbortSignal.timeout(20000)
+      });
+      if (r.status < 300 || r.status >= 400) break;
+      const loc = r.headers.get("location");
+      if (!loc) break;
+      try { current = new URL(loc, current); } catch (e) {
+        return send(res, 400, { ok: false, error: "图片链接的跳转地址不合法" });
+      }
+    }
+  } catch (e) {
+    const timedOut = !!(e && (e.name === "TimeoutError" || e.name === "AbortError"));
+    return send(res, 502, { ok: false, error: timedOut ? "图片链接超过 20 秒没有响应" : "抓取图片失败：" + String(e.message || e) });
+  }
+  if (!r.ok) return send(res, 502, { ok: false, error: "图片链接返回 HTTP " + r.status });
+  const ct = String(r.headers.get("content-type") || "").toLowerCase();
+  const declared = Number(r.headers.get("content-length") || 0);
+  if (declared && declared > MAX_FETCH_IMAGE_BYTES) {
+    return send(res, 400, { ok: false, error: "图片太大（上限 15MB）" });
+  }
+  let buf = null;
+  try {
+    buf = Buffer.from(await r.arrayBuffer());
+  } catch (e) {
+    return send(res, 502, { ok: false, error: "读取图片失败：" + String(e.message || e) });
+  }
+  if (!buf.length) return send(res, 400, { ok: false, error: "链接返回了空内容" });
+  if (buf.length > MAX_FETCH_IMAGE_BYTES) return send(res, 400, { ok: false, error: "图片太大（上限 15MB）" });
+  const mime = detectImageMime(buf);
+  if (!mime) {
+    return send(res, 400, { ok: false, error: "链接内容不是 png / jpeg / webp 图片" + (ct ? "（Content-Type: " + ct.slice(0, 60) + "）" : "") });
+  }
+  let dims = null;
+  try { dims = imageDimensions(buf); } catch (e) { dims = null; }
+  return send(res, 200, {
+    ok: true,
+    dataUrl: "data:" + mime + ";base64," + buf.toString("base64"),
+    mime: mime,
+    bytes: buf.length,
+    width: dims ? dims.width : null,
+    height: dims ? dims.height : null,
+    finalUrl: r.url || u.href
   });
 }
 
@@ -1155,34 +1569,43 @@ const server = http.createServer(async function (req, res) {
     return res.end();
   }
   try {
-    if (url.pathname === "/api/health") return send(res, 200, { ok: true, ts: Date.now() });
+    if (url.pathname === "/api/health") return send(res, 200, { ok: true, version: APP_VERSION, ts: Date.now() });
     if (url.pathname === "/api/config" && req.method === "GET")
       return send(res, 200, {
         ok: true,
         providers: publicProviders(),
+        llmProviders: publicLlmProviders(),
         settings: config.settings || {},
         hiddenModels: (config.settings && config.settings.hiddenModels) || {}
       });
     if (url.pathname === "/api/providers" && req.method === "GET")
-      return send(res, 200, { ok: true, providers: publicProviders() });
+      return send(res, 200, { ok: true, providers: publicProviders(), llmProviders: publicLlmProviders() });
     if (url.pathname === "/api/providers" && req.method === "POST") {
       const b = await readJsonBody(req, 1 << 20);
+      /* kind=llm 是「参考图反推」用的 LLM 服务商；不传按生图服务商处理，兼容旧页面 */
+      const kind = b.kind === "llm" ? "llm" : "image";
+      const list = kind === "llm" ? (config.llmProviders = config.llmProviders || []) : config.providers;
       if (!b.baseUrl) return send(res, 400, { ok: false, error: "接口地址不能为空" });
       const givenId = String(b.id || "").trim().toLowerCase();
       /* id 会拼进环境变量名，只允许小写字母/数字/_/-，其余一律重新生成 */
       const id = /^[a-z0-9_-]{1,32}$/.test(givenId) ? givenId : "p" + Math.random().toString(36).slice(2, 8);
-      const existing = findProvider(id);
-      /* 方案 A：密钥只从 .env 读。网页提交密钥一律拒收，避免用户以为改了就生效 */
+      const existing = list.find(function (p) { return p.id === id; });
+      /* 同一个 id 不能同时属于两类服务商：.env 变量名会撞 */
+      if (!existing) {
+        const other = kind === "llm" ? findProvider(id) : findLlmProvider(id);
+        if (other) return send(res, 400, { ok: false, error: "标识「" + id + "」已被另一类服务商占用，换一个" });
+      }
+      /* 密钥只进 .env：这个接口不再接收 apiKey（网页弹窗走 /api/providers/key） */
       const rawKey = String(b.apiKey == null ? "" : b.apiKey).trim();
       if (rawKey) {
         return send(res, 400, {
           ok: false,
-          error: "密钥不再通过网页保存：请在项目根目录的 .env 里写一行 " + providerEnvName({ id: id }) + "=你的密钥，然后重启定妆间"
+          error: "这个接口不再接收密钥：请用服务商弹窗的「密钥」框保存（会写入 .env 并立即生效），或手动在 .env 写一行 " + providerEnvName({ id: id }) + "=你的密钥"
         });
       }
       const baseUrl = normalizeBaseUrl(b.baseUrl);
       if (!baseUrl) return send(res, 400, { ok: false, error: "接口地址不合法" });
-      const name = String(b.name || "").trim() || (existing ? existing.name : "未命名服务商");
+      const name = String(b.name || "").trim() || (existing ? existing.name : (kind === "llm" ? "未命名反推服务商" : "未命名服务商"));
       /* 编辑：密钥不在网页里改（只改名称/地址）；改了地址就把上次命中的模型目录清掉，下次重新探测 */
       if (existing) {
         const baseChanged = baseUrl !== String(existing.baseUrl || "").replace(/\/+$/, "");
@@ -1192,26 +1615,149 @@ const server = http.createServer(async function (req, res) {
         if (b.authPrefix != null) existing.authPrefix = b.authPrefix;
         else if (existing.authPrefix == null) existing.authPrefix = "Bearer ";
         existing.enabled = existing.enabled !== false;
+        if (kind === "llm" && b.strengthParam != null) {
+          const sp = String(b.strengthParam).trim().slice(0, 40);
+          if (sp) existing.strengthParam = sp;
+          else delete existing.strengthParam;
+        }
         if (baseChanged) delete existing.modelBase;
       } else {
-        config.providers.push({
+        const item = {
           id: id,
           name: name,
           baseUrl: baseUrl,
           authHeader: b.authHeader || "Authorization",
           authPrefix: b.authPrefix == null ? "Bearer " : b.authPrefix,
           enabled: true
-        });
+        };
+        if (kind === "llm") {
+          const sp = String(b.strengthParam == null ? "" : b.strengthParam).trim().slice(0, 40);
+          if (sp) item.strengthParam = sp;
+        }
+        list.push(item);
       }
       await saveConfig();
-      return send(res, 200, { ok: true, providers: publicProviders() });
+      return send(res, 200, { ok: true, kind: kind, id: id, providers: publicProviders(), llmProviders: publicLlmProviders() });
+    }
+    /* 网页弹窗里填的密钥：写进 .env 并立即生效（config.json 仍然不落盘）。
+       只接受本机页面（同源）发起的写入，避免任意网站跨站改密钥。 */
+    if (url.pathname === "/api/providers/key" && req.method === "POST") {
+      const origin = String(req.headers.origin || "");
+      const sameOrigin = !origin || origin === BASE_URL || origin === "http://localhost:" + PORT;
+      if (!sameOrigin) return send(res, 403, { ok: false, error: "拒绝跨站写入密钥" });
+      const b = await readJsonBody(req, 64 * 1024);
+      const id = String(b.providerId || "").trim().toLowerCase();
+      const p = findProviderAnywhere(id);
+      if (!p) return send(res, 404, { ok: false, error: "没有这个服务商：" + (id || "（空）") });
+      const key = String(b.apiKey == null ? "" : b.apiKey).trim();
+      if (!key) return send(res, 400, { ok: false, error: "密钥不能为空" });
+      if (/[\r\n]/.test(key)) return send(res, 400, { ok: false, error: "密钥不能包含换行" });
+      if (key.length > 512) return send(res, 400, { ok: false, error: "密钥太长（上限 512 字符）" });
+      const envName = providerEnvName(p);
+      try {
+        await saveEnvKey(envName, key);
+      } catch (e) {
+        return send(res, 500, { ok: false, error: "写 .env 失败：" + String((e && e.message) || e) });
+      }
+      process.env[envName] = key;
+      p.apiKey = key;
+      return send(res, 200, { ok: true, providers: publicProviders(), llmProviders: publicLlmProviders(), envKey: envName });
     }
     if (url.pathname === "/api/providers" && req.method === "DELETE") {
       const id = url.searchParams.get("id");
-      config.providers = config.providers.filter(function (p) { return p.id !== id; });
+      const kind = url.searchParams.get("kind") === "llm" ? "llm" : "image";
+      if (kind === "llm") config.llmProviders = (config.llmProviders || []).filter(function (p) { return p.id !== id; });
+      else config.providers = config.providers.filter(function (p) { return p.id !== id; });
       await saveConfig();
-      return send(res, 200, { ok: true, providers: publicProviders() });
+      return send(res, 200, { ok: true, kind: kind, providers: publicProviders(), llmProviders: publicLlmProviders() });
     }
+    /* ---------- 参考图复刻：系统提示词 / 风格预设 / 反推 / 抓图 ---------- */
+    if (url.pathname === "/api/reverse-prompts" && req.method === "GET")
+      return send(res, 200, Object.assign({ ok: true }, await loadReversePrompts()));
+    if (url.pathname === "/api/reverse-prompts" && req.method === "POST") {
+      const b = await readJsonBody(req, 512 * 1024);
+      const data = await loadReversePrompts();
+      const text = String(b.text || "").trim();
+      const name = String(b.name || "").trim().slice(0, 40);
+      if (!text) return send(res, 400, { ok: false, error: "系统提示词不能为空" });
+      if (text.length > 60000) return send(res, 400, { ok: false, error: "系统提示词太长（上限 60000 字）" });
+      const id = String(b.id || "").trim();
+      const at = data.prompts.findIndex(function (p) { return p.id === id; });
+      let item;
+      if (at >= 0) {
+        item = data.prompts[at];
+        item.name = name || item.name;
+        item.text = text;
+      } else {
+        if (data.prompts.length >= 20) return send(res, 400, { ok: false, error: "系统提示词最多 20 条" });
+        item = {
+          id: "rp-" + Date.now().toString(36) + Math.random().toString(36).slice(2, 5),
+          name: name || "未命名系统提示词",
+          text: text,
+          builtin: false
+        };
+        data.prompts.push(item);
+      }
+      data.defaultId = item.id;
+      await saveReversePrompts(data);
+      return send(res, 200, Object.assign({ ok: true, prompt: item }, data));
+    }
+    if (url.pathname === "/api/reverse-prompts/reset" && req.method === "POST") {
+      const data = await loadReversePrompts();
+      const def = defaultReversePrompts().prompts[0];
+      const at = data.prompts.findIndex(function (p) { return p.id === def.id; });
+      if (at >= 0) data.prompts[at] = def;
+      else data.prompts.unshift(def);
+      data.defaultId = def.id;
+      await saveReversePrompts(data);
+      return send(res, 200, Object.assign({ ok: true }, data));
+    }
+    if (url.pathname === "/api/reverse-prompts" && req.method === "DELETE") {
+      const id = url.searchParams.get("id");
+      const data = await loadReversePrompts();
+      if (data.prompts.length <= 1) return send(res, 400, { ok: false, error: "至少要保留一条系统提示词" });
+      const next = data.prompts.filter(function (p) { return p.id !== id; });
+      if (next.length === data.prompts.length) return send(res, 404, { ok: false, error: "没有这条系统提示词" });
+      data.prompts = next;
+      if (data.defaultId === id) data.defaultId = next[0].id;
+      await saveReversePrompts(data);
+      return send(res, 200, Object.assign({ ok: true }, data));
+    }
+    if (url.pathname === "/api/styles" && req.method === "GET")
+      return send(res, 200, Object.assign({ ok: true }, await loadStyles()));
+    if (url.pathname === "/api/styles" && req.method === "POST") {
+      const b = await readJsonBody(req, 2 * 1024 * 1024);
+      let item;
+      try { item = cleanStyle(b); } catch (e) { return send(res, 400, { ok: false, error: String((e && e.message) || e) }); }
+      const data = await loadStyles();
+      const now = new Date().toISOString();
+      if (item.id) {
+        const at = data.styles.findIndex(function (s) { return s.id === item.id; });
+        if (at < 0) return send(res, 404, { ok: false, error: "没有这个风格预设" });
+        item.createdAt = data.styles[at].createdAt || now;
+        item.updatedAt = now;
+        data.styles[at] = item;
+      } else {
+        item.id = "st-" + Date.now().toString(36) + Math.random().toString(36).slice(2, 5);
+        item.createdAt = now;
+        item.updatedAt = now;
+        data.styles.unshift(item);
+        if (data.styles.length > 60) data.styles.length = 60;
+      }
+      await saveStyles(data);
+      return send(res, 200, { ok: true, style: item, styles: data.styles });
+    }
+    if (url.pathname === "/api/styles" && req.method === "DELETE") {
+      const id = url.searchParams.get("id");
+      const data = await loadStyles();
+      const next = data.styles.filter(function (s) { return s.id !== id; });
+      if (next.length === data.styles.length) return send(res, 404, { ok: false, error: "没有这个风格预设" });
+      data.styles = next;
+      await saveStyles(data);
+      return send(res, 200, { ok: true, styles: next });
+    }
+    if (url.pathname === "/api/reverse" && req.method === "POST") return await handleReverse(req, res);
+    if (url.pathname === "/api/fetch-image" && req.method === "POST") return await handleFetchImage(req, res);
     if (url.pathname === "/api/layouts" && req.method === "GET")
       return send(res, 200, { ok: true, layouts: await loadLayouts() });
     if (url.pathname === "/api/layouts/reset" && req.method === "POST") {
